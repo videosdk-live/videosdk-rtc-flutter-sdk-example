@@ -7,8 +7,13 @@ import 'package:videosdk/rtc.dart';
 import 'package:videosdk/meeting.dart';
 import 'package:videosdk/participant.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  print("loading dot env ");
+
+  await dotenv.load(fileName: ".env");
+
   runApp(MyApp());
 }
 
@@ -77,13 +82,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _fetchMeetingIdAndToken() async {
-    final Uri get_token_url = Uri.parse('http://192.168.29.198:9000/get-token');
+    final API_SERVER_HOST = dotenv.env['API_SERVER_HOST'];
+
+    final Uri get_token_url = Uri.parse('http://$API_SERVER_HOST/get-token');
     final http.Response tokenResponse = await http.get(get_token_url);
 
     final dynamic _token = json.decode(tokenResponse.body)['token'];
 
     final Uri get_meeting_id_url =
-        Uri.parse('http://192.168.29.198:9000/create-meeting/');
+        Uri.parse('http://$API_SERVER_HOST/create-meeting/');
 
     final http.Response meetingIdResponse =
         await http.post(get_meeting_id_url, body: {"token": _token});

@@ -55,3 +55,39 @@ android {
 ```
 
 If necessary, in the same `build.gradle` you will need to increase `minSdkVersion` of `defaultConfig` up to `21` (currently default Flutter generator set it to `16`).
+
+### Setting up authentication server and flutter app
+
+1. Run the authentication server
+
+   Follow instructions from [videosdk-rtc-nodejs-sdk-example](https://github.com/videosdk-live/videosdk-rtc-nodejs-sdk-example) to run the authentication server.
+
+2. Clone the repo
+
+   ```sh
+   $ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
+   ```
+
+3. Copy the `.env.example` file to `.env` file.
+
+   ```sh
+   $ cp .env.example .env
+   ```
+
+4. Update the api server url in the `.env` file that points to the authentication server.
+
+   ```
+   API_SERVER_HOST="http://localhost:9000"
+   ```
+
+5. Install pub
+
+   ```sh
+   $ flutter pub get
+   ```
+
+6. Run the app
+
+   ```sh
+   $ flutter run
+   ```
