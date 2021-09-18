@@ -2,9 +2,9 @@
 
 This is VideoSDK RTC example code for flutter.
 
-## Getting Started
+<!-- ## Getting Started
 
-Add `videosdk` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+Add `videosdk` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/). -->
 
 <!-- ### iOS
 
@@ -19,7 +19,7 @@ Add the following entry to your _Info.plist_ file, located in `<project root>/io
 
 This entry allows your app to access camera and microphone. -->
 
-### Android
+<!-- ### Android
 
 Ensure the following permission is present in your Android Manifest file, located in `<project root>/android/app/src/main/AndroidManifest.xml`:
 
@@ -54,7 +54,7 @@ android {
 }
 ```
 
-If necessary, in the same `build.gradle` you will need to increase `minSdkVersion` of `defaultConfig` up to `21` (currently default Flutter generator set it to `16`).
+If necessary, in the same `build.gradle` you will need to increase `minSdkVersion` of `defaultConfig` up to `21` (currently default Flutter generator set it to `16`). -->
 
 ### Setting up authentication server and flutter app
 
