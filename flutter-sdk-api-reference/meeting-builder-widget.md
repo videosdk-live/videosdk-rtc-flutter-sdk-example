@@ -6,23 +6,16 @@ The entry point into real-time communication SDK.
 
 The `Meeting Builder Widget` includes methods and events to initialize and configure the SDK. It is a factory class.
 
-import MethodListGroup from '@theme/MethodListGroup';
-import MethodListItemLabel from '@theme/MethodListItemLabel';
-import MethodListHeading from '@theme/MethodListHeading';
-
 ### Properties
 
-<MethodListGroup>
-<MethodListHeading heading="Properties" />
-  <MethodListGroup name="initMeeting()">
-    <MethodListItemLabel name="meetingId" type={"String"} />
-    <MethodListItemLabel name="displayName" type={"String"}   />
-    <MethodListItemLabel name="token" type={"String"}   />
-    <MethodListItemLabel name="micEnabled" type={"Bool"}   />
-    <MethodListItemLabel name="webcamEnabled" type={"Bool"}   />
-    <MethodListItemLabel name="builder" type={"Widget Function(Meeting)"}   />
-  </MethodListGroup>
-</MethodListGroup>
+| name          | type                     |
+| ------------- | ------------------------ |
+| meetingId     | String                   |
+| displayName   | String                   |
+| token         | String                   |
+| micEnabled    | Bool                     |
+| webcamEnabled | Bool                     |
+| builder       | Widget Function(Meeting) |
 
 ## Example
 
