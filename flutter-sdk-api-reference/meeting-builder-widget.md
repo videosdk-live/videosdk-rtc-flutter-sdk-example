@@ -1,20 +1,3 @@
----
-title: Meeting Builder Widget for flutter SDK.
-hide_title: false
-hide_table_of_contents: false
-description: Video SDK Class is a factory for initialize, configure and init meetings.
-sidebar_label: Meeting Builder Widget
-pagination_label: Meeting Builder Widget
-keywords:
-  - RTC IOS
-  - VideoSDK Class
-  - Video API
-  - Video Conferencing
-image: img/videosdklive-thumbnail.jpg
-sidebar_position: 1
-slug: meeting-builder-widget
----
-
 # Meeting Builder Widget
 
 The entry point into real-time communication SDK.

@@ -1,20 +1,3 @@
----
-title: Participant class for IOS SDK.
-hide_title: false
-hide_table_of_contents: false
-description: The `Participant Class` includes methods and events for participants and their associated audio and video streams, data channels and UI customisation.
-sidebar_label: Participant Class
-pagination_label: Participant Class
-keywords:
-  - RTC IOS
-  - Participant Class
-  - Video API
-  - Video Conferencing
-image: img/videosdklive-thumbnail.jpg
-sidebar_position: 1
-slug: participant-class
----
-
 # Participant Class
 
 ## using Participant Class

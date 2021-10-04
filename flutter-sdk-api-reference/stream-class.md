@@ -1,20 +1,3 @@
----
-title: Stream class for IOS SDK.
-hide_title: false
-hide_table_of_contents: false
-description: RTC Stream Class enables opportunity to .
-sidebar_label: Stream Class
-pagination_label: Stream Class
-keywords:
-  - RTC Android
-  - Stream Class
-  - Video API
-  - Video Conferencing
-image: img/videosdklive-thumbnail.jpg
-sidebar_position: 1
-slug: stream-class
----
-
 # Stream Class
 
 ## using Stream Class

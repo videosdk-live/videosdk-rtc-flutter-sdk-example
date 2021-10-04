@@ -1,19 +1,3 @@
----
-title: Installation Steps for RTC Flutter SDK
-hide_title: false
-hide_table_of_contents: false
-description: RTC Flutter SDK provides client for almost all Android and IOS devices. it takes less amount of cpu and memory.
-sidebar_label: Setup
-pagination_label: Setup
-keywords:
-  - RTC FLUTTER
-  - FLUTTER SDK
-  - DART SDK
-image: img/videosdklive-thumbnail.jpg
-sidebar_position: 1
-slug: setup
----
-
 # Setup
 
 ## Setting up Flutter SDK

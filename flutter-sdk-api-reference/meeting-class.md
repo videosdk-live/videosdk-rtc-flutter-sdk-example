@@ -1,20 +1,3 @@
----
-title: Meeting class for IOS SDK.
-hide_title: false
-hide_table_of_contents: false
-description: RTC Meeting Class provides features to implement custom meeting layout in your application.
-sidebar_label: Meeting Class
-pagination_label: Meeting Class
-keywords:
-  - RTC IOS
-  - Meeting Class
-  - Video API
-  - Video Conferencing
-image: img/videosdklive-thumbnail.jpg
-sidebar_position: 1
-slug: meeting-class
----
-
 # Meeting Class
 
 ## Using Meeting Class
