@@ -22,7 +22,7 @@ The `Meeting Builder Widget` includes methods and events to initialize and confi
 ```js title="Configure MeetingBuilder Example"
 MeetingBuilder(
   meetingId: "<meeting-id>",
-  displayName: "Chintan",
+  displayName: "John Doe",
   token: "<token>",
   micEnabled: true,
   webcamEnabled: true,

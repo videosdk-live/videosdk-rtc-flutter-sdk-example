@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: meetingId != null && token != null
           ? MeetingBuilder(
               meetingId: meetingId as String,
-              displayName: "Chintan",
+              displayName: "John Doe",
               token: token as String,
               micEnabled: true,
               webcamEnabled: true,
