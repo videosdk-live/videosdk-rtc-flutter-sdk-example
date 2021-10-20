@@ -84,13 +84,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _fetchMeetingIdAndToken() async {
     final API_SERVER_HOST = dotenv.env['API_SERVER_HOST'];
 
-    final Uri get_token_url = Uri.parse('http://$API_SERVER_HOST/get-token');
+    final Uri get_token_url = Uri.parse('$API_SERVER_HOST/get-token');
     final http.Response tokenResponse = await http.get(get_token_url);
 
     final dynamic _token = json.decode(tokenResponse.body)['token'];
 
     final Uri get_meeting_id_url =
-        Uri.parse('http://$API_SERVER_HOST/create-meeting/');
+        Uri.parse('$API_SERVER_HOST/create-meeting/');
 
     final http.Response meetingIdResponse =
         await http.post(get_meeting_id_url, body: {"token": _token});
