@@ -1,4 +1,5 @@
 // import 'package:example/ui/utils/dragger.dart';
+import 'package:example/ui/utils/navigator_key.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk/meeting.dart';
 import 'package:videosdk/participant.dart';
@@ -61,55 +62,37 @@ class MeetingActionsState extends State<MeetingActions> {
   }
 
   _initListners() {
-    widget.localParticipant.on(
-      "stream-enabled",
-      (Stream _stream) {
-        if (_stream.kind == 'video') {
-          setState(
-            () {
-              videoStream = _stream;
-            },
-          );
-        } else if (_stream.kind == 'audio') {
-          setState(
-            () {
-              audioStream = _stream;
-            },
-          );
-        } else if (_stream.kind == 'share') {
-          setState(
-            () {
-              shareStream = _stream;
-            },
-          );
-        }
-      },
-    );
+    widget.localParticipant.on("stream-enabled", (Stream _stream) {
+      if (_stream.kind == 'video') {
+        setState(() {
+          videoStream = _stream;
+        });
+      } else if (_stream.kind == 'audio') {
+        setState(() {
+          audioStream = _stream;
+        });
+      } else if (_stream.kind == 'share') {
+        setState(() {
+          shareStream = _stream;
+        });
+      }
+    });
 
-    widget.localParticipant.on(
-      "stream-disabled",
-      (Stream _stream) {
-        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-          setState(
-            () {
-              videoStream = null;
-            },
-          );
-        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-          setState(
-            () {
-              audioStream = null;
-            },
-          );
-        } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
-          setState(
-            () {
-              shareStream = null;
-            },
-          );
-        }
-      },
-    );
+    widget.localParticipant.on("stream-disabled", (Stream _stream) {
+      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+        setState(() {
+          videoStream = null;
+        });
+      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+        setState(() {
+          audioStream = null;
+        });
+      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+        setState(() {
+          shareStream = null;
+        });
+      }
+    });
 
     widget.meeting.on("recording-started", () {
       toastMsg("Meeting recording started.");
@@ -141,6 +124,62 @@ class MeetingActionsState extends State<MeetingActions> {
       setState(() {
         isLivestreamOn = false;
       });
+    });
+
+    widget.meeting.on("mic-requested", ({participantId, accept, reject}) {
+      showDialog(
+        context: navigatorKey.currentContext as BuildContext,
+        builder: (context) => AlertDialog(
+          title: Text("Mic requested?"),
+          content: Text("Do you accept to turn on your mic? "),
+          actions: [
+            TextButton(
+              onPressed: () {
+                reject();
+
+                Navigator.of(context).pop();
+              },
+              child: Text("Reject"),
+            ),
+            TextButton(
+              onPressed: () {
+                accept();
+
+                Navigator.of(context).pop();
+              },
+              child: Text("Accept"),
+            ),
+          ],
+        ),
+      );
+    });
+
+    widget.meeting.on("webcam-requested", ({participantId, accept, reject}) {
+      showDialog(
+        context: navigatorKey.currentContext as BuildContext,
+        builder: (context) => AlertDialog(
+          title: Text("webcam requested?"),
+          content: Text("Do you accept to turn on your webcam? "),
+          actions: [
+            TextButton(
+              onPressed: () {
+                reject();
+
+                Navigator.of(context).pop();
+              },
+              child: Text("Reject"),
+            ),
+            TextButton(
+              onPressed: () {
+                accept();
+
+                Navigator.of(context).pop();
+              },
+              child: Text("Accept"),
+            ),
+          ],
+        ),
+      );
     });
   }
 
@@ -177,7 +216,7 @@ class MeetingActionsState extends State<MeetingActions> {
             },
             backgroundColor: videoStream != null
                 ? Colors.teal.shade600
-                : Colors.teal.shade300,
+                : Colors.teal.shade200,
             child: videoStream != null
                 ? const Icon(Icons.videocam)
                 : const Icon(Icons.videocam_off),
@@ -203,7 +242,7 @@ class MeetingActionsState extends State<MeetingActions> {
             },
             backgroundColor: audioStream != null
                 ? Colors.teal.shade600
-                : Colors.teal.shade300,
+                : Colors.teal.shade200,
             child: audioStream != null
                 ? const Icon(Icons.mic)
                 : const Icon(Icons.mic_off),

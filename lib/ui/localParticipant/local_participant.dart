@@ -51,58 +51,56 @@ class LocalParticipantState extends State<LocalParticipant> {
     final _webcams = widget.meeting.getWebcams();
 
     webcams = _webcams;
+
+    widget.localParticipant.streams.forEach((key, stream) {
+      if (stream.kind == 'video') {
+        setState(() {
+          videoStream = stream;
+        });
+      } else if (stream.kind == 'audio') {
+        setState(() {
+          audioStream = stream;
+        });
+      } else if (stream.kind == 'share') {
+        setState(() {
+          shareStream = stream;
+        });
+      }
+    });
   }
 
   _initStreamListners() {
-    widget.localParticipant.on(
-      "stream-enabled",
-      (Stream _stream) {
-        if (_stream.kind == 'video') {
-          setState(
-            () {
-              videoStream = _stream;
-            },
-          );
-        } else if (_stream.kind == 'audio') {
-          setState(
-            () {
-              audioStream = _stream;
-            },
-          );
-        } else if (_stream.kind == 'share') {
-          setState(
-            () {
-              shareStream = _stream;
-            },
-          );
-        }
-      },
-    );
+    widget.localParticipant.on("stream-enabled", (Stream _stream) {
+      if (_stream.kind == 'video') {
+        setState(() {
+          videoStream = _stream;
+        });
+      } else if (_stream.kind == 'audio') {
+        setState(() {
+          audioStream = _stream;
+        });
+      } else if (_stream.kind == 'share') {
+        setState(() {
+          shareStream = _stream;
+        });
+      }
+    });
 
-    widget.localParticipant.on(
-      "stream-disabled",
-      (Stream _stream) {
-        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-          setState(
-            () {
-              videoStream = null;
-            },
-          );
-        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-          setState(
-            () {
-              audioStream = null;
-            },
-          );
-        } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
-          setState(
-            () {
-              shareStream = null;
-            },
-          );
-        }
-      },
-    );
+    widget.localParticipant.on("stream-disabled", (Stream _stream) {
+      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+        setState(() {
+          videoStream = null;
+        });
+      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+        setState(() {
+          audioStream = null;
+        });
+      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+        setState(() {
+          shareStream = null;
+        });
+      }
+    });
   }
 
   Widget build(BuildContext context) {

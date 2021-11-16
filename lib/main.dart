@@ -1,17 +1,13 @@
 import 'package:example/ui/meeting_actions.dart';
-import 'package:example/ui/utils/dragger.dart';
-
+import 'package:example/ui/utils/navigator_key.dart';
 import './ui/localParticipant/local_participant.dart';
 import './ui/remoteParticipants/list_remote_participants.dart';
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:videosdk/rtc.dart';
 import 'package:videosdk/meeting.dart';
 import 'package:videosdk/participant.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   runApp(MyApp());
@@ -21,38 +17,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        backgroundColor: Color.fromARGB(255, 38, 50, 56),
-        primarySwatch: Colors.teal,
-        textTheme: TextTheme(
-          bodyText1: TextStyle(
-            color: Colors.white,
-          ),
-          bodyText2: TextStyle(
-            color: Colors.white,
-          ),
-          headline1: TextStyle(
-            color: Colors.white,
-          ),
-          headline2: TextStyle(
-            color: Colors.white,
-          ),
-          headline3: TextStyle(
-            color: Colors.white,
-          ),
-          headline4: TextStyle(
-            color: Colors.white,
-          ),
-          headline5: TextStyle(
-            color: Colors.white,
-          ),
-          headline6: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
+      title: 'VideoSDK Flutter Example',
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark(),
+      theme: ThemeData.light(),
       home: MyHomePage(title: 'VideoSDK Flutter Example'),
+      navigatorKey: navigatorKey,
     );
   }
 }
@@ -115,23 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
         meetingId = null;
       });
     });
-    //
-    // meeting.on("recording-started", () {
-    //   print("meeting recording-started");
-    // });
-    // //
-    // meeting.on("recording-stopped", () {
-    //   print("meeting recording-stopped");
-    // });
-    // //
-    // meeting.on("livestream-started", () {
-    //   print("meeting livestream-started");
-    // });
-    // //
-    // meeting.on("livestream-stopped", () {
-    //   print("meeting livestream-stopped");
-    // });
-    // //
     meeting.on('speaker-changed', (_activeSpeakerId) {
       setState(() {
         activeSpeakerId = _activeSpeakerId;
@@ -155,16 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final dynamic _token = json.decode(tokenResponse.body)['token'];
 
-    final Uri getMeetingIdUrl = Uri.parse('$API_SERVER_HOST/create-meeting/');
+    // final Uri getMeetingIdUrl = Uri.parse('$API_SERVER_HOST/create-meeting/');
 
-    final http.Response meetingIdResponse =
-        await http.post(getMeetingIdUrl, body: {"token": _token});
+    // final http.Response meetingIdResponse =
+    //     await http.post(getMeetingIdUrl, body: {"token": _token});
 
-    final _meetingId = json.decode(meetingIdResponse.body)['meetingId'];
+    // final _meetingId = json.decode(meetingIdResponse.body)['meetingId'];
 
     setState(() {
       token = _token;
-      meetingId = _meetingId;
+      meetingId = "d6c2-y6xf-ku84"; // _meetingId;
     });
   }
 
@@ -175,8 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
             meetingId: meetingId as String,
             displayName: "Chintan Rajpara",
             token: token as String,
-            micEnabled: true,
-            webcamEnabled: true,
+            micEnabled: false,
+            webcamEnabled: false,
             builder: (_meeting) {
               _meeting.on(
                 "meeting-joined",
@@ -204,7 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     FloatingActionButtonLocation.centerFloat,
                 appBar: AppBar(title: Text(widget.title)),
                 body: Container(
-                  color: Color.fromARGB(255, 38, 50, 56),
                   child: Stack(
                     children: [
                       Column(
