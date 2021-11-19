@@ -1,3 +1,4 @@
+import 'package:example/ui/utils/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:videosdk/participant.dart';
@@ -14,9 +15,12 @@ class RemoteParticipant extends StatefulWidget {
 }
 
 class RemoteParticipantState extends State<RemoteParticipant> {
+  late final Participant participant;
+
   Stream? shareStream;
   Stream? videoStream;
   Stream? audioStream;
+  String? quality;
 
   @override
   initState() {
@@ -25,93 +29,73 @@ class RemoteParticipantState extends State<RemoteParticipant> {
     super.initState();
 
     widget.participant.streams.forEach((key, Stream stream) {
-      if (stream.kind == 'video') {
-        setState(() {
+      setState(() {
+        if (stream.kind == 'video') {
           videoStream = stream;
-        });
-      } else if (stream.kind == 'audio') {
-        setState(() {
+        } else if (stream.kind == 'audio') {
           audioStream = stream;
-        });
-      } else if (stream.kind == 'share') {
-        setState(() {
+        } else if (stream.kind == 'share') {
           shareStream = stream;
-        });
-      }
+        }
+      });
     });
   }
 
   _initStreamListners() {
     widget.participant.on("stream-enabled", (Stream _stream) {
-      if (_stream.kind == 'video') {
-        setState(() {
+      setState(() {
+        if (_stream.kind == 'video') {
           videoStream = _stream;
-        });
-      } else if (_stream.kind == 'audio') {
-        setState(() {
+        } else if (_stream.kind == 'audio') {
           audioStream = _stream;
-        });
-      } else if (_stream.kind == 'share') {
-        setState(() {
+        } else if (_stream.kind == 'share') {
           shareStream = _stream;
-        });
-      }
+        }
+      });
     });
 
     widget.participant.on("stream-disabled", (Stream _stream) {
-      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-        setState(() {
+      setState(() {
+        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = null;
-        });
-      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-        setState(() {
+        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
           audioStream = null;
-        });
-      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
-        setState(() {
+        } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
           shareStream = null;
-        });
-      }
+        }
+      });
     });
 
-    // widget.participant.on("stream-paused", (Stream _stream) {
-    //   if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-    //     setState(() {
-    //       videoStream = _stream;
-    //     });
-    //   } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-    //     setState(() {
-    //       audioStream = _stream;
-    //     });
-    //   } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
-    //     setState(() {
-    //       shareStream = _stream;
-    //     });
-    //   }
-    // });
+    widget.participant.on("stream-paused", (Stream _stream) {
+      setState(() {
+        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+          videoStream = _stream;
+        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+          audioStream = _stream;
+        } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+          shareStream = _stream;
+        }
+      });
+    });
 
-    // widget.participant.on("stream-resumed", (Stream _stream) {
-    //   if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-    //     setState(() {
-    //       videoStream = _stream;
-    //     });
-    //   } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-    //     setState(() {
-    //       audioStream = _stream;
-    //     });
-    //   } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
-    //     setState(() {
-    //       shareStream = _stream;
-    //     });
-    //   }
-    // });
+    widget.participant.on("stream-resumed", (Stream _stream) {
+      setState(() {
+        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+          videoStream = _stream;
+        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+          audioStream = _stream;
+        } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+          shareStream = _stream;
+        }
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(4.0),
-      color: Color.fromARGB(140, 0, 0, 0),
+      color: Color.fromARGB(180, 0, 0, 0),
       child: AspectRatio(
         aspectRatio: 3 / 2,
         child: Container(
@@ -167,6 +151,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                                 if (videoStream != null) {
                                   widget.participant.disableWebcam();
                                 } else {
+                                  toastMsg("Webcam requested");
                                   widget.participant.enableWebcam();
                                 }
                               },
@@ -185,6 +170,11 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                                 icon: videoStream!.track.paused
                                     ? Icon(Icons.play_arrow)
                                     : Icon(Icons.pause),
+                              )
+                            else
+                              IconButton(
+                                onPressed: null,
+                                icon: Icon(Icons.play_arrow),
                               ),
                           ],
                         ),
@@ -195,6 +185,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                                 if (audioStream != null) {
                                   widget.participant.disableMic();
                                 } else {
+                                  toastMsg("Mic requested");
                                   widget.participant.enableMic();
                                 }
                               },
@@ -207,41 +198,52 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                             ),
                             if (audioStream != null)
                               IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.pause),
-                              ),
-                            if (audioStream != null)
+                                onPressed: audioStream!.track.paused
+                                    ? audioStream!.resume
+                                    : audioStream!.pause,
+                                icon: audioStream!.track.paused
+                                    ? Icon(Icons.play_arrow)
+                                    : Icon(Icons.pause),
+                              )
+                            else
                               IconButton(
-                                onPressed: () {},
+                                onPressed: null,
                                 icon: Icon(Icons.play_arrow),
                               ),
                           ],
                         ),
-                        // if (videoStream != null)
-                        //   Row(
-                        //     children: [
-                        //       Text("Set Quality : "),
-                        //       ElevatedButton(
-                        //         onPressed: () =>
-                        //             widget.participant.setQuality("low"),
-                        //         child: Text("Low"),
-                        //       ),
-                        //       ElevatedButton(
-                        //         onPressed: () =>
-                        //             widget.participant.setQuality("med"),
-                        //         child: Text("Med"),
-                        //       ),
-                        //       ElevatedButton(
-                        //         onPressed: () =>
-                        //             widget.participant.setQuality("high"),
-                        //         child: Text("High"),
-                        //       ),
-                        //     ],
-                        //   ),
                         Text(
                           "Screen share is ${shareStream != null ? "on" : "off"}",
                           style: TextStyle(color: Colors.white),
-                        )
+                        ),
+                        if (videoStream != null)
+                          Row(
+                            children: [
+                              Text("Quality: "),
+                              ElevatedButton(
+                                // style: ButtonStyle(size/),
+                                onPressed: () {
+                                  String newQuality = quality != null
+                                      ? quality == "low"
+                                          ? "med"
+                                          : quality == "med"
+                                              ? "high"
+                                              : "low"
+                                      : "med";
+
+                                  widget.participant.setQuality(newQuality);
+                                  setState(() {
+                                    quality = newQuality;
+                                  });
+                                },
+                                child: Text(
+                                  quality != null
+                                      ? quality!.toUpperCase()
+                                      : "Low",
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),

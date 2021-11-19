@@ -1,20 +1,22 @@
-// import 'package:example/ui/utils/dragger.dart';
 import 'package:example/ui/utils/navigator_key.dart';
+import 'package:example/ui/utils/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk/meeting.dart';
 import 'package:videosdk/participant.dart';
 import 'package:videosdk/stream.dart';
 import 'package:videosdk/rtc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/services.dart';
 
 class MeetingActions extends StatefulWidget {
   final Participant localParticipant;
   final Meeting meeting;
+  final String meetingId;
 
   MeetingActions({
     Key? key,
     required this.localParticipant,
     required this.meeting,
+    required this.meetingId,
   }) : super(key: key);
 
   @override
@@ -47,18 +49,6 @@ class MeetingActionsState extends State<MeetingActions> {
 
     isRecordingOn = false;
     isLivestreamOn = false;
-  }
-
-  void toastMsg(String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      // toastLength: Toast.LENGTH_LONG,
-      // gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      // backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
   }
 
   _initListners() {
@@ -257,50 +247,64 @@ class MeetingActionsState extends State<MeetingActions> {
                 builder: (BuildContext context) {
                   return Container(
                     padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ElevatedButton(
-                            child: isRecordingOn
-                                ? const Text('Stop Recording')
-                                : const Text('Start Recording'),
-                            onPressed: () {
-                              if (isRecordingOn)
-                                widget.meeting.stopRecording();
-                              else
-                                widget.meeting.startRecording("webhookUrl");
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Row(
+                          children: [
+                            Text('Meeting ID: ${widget.meetingId}'),
+                            IconButton(
+                              onPressed: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: widget.meetingId));
 
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ElevatedButton(
-                            child: isLivestreamOn
-                                ? const Text('Stop Livestream')
-                                : const Text('Start Livestream'),
-                            onPressed: () {
-                              if (isLivestreamOn)
-                                widget.meeting.stopLivestream();
-                              else
-                                widget.meeting.startLivestream(
-                                  [
-                                    {
-                                      'url': "url1",
-                                      'streamKey': "streamKey1",
-                                    },
-                                    {
-                                      'url': "url2",
-                                      'streamKey': "streamKey2",
-                                    }
-                                  ],
-                                );
+                                toastMsg("Meeting Id copied!");
 
-                              Navigator.pop(context);
-                            },
-                          )
-                        ],
-                      ),
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(Icons.copy),
+                            )
+                          ],
+                        ),
+                        ElevatedButton(
+                          child: isRecordingOn
+                              ? const Text('Stop Recording')
+                              : const Text('Start Recording'),
+                          onPressed: () {
+                            if (isRecordingOn)
+                              widget.meeting.stopRecording();
+                            else
+                              widget.meeting.startRecording("webhookUrl");
+
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ElevatedButton(
+                          child: isLivestreamOn
+                              ? const Text('Stop Livestream')
+                              : const Text('Start Livestream'),
+                          onPressed: () {
+                            if (isLivestreamOn)
+                              widget.meeting.stopLivestream();
+                            else
+                              widget.meeting.startLivestream(
+                                [
+                                  {
+                                    'url': "url1",
+                                    'streamKey': "streamKey1",
+                                  },
+                                  {
+                                    'url': "url2",
+                                    'streamKey': "streamKey2",
+                                  }
+                                ],
+                              );
+
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
                     ),
                   );
                 },

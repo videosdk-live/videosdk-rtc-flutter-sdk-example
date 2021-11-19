@@ -8,8 +8,11 @@ import 'package:videosdk/rtc.dart';
 import 'package:videosdk/meeting.dart';
 import 'package:videosdk/participant.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
+
   runApp(MyApp());
 }
 
@@ -51,6 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
     this.localParticipant = null;
     this.activeSpeakerId = null;
     this.activePresenterId = null;
+    this.meetingId = null;
+    this.token = null;
 
     this._fetchMeetingIdAndToken();
   }
@@ -101,23 +106,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _fetchMeetingIdAndToken() async {
-    final String API_SERVER_HOST = "http://127.0.0.1:9000";
+    final String? API_SERVER_HOST = dotenv.env['API_SERVER_HOST'];
 
     final Uri getTokenUrl = Uri.parse('$API_SERVER_HOST/get-token');
     final http.Response tokenResponse = await http.get(getTokenUrl);
 
     final dynamic _token = json.decode(tokenResponse.body)['token'];
 
-    // final Uri getMeetingIdUrl = Uri.parse('$API_SERVER_HOST/create-meeting/');
+    final Uri getMeetingIdUrl = Uri.parse('$API_SERVER_HOST/create-meeting/');
 
-    // final http.Response meetingIdResponse =
-    //     await http.post(getMeetingIdUrl, body: {"token": _token});
+    final http.Response meetingIdResponse =
+        await http.post(getMeetingIdUrl, body: {"token": _token});
 
-    // final _meetingId = json.decode(meetingIdResponse.body)['meetingId'];
+    final _meetingId = json.decode(meetingIdResponse.body)['meetingId'];
 
     setState(() {
       token = _token;
-      meetingId = "d6c2-y6xf-ku84"; // _meetingId;
+      meetingId = _meetingId;
     });
   }
 
@@ -128,18 +133,16 @@ class _MyHomePageState extends State<MyHomePage> {
             meetingId: meetingId as String,
             displayName: "Chintan Rajpara",
             token: token as String,
-            micEnabled: false,
-            webcamEnabled: false,
+            micEnabled: true,
+            webcamEnabled: true,
             builder: (_meeting) {
               _meeting.on(
                 "meeting-joined",
                 () {
-                  setState(
-                    () {
-                      localParticipant = _meeting.localParticipant;
-                      meeting = _meeting;
-                    },
-                  );
+                  setState(() {
+                    localParticipant = _meeting.localParticipant;
+                    meeting = _meeting;
+                  });
                   _handleMeetingListners(_meeting);
                 },
               );
@@ -152,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 floatingActionButton: MeetingActions(
                   localParticipant: localParticipant as Participant,
                   meeting: meeting as Meeting,
+                  meetingId: meetingId as String,
                 ),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerFloat,
