@@ -122,7 +122,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_webrtc:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_webrtc
       url: "https://pub.dartlang.org"
@@ -342,7 +342,7 @@ packages:
       name: videosdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.8"
   win32:
     dependency: transitive
     description:

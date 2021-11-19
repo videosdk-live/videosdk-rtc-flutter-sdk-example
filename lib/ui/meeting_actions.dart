@@ -37,9 +37,9 @@ class MeetingActionsState extends State<MeetingActions> {
 
   @override
   initState() {
-    _initListners();
-
     super.initState();
+
+    _initListners();
 
     selectedMicId = widget.meeting.selectedMicId;
 
@@ -116,7 +116,13 @@ class MeetingActionsState extends State<MeetingActions> {
       });
     });
 
-    widget.meeting.on("mic-requested", ({participantId, accept, reject}) {
+    widget.meeting.on("mic-requested", (_data) {
+      print("_data => $_data");
+      dynamic accept = _data['accept'];
+      dynamic reject = _data['reject'];
+
+      print("accept => $accept reject => $reject");
+
       showDialog(
         context: navigatorKey.currentContext as BuildContext,
         builder: (context) => AlertDialog(
@@ -144,7 +150,13 @@ class MeetingActionsState extends State<MeetingActions> {
       );
     });
 
-    widget.meeting.on("webcam-requested", ({participantId, accept, reject}) {
+    widget.meeting.on("webcam-requested", (_data) {
+      print("_data => $_data");
+      dynamic accept = _data['accept'];
+      dynamic reject = _data['reject'];
+
+      print("accept => $accept reject => $reject");
+
       showDialog(
         context: navigatorKey.currentContext as BuildContext,
         builder: (context) => AlertDialog(

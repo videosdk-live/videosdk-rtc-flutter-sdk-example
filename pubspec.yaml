@@ -23,10 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^0.0.7
+  videosdk: ^0.0.8
   http: ^0.13.3
   flutter_dotenv: ^5.0.2
-  flutter_webrtc: ^0.6.7
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
