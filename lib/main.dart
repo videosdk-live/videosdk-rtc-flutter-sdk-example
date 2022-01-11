@@ -12,6 +12,7 @@ import 'ui/localParticipant/local_participant.dart';
 import 'ui/meeting_actions.dart';
 import 'ui/remoteParticipants/list_remote_participants.dart';
 import 'ui/utils/navigator_key.dart';
+import 'ui/utils/toast.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -106,7 +107,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _fetchMeetingIdAndToken() async {
     final String? _VIDEOSDK_API = dotenv.env['VIDEOSDK_API'];
-    final String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
+    final String? _AUTH_URL = dotenv.env['AUTH_URL'];
+
+    String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
+
+    if ((_AUTH_TOKEN?.isEmpty ?? true) && (_AUTH_URL?.isEmpty ?? true)) {
+      toastMsg("Please set the environment variables");
+      throw Exception("Either AUTH_TOKEN or AUTH_URL is not set in .env file");
+      return;
+    }
+
+    if ((_AUTH_TOKEN?.isNotEmpty ?? false) &&
+        (_AUTH_URL?.isNotEmpty ?? false)) {
+      toastMsg("Please set only one environment variable");
+      throw Exception("Either AUTH_TOKEN or AUTH_URL can be set in .env file");
+      return;
+    }
+
+    if (_AUTH_URL?.isNotEmpty ?? false) {
+      final Uri getTokenUrl = Uri.parse('$_AUTH_URL/get-token');
+      final http.Response tokenResponse = await http.get(getTokenUrl);
+      _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
+    }
 
     final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API/meetings');
 
