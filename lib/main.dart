@@ -1,22 +1,27 @@
-import 'package:example/ui/meeting_actions.dart';
-import 'package:example/ui/utils/navigator_key.dart';
-import './ui/localParticipant/local_participant.dart';
-import './ui/remoteParticipants/list_remote_participants.dart';
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:videosdk/rtc.dart';
-import 'package:videosdk/meeting.dart';
-import 'package:videosdk/participant.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:videosdk/rtc.dart';
+
+import 'ui/localParticipant/local_participant.dart';
+import 'ui/meeting_actions.dart';
+import 'ui/remoteParticipants/list_remote_participants.dart';
+import 'ui/utils/navigator_key.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,14 +29,14 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark(),
       theme: ThemeData.light(),
-      home: MyHomePage(title: 'VideoSDK Flutter Example'),
+      home: const MyHomePage(title: 'VideoSDK Flutter Example'),
       navigatorKey: navigatorKey,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -40,7 +45,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Map<String, Participant> participants = new Map();
+  Map<String, Participant> participants = {};
   Participant? localParticipant;
   Meeting? meeting;
 
@@ -51,16 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String? token;
 
   _MyHomePageState() {
-    this.localParticipant = null;
-    this.activeSpeakerId = null;
-    this.activePresenterId = null;
-    this.meetingId = null;
-    this.token = null;
-
-    this._fetchMeetingIdAndToken();
+    _fetchMeetingIdAndToken();
   }
 
-  _handleMeetingListners(Meeting meeting) {
+  _handleMeetingListeners(Meeting meeting) {
     meeting.on(
       "participant-joined",
       (Participant participant) {
@@ -94,34 +93,34 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         activeSpeakerId = _activeSpeakerId;
       });
-      print("meeting speaker-changed => ${_activeSpeakerId}");
+      log("meeting speaker-changed => $_activeSpeakerId");
     });
     //
     meeting.on('presenter-changed', (_activePresenterId) {
       setState(() {
         activePresenterId = _activePresenterId;
       });
-      print("meeting presenter-changed => ${_activePresenterId}");
+      log("meeting presenter-changed => $_activePresenterId");
     });
   }
 
   void _fetchMeetingIdAndToken() async {
-    final String? API_SERVER_HOST = dotenv.env['API_SERVER_HOST'];
+    final String? _VIDEOSDK_API = dotenv.env['VIDEOSDK_API'];
+    final String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
 
-    final Uri getTokenUrl = Uri.parse('$API_SERVER_HOST/get-token');
-    final http.Response tokenResponse = await http.get(getTokenUrl);
-
-    final dynamic _token = json.decode(tokenResponse.body)['token'];
-
-    final Uri getMeetingIdUrl = Uri.parse('$API_SERVER_HOST/create-meeting/');
+    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API/meetings');
 
     final http.Response meetingIdResponse =
-        await http.post(getMeetingIdUrl, body: {"token": _token});
+        await http.post(getMeetingIdUrl, headers: {
+      "Authorization": "$_AUTH_TOKEN",
+    });
 
     final _meetingId = json.decode(meetingIdResponse.body)['meetingId'];
 
+    log("Meeting ID: $_meetingId");
+
     setState(() {
-      token = _token;
+      token = _AUTH_TOKEN;
       meetingId = _meetingId;
     });
   }
@@ -143,12 +142,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     localParticipant = _meeting.localParticipant;
                     meeting = _meeting;
                   });
-                  _handleMeetingListners(_meeting);
+                  _handleMeetingListeners(_meeting);
                 },
               );
 
               if (meeting == null) {
-                return Text("waiting to join meeting");
+                return Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text("waiting to join meeting"),
+                      ],
+                    ),
+                  ),
+                );
               }
 
               return Scaffold(
@@ -160,37 +170,46 @@ class _MyHomePageState extends State<MyHomePage> {
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerFloat,
                 appBar: AppBar(title: Text(widget.title)),
-                body: Container(
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          // Text("Active Seaker Id: $activeSpeakerId"),
-                          // Text("Active Presenter Id: $activePresenterId"),
-                          if (participants.length > 0)
-                            Expanded(
-                              child: ListRemoteParticipants(
-                                participants: participants,
-                              ),
-                            )
-                          else
-                            Expanded(
-                              child: Center(
-                                child: Text("No participants."),
-                              ),
+                body: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        // Text("Active Speaker Id: $activeSpeakerId"),
+                        // Text("Active Presenter Id: $activePresenterId"),
+                        if (participants.isNotEmpty)
+                          Expanded(
+                            child: ListRemoteParticipants(
+                              participants: participants,
                             ),
-                        ],
-                      ),
-                      LocalParticipant(
-                        localParticipant: localParticipant as Participant,
-                        meeting: meeting as Meeting,
-                      )
-                    ],
-                  ),
+                          )
+                        else
+                          const Expanded(
+                            child: Center(
+                              child: Text("No participants."),
+                            ),
+                          ),
+                      ],
+                    ),
+                    LocalParticipant(
+                      localParticipant: localParticipant as Participant,
+                      meeting: meeting as Meeting,
+                    )
+                  ],
                 ),
               );
             },
           )
-        : Text("Initializing meeitng");
+        : Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text("Initializing meeting"),
+                ],
+              ),
+            ),
+          );
   }
 }
