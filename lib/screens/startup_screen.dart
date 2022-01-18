@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/spacer.dart';
 import '../utils/toast.dart';
 import 'join_screen.dart';
 import 'meeting_screen.dart';
 
+// Startup Screen
 class StartupScreen extends StatefulWidget {
   const StartupScreen({Key? key}) : super(key: key);
 
@@ -38,10 +40,6 @@ class _StartupScreenState extends State<StartupScreen> {
       ),
     );
 
-    const SizedBox _sizedBox = SizedBox(
-      height: 20,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("VideoSDK RTC"),
@@ -52,12 +50,10 @@ class _StartupScreenState extends State<StartupScreen> {
             ? Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text("Initialization"),
+                  children: [
+                    const CircularProgressIndicator(),
+                    verticalSpacer(12),
+                    const Text("Initialization"),
                   ],
                 ),
               )
@@ -81,7 +77,7 @@ class _StartupScreenState extends State<StartupScreen> {
                     },
                     child: const Text("CREATE MEETING"),
                   ),
-                  _sizedBox,
+                  verticalSpacer(20),
                   const Text(
                     "OR",
                     style: TextStyle(
@@ -90,7 +86,7 @@ class _StartupScreenState extends State<StartupScreen> {
                       fontSize: 24,
                     ),
                   ),
-                  _sizedBox,
+                  verticalSpacer(20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: TextField(
@@ -107,7 +103,7 @@ class _StartupScreenState extends State<StartupScreen> {
                       ),
                     ),
                   ),
-                  _sizedBox,
+                  verticalSpacer(20),
                   TextButton(
                     onPressed: () async {
                       if (_meetingID.isEmpty) {

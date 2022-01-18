@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'ui/constants/colors.dart';
-import 'ui/screens/startup_screen.dart';
-import 'ui/utils/navigator_key.dart';
+import 'constants/colors.dart';
+import 'screens/startup_screen.dart';
+import 'navigator_key.dart';
 
 void main() async {
+  // Load Environment variables
   await dotenv.load(fileName: ".env");
 
+  // Run Flutter App
   runApp(const MyApp());
 }
 
@@ -15,14 +17,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Material App
     return MaterialApp(
       title: 'VideoSDK Flutter Example',
       theme: ThemeData.dark().copyWith(
         appBarTheme: const AppBarTheme().copyWith(
-          color: PRIMARY_COLOR,
+          color: primaryColor,
         ),
-        primaryColor: PRIMARY_COLOR,
-        backgroundColor: SECONDARY_COLOR,
+        primaryColor: primaryColor,
+        backgroundColor: secondaryColor,
       ),
       home: const StartupScreen(),
       navigatorKey: navigatorKey,

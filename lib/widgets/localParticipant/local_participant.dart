@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/rtc.dart';
 
-import '../../utils/dragger.dart';
+import '../dragger.dart';
 
 class LocalParticipant extends StatefulWidget {
   final Participant localParticipant;

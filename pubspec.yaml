@@ -17,6 +17,7 @@ dependencies:
   cupertino_icons: ^1.0.4
   fluttertoast: ^8.0.8
   camera: ^0.9.4+5
+  flutter_svg: ^1.0.1
 
 dev_dependencies:
   flutter_lints: ^1.0.4
@@ -27,4 +28,5 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/
     - .env

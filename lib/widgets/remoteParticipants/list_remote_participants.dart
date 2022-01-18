@@ -1,6 +1,7 @@
-import 'remote_participant.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk/participant.dart';
+
+import 'remote_participant.dart';
 
 class ListRemoteParticipants extends StatelessWidget {
   final Map<String, Participant> participants;

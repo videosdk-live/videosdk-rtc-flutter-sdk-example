@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import '../utils/spacer.dart';
 
 import '../widgets/meeting_controls/meeting_action_button.dart';
 import 'meeting_screen.dart';
 
+// Join Screen
 class JoinScreen extends StatefulWidget {
   final String meetingId;
   final String token;
@@ -30,7 +32,10 @@ class _JoinScreenState extends State<JoinScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Get available cameras
     availableCameras().then((availableCameras) {
+      // stores selected camera id
       int selectedCameraId = availableCameras.length > 1 ? 1 : 0;
 
       cameraController = CameraController(
@@ -51,6 +56,7 @@ class _JoinScreenState extends State<JoinScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Screen Title
         title: const Text("VideoSDK RTC"),
       ),
       backgroundColor: Theme.of(context).backgroundColor,
@@ -58,7 +64,9 @@ class _JoinScreenState extends State<JoinScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 7),
+              verticalSpacer(MediaQuery.of(context).size.height / 7),
+
+              // Camera Preview
               SizedBox(
                 width: (MediaQuery.of(context).size.width / 1.5),
                 height: (MediaQuery.of(context).size.height / 2.5),
@@ -69,29 +77,47 @@ class _JoinScreenState extends State<JoinScreen> {
                         children: [
                           AspectRatio(
                             aspectRatio: cameraController!.value.aspectRatio,
-                            child: CameraPreview(cameraController!),
+                            child: isWebcamOn
+                                ? CameraPreview(cameraController!)
+                                : Container(
+                                    color: Colors.black,
+                                    child: const Center(
+                                      child: Text(
+                                        "Camera is turned off",
+                                      ),
+                                    ),
+                                  ),
                           ),
                           Positioned(
                             bottom: 16,
                             left: 16,
                             right: 16,
+
+                            // Meeting ActionBar
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
+                                // Mic Action Button
                                 MeetingActionButton(
                                   icon: isMicOn ? Icons.mic : Icons.mic_off,
-                                  color: isMicOn
+                                  backgroundColor: isMicOn
                                       ? Theme.of(context).primaryColor
                                       : Colors.red,
-                                  onClick: () => setState(
+                                  iconColor: Colors.white,
+                                  radius: 30,
+                                  onPressed: () => setState(
                                     () => isMicOn = !isMicOn,
                                   ),
                                 ),
+
+                                // Camera Action Button
                                 MeetingActionButton(
-                                  color: isWebcamOn
+                                  backgroundColor: isWebcamOn
                                       ? Theme.of(context).primaryColor
                                       : Colors.red,
-                                  onClick: () {
+                                  iconColor: Colors.white,
+                                  radius: 30,
+                                  onPressed: () {
                                     if (isWebcamOn) {
                                       cameraController?.pausePreview();
                                     } else {
@@ -109,7 +135,9 @@ class _JoinScreenState extends State<JoinScreen> {
                         ],
                       ),
               ),
-              const SizedBox(height: 16),
+              verticalSpacer(16),
+
+              // Display Name TextField
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: TextField(
@@ -127,17 +155,20 @@ class _JoinScreenState extends State<JoinScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              verticalSpacer(20),
+
+              // Join Button
               TextButton(
                 onPressed: () async {
+                  // By default Guest is used as display name
                   if (displayName.isEmpty) {
                     displayName = "Guest";
                   }
 
+                  // Dispose Camera Controller before leaving screen
                   await cameraController?.dispose();
 
+                  // Open meeting screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -168,5 +199,11 @@ class _JoinScreenState extends State<JoinScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    cameraController?.dispose();
+    super.dispose();
   }
 }
