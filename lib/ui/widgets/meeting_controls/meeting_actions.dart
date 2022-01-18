@@ -1,10 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk/rtc.dart';
-import 'dart:developer';
 
-import 'utils/navigator_key.dart';
-import 'utils/toast.dart';
+import '../../utils/navigator_key.dart';
+import '../../utils/toast.dart';
 
 class MeetingActions extends StatefulWidget {
   final Participant localParticipant;

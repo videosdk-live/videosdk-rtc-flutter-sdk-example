@@ -1,4 +1,4 @@
-import './remote_participant.dart';
+import 'remote_participant.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk/participant.dart';
 

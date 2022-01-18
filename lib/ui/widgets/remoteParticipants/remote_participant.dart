@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/rtc.dart';
 
-import '../utils/toast.dart';
+import '../../utils/toast.dart';
 
 class RemoteParticipant extends StatefulWidget {
   final Participant participant;
