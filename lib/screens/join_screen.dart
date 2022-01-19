@@ -23,10 +23,14 @@ class JoinScreen extends StatefulWidget {
 }
 
 class _JoinScreenState extends State<JoinScreen> {
+  // Display Name
   String displayName = "";
+
+  // Control Status
   bool isMicOn = true;
   bool isWebcamOn = true;
 
+  // Camera Controller
   CameraController? cameraController;
 
   @override
@@ -203,6 +207,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   @override
   void dispose() {
+    // Dispose Camera Controller
     cameraController?.dispose();
     super.dispose();
   }

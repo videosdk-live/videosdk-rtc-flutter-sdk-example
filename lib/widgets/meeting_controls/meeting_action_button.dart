@@ -7,7 +7,7 @@ class MeetingActionButton extends StatelessWidget {
   final void Function()? onPressed;
   final IconData icon;
   final Color backgroundColor, iconColor;
-  final double radius;
+  final double radius, iconSize;
 
   const MeetingActionButton({
     Key? key,
@@ -16,6 +16,7 @@ class MeetingActionButton extends StatelessWidget {
     this.backgroundColor = secondaryColor,
     this.iconColor = Colors.white,
     this.radius = 10,
+    this.iconSize = 30,
   }) : super(key: key);
 
   @override
@@ -32,7 +33,7 @@ class MeetingActionButton extends StatelessWidget {
         onTap: onPressed,
         child: Icon(
           icon,
-          size: 30,
+          size: iconSize,
           color: iconColor,
         ),
       ),
