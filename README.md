@@ -2,11 +2,11 @@
 
 This is VideoSDK RTC example code for flutter.
 
-### Setting up authentication server and flutter app
+### Setting up flutter app
 
-1. Run the authentication server
-
-   Follow instructions from [videosdk-rtc-nodejs-sdk-example](https://github.com/videosdk-live/videosdk-rtc-nodejs-sdk-example) to run the authentication server.
+1. There are 2 options
+   Option 1: Get Auth Token from [VideoSDK Dashboard](https://app.videosdk.live/dashboard)
+   Option 2: Setting up Auth Server [Instructions](https://github.com/videosdk-live/videosdk-rtc-nodejs-sdk-example)
 
 2. Clone the repo
 
@@ -20,10 +20,16 @@ This is VideoSDK RTC example code for flutter.
    $ cp .env.example .env
    ```
 
-4. Update the api server url in the `.env` file that points to the authentication server.
+4. Either update `AUTH_TOKEN` or `AUTH_URL` in the `.env` file.
 
    ```
-   API_SERVER_HOST="http://localhost:9000"
+   AUTH_TOKEN=#YOUR_GENERATED_TOKEN
+   ```
+
+   OR
+
+   ```
+   AUTH_URL=#YOUR_AUTH_SERVER_URL
    ```
 
 5. Install pub
@@ -44,7 +50,7 @@ This is VideoSDK RTC example code for flutter.
 
 ### [API Reference](https://docs.videosdk.live/docs/realtime-communication/sdk-reference/flutter-sdk/setup)
 
-Related 
+Related
 
 - [Video SDK RTC React Example](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
 - [Video SDK RTC React Native Example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
