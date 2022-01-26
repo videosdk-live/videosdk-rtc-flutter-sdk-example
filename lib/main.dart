@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _fetchMeetingIdAndToken() async {
-    final String? _VIDEOSDK_API = dotenv.env['VIDEOSDK_API'];
+    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
     final String? _AUTH_URL = dotenv.env['AUTH_URL'];
 
     String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
@@ -130,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
     }
 
-    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API/meetings');
+    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings');
 
     final http.Response meetingIdResponse =
         await http.post(getMeetingIdUrl, headers: {
