@@ -166,9 +166,9 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<String> createMeeting() async {
-    final String? _VIDEOSDK_API = dotenv.env['VIDEOSDK_API'];
+    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
-    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API/meetings');
+    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings');
     final http.Response meetingIdResponse =
         await http.post(getMeetingIdUrl, headers: {
       "Authorization": _token,
@@ -182,10 +182,10 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<bool> validateMeeting(String _meetingId) async {
-    final String? _VIDEOSDK_API = dotenv.env['VIDEOSDK_API'];
+    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
     final Uri validateMeetingUrl =
-        Uri.parse('$_VIDEOSDK_API/meetings/$_meetingId');
+        Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings/$_meetingId');
     final http.Response validateMeetingResponse =
         await http.post(validateMeetingUrl, headers: {
       "Authorization": _token,
