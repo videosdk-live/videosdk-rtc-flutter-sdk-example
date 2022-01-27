@@ -1,18 +1,18 @@
-import 'package:example/ui/utils/navigator_key.dart';
-import 'package:example/ui/utils/toast.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:videosdk/meeting.dart';
-import 'package:videosdk/participant.dart';
-import 'package:videosdk/stream.dart';
-import 'package:videosdk/rtc.dart';
 import 'package:flutter/services.dart';
+import 'package:videosdk/rtc.dart';
+
+import '../../utils/navigator_key.dart';
+import '../../utils/toast.dart';
 
 class MeetingActions extends StatefulWidget {
   final Participant localParticipant;
   final Meeting meeting;
   final String meetingId;
 
-  MeetingActions({
+  const MeetingActions({
     Key? key,
     required this.localParticipant,
     required this.meeting,
@@ -39,7 +39,7 @@ class MeetingActionsState extends State<MeetingActions> {
   initState() {
     super.initState();
 
-    _initListners();
+    _initListeners();
 
     selectedMicId = widget.meeting.selectedMicId;
 
@@ -51,7 +51,7 @@ class MeetingActionsState extends State<MeetingActions> {
     isLivestreamOn = false;
   }
 
-  _initListners() {
+  _initListeners() {
     widget.localParticipant.on("stream-enabled", (Stream _stream) {
       if (_stream.kind == 'video') {
         setState(() {
@@ -117,17 +117,17 @@ class MeetingActionsState extends State<MeetingActions> {
     });
 
     widget.meeting.on("mic-requested", (_data) {
-      print("_data => $_data");
+      log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
 
-      print("accept => $accept reject => $reject");
+      log("accept => $accept reject => $reject");
 
       showDialog(
         context: navigatorKey.currentContext as BuildContext,
         builder: (context) => AlertDialog(
-          title: Text("Mic requested?"),
-          content: Text("Do you accept to turn on your mic? "),
+          title: const Text("Mic requested?"),
+          content: const Text("Do you accept to turn on your mic? "),
           actions: [
             TextButton(
               onPressed: () {
@@ -135,7 +135,7 @@ class MeetingActionsState extends State<MeetingActions> {
 
                 Navigator.of(context).pop();
               },
-              child: Text("Reject"),
+              child: const Text("Reject"),
             ),
             TextButton(
               onPressed: () {
@@ -143,7 +143,7 @@ class MeetingActionsState extends State<MeetingActions> {
 
                 Navigator.of(context).pop();
               },
-              child: Text("Accept"),
+              child: const Text("Accept"),
             ),
           ],
         ),
@@ -151,17 +151,17 @@ class MeetingActionsState extends State<MeetingActions> {
     });
 
     widget.meeting.on("webcam-requested", (_data) {
-      print("_data => $_data");
+      log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
 
-      print("accept => $accept reject => $reject");
+      log("accept => $accept reject => $reject");
 
       showDialog(
         context: navigatorKey.currentContext as BuildContext,
         builder: (context) => AlertDialog(
-          title: Text("webcam requested?"),
-          content: Text("Do you accept to turn on your webcam? "),
+          title: const Text("webcam requested?"),
+          content: const Text("Do you accept to turn on your webcam? "),
           actions: [
             TextButton(
               onPressed: () {
@@ -169,7 +169,7 @@ class MeetingActionsState extends State<MeetingActions> {
 
                 Navigator.of(context).pop();
               },
-              child: Text("Reject"),
+              child: const Text("Reject"),
             ),
             TextButton(
               onPressed: () {
@@ -177,7 +177,7 @@ class MeetingActionsState extends State<MeetingActions> {
 
                 Navigator.of(context).pop();
               },
-              child: Text("Accept"),
+              child: const Text("Accept"),
             ),
           ],
         ),
@@ -185,6 +185,7 @@ class MeetingActionsState extends State<MeetingActions> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -258,7 +259,7 @@ class MeetingActionsState extends State<MeetingActions> {
                 context: context,
                 builder: (BuildContext context) {
                   return Container(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
@@ -275,7 +276,7 @@ class MeetingActionsState extends State<MeetingActions> {
 
                                 Navigator.pop(context);
                               },
-                              icon: Icon(Icons.copy),
+                              icon: const Icon(Icons.copy),
                             )
                           ],
                         ),
@@ -284,10 +285,11 @@ class MeetingActionsState extends State<MeetingActions> {
                               ? const Text('Stop Recording')
                               : const Text('Start Recording'),
                           onPressed: () {
-                            if (isRecordingOn)
+                            if (isRecordingOn) {
                               widget.meeting.stopRecording();
-                            else
+                            } else {
                               widget.meeting.startRecording("webhookUrl");
+                            }
 
                             Navigator.pop(context);
                           },
@@ -297,9 +299,9 @@ class MeetingActionsState extends State<MeetingActions> {
                               ? const Text('Stop Livestream')
                               : const Text('Start Livestream'),
                           onPressed: () {
-                            if (isLivestreamOn)
+                            if (isLivestreamOn) {
                               widget.meeting.stopLivestream();
-                            else
+                            } else {
                               widget.meeting.startLivestream(
                                 [
                                   {
@@ -312,6 +314,7 @@ class MeetingActionsState extends State<MeetingActions> {
                                   }
                                 ],
                               );
+                            }
 
                             Navigator.pop(context);
                           },

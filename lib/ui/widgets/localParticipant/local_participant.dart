@@ -1,15 +1,13 @@
-import 'package:example/ui/utils/dragger.dart';
 import 'package:flutter/material.dart';
-import 'package:videosdk/meeting.dart';
-import 'package:videosdk/participant.dart';
-import 'package:videosdk/stream.dart';
 import 'package:videosdk/rtc.dart';
+
+import '../../utils/dragger.dart';
 
 class LocalParticipant extends StatefulWidget {
   final Participant localParticipant;
   final Meeting meeting;
 
-  LocalParticipant({
+  const LocalParticipant({
     Key? key,
     required this.localParticipant,
     required this.meeting,
@@ -36,7 +34,7 @@ class LocalParticipantState extends State<LocalParticipant> {
 
   @override
   initState() {
-    _initStreamListners();
+    _initStreamListeners();
 
     super.initState();
 
@@ -69,7 +67,7 @@ class LocalParticipantState extends State<LocalParticipant> {
     });
   }
 
-  _initStreamListners() {
+  _initStreamListeners() {
     widget.localParticipant.on("stream-enabled", (Stream _stream) {
       if (_stream.kind == 'video') {
         setState(() {
@@ -103,12 +101,13 @@ class LocalParticipantState extends State<LocalParticipant> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return videoStream != null && videoStream?.renderer != null
         ? Dragger(
-            key: ValueKey('Dragger'),
+            key: const ValueKey('Dragger'),
             child: Container(
-              key: ValueKey('RenderMe_Border'),
+              key: const ValueKey('RenderMe_Border'),
               width: 180,
               height: 180,
               // margin: const EdgeInsets.only(left: 5, bottom: 10),
@@ -123,7 +122,7 @@ class LocalParticipantState extends State<LocalParticipant> {
               ),
             ),
             child2: Container(
-              key: ValueKey('RenderMe_View'),
+              key: const ValueKey('RenderMe_View'),
               width: 180 - 4,
               height: 180 - 4,
               margin: const EdgeInsets.all(2),
@@ -135,6 +134,6 @@ class LocalParticipantState extends State<LocalParticipant> {
               ),
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 }

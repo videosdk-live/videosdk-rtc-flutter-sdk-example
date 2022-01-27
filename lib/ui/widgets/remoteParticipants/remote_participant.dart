@@ -1,14 +1,13 @@
-import 'package:example/ui/utils/toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:videosdk/participant.dart';
-import 'package:videosdk/stream.dart';
 import 'package:videosdk/rtc.dart';
+
+import '../../utils/toast.dart';
 
 class RemoteParticipant extends StatefulWidget {
   final Participant participant;
 
-  RemoteParticipant({Key? key, required this.participant}) : super(key: key);
+  const RemoteParticipant({Key? key, required this.participant})
+      : super(key: key);
 
   @override
   RemoteParticipantState createState() => RemoteParticipantState();
@@ -24,7 +23,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
 
   @override
   initState() {
-    _initStreamListners();
+    _initStreamListeners();
 
     super.initState();
 
@@ -41,7 +40,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
     });
   }
 
-  _initStreamListners() {
+  _initStreamListeners() {
     widget.participant.on("stream-enabled", (Stream _stream) {
       setState(() {
         if (_stream.kind == 'video') {
@@ -95,7 +94,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(4.0),
-      color: Color.fromARGB(180, 0, 0, 0),
+      color: const Color.fromARGB(180, 0, 0, 0),
       child: AspectRatio(
         aspectRatio: 3 / 2,
         child: Container(
@@ -111,7 +110,7 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                             objectFit: RTCVideoViewObjectFit
                                 .RTCVideoViewObjectFitCover,
                           )
-                        : Center(
+                        : const Center(
                             child: Icon(
                               Icons.person,
                               size: 180.0,
@@ -133,13 +132,13 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                 alignment: Alignment.topLeft,
                 child: FittedBox(
                   child: Container(
-                    color: Color.fromARGB(100, 0, 0, 0),
-                    padding: EdgeInsets.all(6.0),
+                    color: const Color.fromARGB(100, 0, 0, 0),
+                    padding: const EdgeInsets.all(6.0),
                     child: Column(
                       children: [
                         Text(
-                          "${widget.participant.displayName}",
-                          style: TextStyle(
+                          widget.participant.displayName,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20.0,
                           ),
@@ -168,11 +167,11 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                                     ? videoStream!.resume
                                     : videoStream!.pause,
                                 icon: videoStream!.track.paused
-                                    ? Icon(Icons.play_arrow)
-                                    : Icon(Icons.pause),
+                                    ? const Icon(Icons.play_arrow)
+                                    : const Icon(Icons.pause),
                               )
                             else
-                              IconButton(
+                              const IconButton(
                                 onPressed: null,
                                 icon: Icon(Icons.play_arrow),
                               ),
@@ -202,11 +201,11 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                                     ? audioStream!.resume
                                     : audioStream!.pause,
                                 icon: audioStream!.track.paused
-                                    ? Icon(Icons.play_arrow)
-                                    : Icon(Icons.pause),
+                                    ? const Icon(Icons.play_arrow)
+                                    : const Icon(Icons.pause),
                               )
                             else
-                              IconButton(
+                              const IconButton(
                                 onPressed: null,
                                 icon: Icon(Icons.play_arrow),
                               ),
@@ -214,12 +213,12 @@ class RemoteParticipantState extends State<RemoteParticipant> {
                         ),
                         Text(
                           "Screen share is ${shareStream != null ? "on" : "off"}",
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         if (videoStream != null)
                           Row(
                             children: [
-                              Text("Quality: "),
+                              const Text("Quality: "),
                               ElevatedButton(
                                 // style: ButtonStyle(size/),
                                 onPressed: () {
