@@ -47,8 +47,12 @@ class _ParticipantTileState extends State<ParticipantTile> {
       key: Key("tile_${widget.participant.id}"),
       onVisibilityChanged: (visibilityInfo) {
         if (visibilityInfo.visibleFraction > 0 && !shouldRenderVideo) {
+          if (videoStream?.track.paused ?? true) {
+            videoStream?.track.resume();
+          }
           setState(() => shouldRenderVideo = true);
         } else if (visibilityInfo.visibleFraction == 0 && shouldRenderVideo) {
+          videoStream?.track.pause();
           setState(() => shouldRenderVideo = false);
         }
       },
@@ -119,7 +123,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                       ),
                       child: Icon(
                         audioStream != null ? Icons.mic : Icons.mic_off,
-                        size: 12,
+                        size: 16,
                       ),
                     ),
                     onTap: widget.isLocalParticipant
@@ -150,7 +154,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                         videoStream != null
                             ? Icons.videocam
                             : Icons.videocam_off,
-                        size: 12,
+                        size: 16,
                       ),
                     ),
                     onTap: widget.isLocalParticipant
@@ -178,12 +182,31 @@ class _ParticipantTileState extends State<ParticipantTile> {
                         ),
                         child: const Icon(
                           Icons.logout,
-                          size: 12,
+                          size: 16,
                         ),
                       ),
                       onTap: () {
-                        widget.participant.remove();
-                        toastMsg("Participant removed");
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: const Text("Are you sure ?"),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text("Yes"),
+                                      onPressed: () {
+                                        widget.participant.remove();
+                                        toastMsg("Participant removed");
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text("No"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  ],
+                                ));
                       },
                     ),
                   ),
