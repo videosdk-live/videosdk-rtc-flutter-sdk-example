@@ -2,16 +2,15 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:videosdk/rtc.dart';
-import '../utils/spacer.dart';
 
 import '../../navigator_key.dart';
+import '../utils/spacer.dart';
 import '../utils/toast.dart';
-import '../widgets/localParticipant/local_participant.dart';
 import '../widgets/meeting_controls/meeting_action_bar.dart';
-import '../widgets/remoteParticipants/list_remote_participants.dart';
+import '../widgets/participant_grid_view/participant_grid_view.dart';
 import 'startup_screen.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 // Meeting Screen
 class MeetingScreen extends StatefulWidget {
@@ -37,12 +36,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
   // LiveStream Configuration
   final List<Map<String, dynamic>> liveStreams = [];
 
-  Map<String, Participant> participants = {};
-  Participant? localParticipant;
   Meeting? meeting;
-
-  String? activeSpeakerId;
-  String? activePresenterId;
 
   // control states
   bool isRecordingOn = false;
@@ -53,10 +47,13 @@ class _MeetingScreenState extends State<MeetingScreen> {
   List<MediaDeviceInfo> mics = [];
   String? selectedMicId;
 
+  String? activePresenterId;
+
   // Streams
   Stream? shareStream;
   Stream? videoStream;
   Stream? audioStream;
+  Stream? remoteParticipantShareStream;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +70,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
           "meeting-joined",
           () {
             setState(() {
-              localParticipant = _meeting.localParticipant;
               meeting = _meeting;
             });
 
@@ -216,29 +212,24 @@ class _MeetingScreenState extends State<MeetingScreen> {
               ),
             ],
           ),
-          body: Stack(
-            children: [
-              Column(
-                children: [
-                  if (participants.isNotEmpty)
-                    Expanded(
-                      child: ListRemoteParticipants(
-                        participants: participants,
-                      ),
-                    )
-                  else
-                    const Expanded(
-                      child: Center(
-                        child: Text("No participants."),
-                      ),
+          body: Padding(
+            padding: const EdgeInsets.only(bottom: 80.0),
+            child: Column(
+              children: [
+                if (remoteParticipantShareStream != null)
+                  AspectRatio(
+                    aspectRatio: 2,
+                    child: Container(
+                      color: Colors.black,
+                      child:
+                          RTCVideoView(remoteParticipantShareStream!.renderer!),
                     ),
-                ],
-              ),
-              LocalParticipant(
-                localParticipant: localParticipant!,
-                meeting: meeting!,
-              )
-            ],
+                  ),
+                Expanded(
+                  child: ParticipantGridView(meeting: meeting!),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -246,53 +237,12 @@ class _MeetingScreenState extends State<MeetingScreen> {
   }
 
   void setMeetingListeners(Meeting meeting) {
-    // Called when participant joined meeting
-    meeting.on(
-      "participant-joined",
-      (Participant participant) {
-        final newParticipants = participants;
-        newParticipants[participant.id] = participant;
-        setState(() {
-          participants = newParticipants;
-        });
-      },
-    );
-
-    // Called when participant left meeting
-    meeting.on(
-      "participant-left",
-      (participantId) {
-        final newParticipants = participants;
-
-        newParticipants.remove(participantId);
-        setState(() {
-          participants = newParticipants;
-        });
-      },
-    );
-
     // Called when meeting is ended
     meeting.on('meeting-left', () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const StartupScreen()),
           (route) => false);
-    });
-
-    // Called when speaker is changed
-    meeting.on('speaker-changed', (_activeSpeakerId) {
-      setState(() {
-        activeSpeakerId = _activeSpeakerId;
-      });
-      log("meeting speaker-changed => $_activeSpeakerId");
-    });
-
-    // Called when presenter is changed
-    meeting.on('presenter-changed', (_activePresenterId) {
-      setState(() {
-        activePresenterId = _activePresenterId;
-      });
-      log("meeting presenter-changed => $_activePresenterId");
     });
 
     // Called when recording is started
@@ -339,6 +289,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
       log("accept => $accept reject => $reject");
 
+      // Mic Request Dialog
       showDialog(
         context: navigatorKey.currentContext!,
         builder: (context) => AlertDialog(
@@ -374,6 +325,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
       log("accept => $accept reject => $reject");
 
+      // Webcam Request Dialog
       showDialog(
         context: navigatorKey.currentContext!,
         builder: (context) => AlertDialog(
@@ -433,6 +385,18 @@ class _MeetingScreenState extends State<MeetingScreen> {
           shareStream = null;
         });
       }
+    });
+
+    // Called when presenter is changed
+    meeting.on('presenter-changed', (_activePresenterId) {
+      Participant? activePresenterParticipant =
+          meeting.participants[_activePresenterId];
+
+      // Get Share Stream
+      Stream? _stream = activePresenterParticipant?.streams.values
+          .singleWhere((e) => e.kind == "share");
+
+      setState(() => remoteParticipantShareStream = _stream);
     });
   }
 }
