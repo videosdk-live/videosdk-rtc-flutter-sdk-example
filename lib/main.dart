@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'constants/colors.dart';
-import 'screens/startup_screen.dart';
 import 'navigator_key.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   // Load Environment variables
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         primaryColor: primaryColor,
         backgroundColor: secondaryColor,
       ),
-      home: const StartupScreen(),
+      home: const SplashScreen(),
       navigatorKey: navigatorKey,
     );
   }
