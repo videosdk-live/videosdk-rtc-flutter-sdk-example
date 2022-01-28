@@ -26,23 +26,23 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(10, 13, 44, 1),
-      body: Stack(children: [
-        Center(
-          child: Image.asset('assets/logo.png'),
-        ),
-        const Positioned(
-          bottom: 40,
-          left: 0,
-          right: 0,
-          child: Text(
-            "VideoSDK",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 26,
-            ),
+      body: Stack(
+        children: [
+          Center(
+            child: Image.asset('assets/logo.png'),
           ),
-        )
-      ]),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/videosdk_text.png',
+              fit: BoxFit.scaleDown,
+              scale: 4,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

@@ -58,181 +58,181 @@ class _MeetingScreenState extends State<MeetingScreen> {
   @override
   Widget build(BuildContext context) {
     log("Meeting Data: ${widget.meetingId} ${widget.token}");
-    return MeetingBuilder(
-      meetingId: widget.meetingId,
-      displayName: widget.displayName,
-      token: widget.token,
-      micEnabled: widget.micEnabled,
-      webcamEnabled: widget.webcamEnabled,
-      builder: (_meeting) {
-        // Called when joined in meeting
-        _meeting.on(
-          "meeting-joined",
-          () {
-            setState(() {
-              meeting = _meeting;
-            });
+    return WillPopScope(
+      onWillPop: _onWillPopScope,
+      child: MeetingBuilder(
+        meetingId: widget.meetingId,
+        displayName: widget.displayName,
+        token: widget.token,
+        micEnabled: widget.micEnabled,
+        webcamEnabled: widget.webcamEnabled,
+        builder: (_meeting) {
+          // Called when joined in meeting
+          _meeting.on(
+            "meeting-joined",
+            () {
+              setState(() {
+                meeting = _meeting;
+              });
 
-            // Setting meeting event listeners
-            setMeetingListeners(_meeting);
+              // Setting meeting event listeners
+              setMeetingListeners(_meeting);
 
-            // Holds available webcams info
-            webcams = _meeting.getWebcams();
-          },
-        );
+              // Holds available webcams info
+              webcams = _meeting.getWebcams();
+            },
+          );
 
-        // Showing waiting screen
-        if (meeting == null) {
+          // Showing waiting screen
+          if (meeting == null) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    verticalSpacer(10),
+                    const Text("waiting to join meeting"),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return Scaffold(
-            body: Center(
+            backgroundColor: Theme.of(context).backgroundColor.withOpacity(0.8),
+            floatingActionButton: MeetingActionBar(
+              isMicEnabled: audioStream != null,
+              isWebcamEnabled: videoStream != null,
+              // Called when Call End button is pressed
+              onCallEndButtonPressed: () {
+                _meeting.leave();
+              },
+              // Called when mic button is pressed
+              onMicButtonPressed: () {
+                if (audioStream != null) {
+                  _meeting.muteMic();
+                } else {
+                  _meeting.unmuteMic();
+                }
+              },
+              // Called when webcam button is pressed
+              onWebcamButtonPressed: () {
+                if (videoStream != null) {
+                  _meeting.disableWebcam();
+                } else {
+                  _meeting.enableWebcam();
+                }
+              },
+              // Called when switch webcam button is pressed
+              onSwitchCameraButtonPressed: () {
+                final selectedWebcamId = _meeting.selectedWebcamId;
+
+                MediaDeviceInfo deviceToSwitch = webcams.firstWhere(
+                  (webcam) => webcam.deviceId != selectedWebcamId,
+                );
+
+                _meeting.changeWebcam(deviceToSwitch.deviceId);
+              },
+              // Called when more options button is pressed
+              onMoreButtonPressed: () {
+                // Showing more options dialog box
+                showDialog<void>(
+                  context: navigatorKey.currentContext!,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text("More options"),
+                    content: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        // Recording button
+                        ElevatedButton(
+                          child: Text(
+                            isRecordingOn
+                                ? 'Stop Recording'
+                                : 'Start Recording',
+                          ),
+                          onPressed: () {
+                            if (isRecordingOn) {
+                              _meeting.stopRecording();
+                            } else {
+                              _meeting.startRecording(recordingWebHookURL);
+                            }
+
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        // LiveStream button
+                        ElevatedButton(
+                          child: Text(
+                            isLiveStreamOn
+                                ? 'Stop Livestream'
+                                : 'Start Livestream',
+                          ),
+                          onPressed: () {
+                            // validation
+                            if (liveStreams.isEmpty) {
+                              toastMsg(
+                                  "Please set configuration for LiveStream");
+                              Navigator.pop(context);
+                              return;
+                            }
+                            if (isLiveStreamOn) {
+                              _meeting.stopLivestream();
+                            } else {
+                              _meeting.startLivestream(liveStreams);
+                            }
+
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            appBar: AppBar(
+              title: Text(widget.meetingId),
+              actions: [
+                // Recording status
+                if (isRecordingOn) SvgPicture.asset("assets/recording_on.svg"),
+
+                // Copy meeting id button
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: widget.meetingId));
+                    toastMsg("Meeting ID has been copied.");
+                  },
+                ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.only(bottom: 80.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(),
-                  verticalSpacer(10),
-                  const Text("waiting to join meeting"),
+                  if (remoteParticipantShareStream != null)
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Container(
+                        color: Colors.black,
+                        child: RTCVideoView(
+                            remoteParticipantShareStream!.renderer!),
+                      ),
+                    ),
+                  Expanded(
+                    child: ParticipantGridView(meeting: meeting!),
+                  ),
                 ],
               ),
             ),
           );
-        }
-
-        return Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor.withOpacity(0.8),
-          floatingActionButton: MeetingActionBar(
-            isMicEnabled: audioStream != null,
-            isWebcamEnabled: videoStream != null,
-            // Called when Call End button is pressed
-            onCallEndButtonPressed: () {
-              _meeting.leave();
-            },
-            // Called when mic button is pressed
-            onMicButtonPressed: () {
-              if (audioStream != null) {
-                _meeting.muteMic();
-              } else {
-                _meeting.unmuteMic();
-              }
-            },
-            // Called when webcam button is pressed
-            onWebcamButtonPressed: () {
-              if (videoStream != null) {
-                _meeting.disableWebcam();
-              } else {
-                _meeting.enableWebcam();
-              }
-            },
-            // Called when switch webcam button is pressed
-            onSwitchCameraButtonPressed: () {
-              final selectedWebcamId = _meeting.selectedWebcamId;
-
-              MediaDeviceInfo deviceToSwitch = webcams.firstWhere(
-                (webcam) => webcam.deviceId != selectedWebcamId,
-              );
-
-              _meeting.changeWebcam(deviceToSwitch.deviceId);
-            },
-            // Called when more options button is pressed
-            onMoreButtonPressed: () {
-              // Showing more options dialog box
-              showDialog<void>(
-                context: navigatorKey.currentContext!,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text("More options"),
-                  content: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      // Recording button
-                      ElevatedButton(
-                        child: Text(
-                          isRecordingOn ? 'Stop Recording' : 'Start Recording',
-                        ),
-                        onPressed: () {
-                          // validation
-                          if (recordingWebHookURL.isEmpty) {
-                            toastMsg("Please set webhook URL");
-                            Navigator.pop(context);
-                            return;
-                          }
-                          if (isRecordingOn) {
-                            _meeting.stopRecording();
-                          } else {
-                            _meeting.startRecording(recordingWebHookURL);
-                          }
-
-                          Navigator.pop(context);
-                        },
-                      ),
-
-                      // LiveStream button
-                      ElevatedButton(
-                        child: Text(
-                          isLiveStreamOn
-                              ? 'Stop Livestream'
-                              : 'Start Livestream',
-                        ),
-                        onPressed: () {
-                          // validation
-                          if (liveStreams.isEmpty) {
-                            toastMsg("Please set configuration for LiveStream");
-                            Navigator.pop(context);
-                            return;
-                          }
-                          if (isLiveStreamOn) {
-                            _meeting.stopLivestream();
-                          } else {
-                            _meeting.startLivestream(liveStreams);
-                          }
-
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          appBar: AppBar(
-            title: Text(widget.meetingId),
-            actions: [
-              // Recording status
-              if (isRecordingOn) SvgPicture.asset("assets/recording_on.svg"),
-
-              // Copy meeting id button
-              IconButton(
-                icon: const Icon(Icons.copy),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: widget.meetingId));
-                  toastMsg("Meeting ID has been copied.");
-                },
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.only(bottom: 80.0),
-            child: Column(
-              children: [
-                if (remoteParticipantShareStream != null)
-                  AspectRatio(
-                    aspectRatio: 2,
-                    child: Container(
-                      color: Colors.black,
-                      child:
-                          RTCVideoView(remoteParticipantShareStream!.renderer!),
-                    ),
-                  ),
-                Expanded(
-                  child: ParticipantGridView(meeting: meeting!),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
@@ -398,5 +398,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
       setState(() => remoteParticipantShareStream = _stream);
     });
+  }
+
+  Future<bool> _onWillPopScope() async {
+    meeting?.leave();
+    return true;
   }
 }
