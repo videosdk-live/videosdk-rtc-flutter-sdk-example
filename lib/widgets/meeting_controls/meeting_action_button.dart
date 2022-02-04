@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';
+import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
 // Action Button
 class MeetingActionButton extends StatelessWidget {
@@ -21,16 +22,18 @@ class MeetingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: Colors.white30),
-        color: backgroundColor,
-      ),
-      padding: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: onPressed,
+    return TouchRippleEffect(
+      borderRadius: BorderRadius.circular(radius),
+      rippleColor: backgroundColor,
+      onTap: onPressed,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(color: Colors.white30),
+          color: backgroundColor,
+        ),
+        padding: const EdgeInsets.all(8),
         child: Icon(
           icon,
           size: iconSize,

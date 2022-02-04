@@ -33,9 +33,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
   // Recording Webhook
   final String recordingWebHookURL = "";
 
-  // LiveStream Configuration
-  final List<Map<String, dynamic>> liveStreams = [];
-
   Meeting? meeting;
 
   // control states
@@ -66,10 +63,15 @@ class _MeetingScreenState extends State<MeetingScreen> {
         token: widget.token,
         micEnabled: widget.micEnabled,
         webcamEnabled: widget.webcamEnabled,
+        notification: const NotificationInfo(
+          title: "Video SDK",
+          message: "Video SDK is sharing screen in the meeting",
+          icon: "notification_share", // drawable icon name
+        ),
         builder: (_meeting) {
           // Called when joined in meeting
           _meeting.on(
-            "meeting-joined",
+            Events.meetingJoined,
             () {
               setState(() {
                 meeting = _meeting;
@@ -104,6 +106,8 @@ class _MeetingScreenState extends State<MeetingScreen> {
             floatingActionButton: MeetingActionBar(
               isMicEnabled: audioStream != null,
               isWebcamEnabled: videoStream != null,
+              isScreenShareEnabled: shareStream != null,
+              isScreenShareButtonDisabled: remoteParticipantShareStream != null,
               // Called when Call End button is pressed
               onCallEndButtonPressed: () {
                 _meeting.leave();
@@ -134,6 +138,16 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
                 _meeting.changeWebcam(deviceToSwitch.deviceId);
               },
+
+              // Called when ScreenShare button is pressed
+              onScreenShareButtonPressed: () {
+                if (shareStream != null) {
+                  _meeting.disableScreenShare();
+                } else {
+                  _meeting.enableScreenShare();
+                }
+              },
+
               // Called when more options button is pressed
               onMoreButtonPressed: () {
                 // Showing more options dialog box
@@ -171,17 +185,18 @@ class _MeetingScreenState extends State<MeetingScreen> {
                                 : 'Start Livestream',
                           ),
                           onPressed: () {
-                            // validation
-                            if (liveStreams.isEmpty) {
-                              toastMsg(
-                                  "Please set configuration for LiveStream");
-                              Navigator.pop(context);
-                              return;
-                            }
+                            List liveStreamOptions = [];
+
                             if (isLiveStreamOn) {
                               _meeting.stopLivestream();
                             } else {
-                              _meeting.startLivestream(liveStreams);
+                              if (liveStreamOptions.length > 0) {
+                                _meeting.startLivestream(liveStreamOptions);
+                              } else {
+                                toastMsg(
+                                  "Failed to start livestream. Please add live stream options.",
+                                );
+                              }
                             }
 
                             Navigator.pop(context);
@@ -215,13 +230,17 @@ class _MeetingScreenState extends State<MeetingScreen> {
               padding: const EdgeInsets.only(bottom: 80.0),
               child: Column(
                 children: [
-                  if (remoteParticipantShareStream != null)
+                  if (remoteParticipantShareStream != null ||
+                      shareStream != null)
                     AspectRatio(
                       aspectRatio: 16 / 9,
                       child: Container(
                         color: Colors.black,
                         child: RTCVideoView(
-                            remoteParticipantShareStream!.renderer!),
+                          remoteParticipantShareStream != null
+                              ? remoteParticipantShareStream!.renderer!
+                              : shareStream!.renderer!,
+                        ),
                       ),
                     ),
                   Expanded(
@@ -238,7 +257,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
   void setMeetingListeners(Meeting meeting) {
     // Called when meeting is ended
-    meeting.on('meeting-left', () {
+    meeting.on(Events.meetingLeft, () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const StartupScreen()),
@@ -246,7 +265,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when recording is started
-    meeting.on("recording-started", () {
+    meeting.on(Events.recordingStarted, () {
       toastMsg("Meeting recording started.");
 
       setState(() {
@@ -255,7 +274,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when recording is stopped
-    meeting.on("recording-stopped", () {
+    meeting.on(Events.recordingStopped, () {
       toastMsg("Meeting recording stopped.");
 
       setState(() {
@@ -264,7 +283,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when LiveStreaming is started
-    meeting.on("livestream-started", () {
+    meeting.on(Events.liveStreamStarted, () {
       toastMsg("Meeting live streaming started.");
 
       setState(() {
@@ -273,7 +292,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when LiveStreaming is stopped
-    meeting.on("livestream-stopped", () {
+    meeting.on(Events.liveStreamStopped, () {
       toastMsg("Meeting live streaming stopped.");
 
       setState(() {
@@ -282,7 +301,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when mic is requested
-    meeting.on("mic-requested", (_data) {
+    meeting.on(Events.micRequested, (_data) {
       log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
@@ -318,7 +337,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when webcam is requested
-    meeting.on("webcam-requested", (_data) {
+    meeting.on(Events.webcamRequested, (_data) {
       log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
@@ -354,7 +373,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when stream is enabled
-    meeting.localParticipant.on("stream-enabled", (Stream _stream) {
+    meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
       if (_stream.kind == 'video') {
         setState(() {
           videoStream = _stream;
@@ -371,7 +390,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when stream is disabled
-    meeting.localParticipant.on("stream-disabled", (Stream _stream) {
+    meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
       if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
         setState(() {
           videoStream = null;
@@ -388,7 +407,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when presenter is changed
-    meeting.on('presenter-changed', (_activePresenterId) {
+    meeting.on(Events.presenterChanged, (_activePresenterId) {
       Participant? activePresenterParticipant =
           meeting.participants[_activePresenterId];
 

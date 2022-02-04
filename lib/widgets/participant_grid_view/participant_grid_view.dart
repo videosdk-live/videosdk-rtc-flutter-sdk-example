@@ -51,7 +51,7 @@ class _ParticipantGridViewState extends State<ParticipantGridView> {
   void setMeetingListeners(Meeting _meeting) {
     // Called when participant joined meeting
     _meeting.on(
-      "participant-joined",
+      Events.participantJoined,
       (Participant participant) {
         final newParticipants = participants;
         newParticipants[participant.id] = participant;
@@ -63,7 +63,7 @@ class _ParticipantGridViewState extends State<ParticipantGridView> {
 
     // Called when participant left meeting
     _meeting.on(
-      "participant-left",
+      Events.participantLeft,
       (participantId) {
         final newParticipants = participants;
 
@@ -75,7 +75,7 @@ class _ParticipantGridViewState extends State<ParticipantGridView> {
     );
 
     // Called when speaker is changed
-    _meeting.on('speaker-changed', (_activeSpeakerId) {
+    _meeting.on(Events.speakerChanged, (_activeSpeakerId) {
       setState(() {
         activeSpeakerId = _activeSpeakerId;
       });

@@ -219,7 +219,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
   }
 
   _initStreamListeners() {
-    widget.participant.on("stream-enabled", (Stream _stream) {
+    widget.participant.on(Events.streamEnabled, (Stream _stream) {
       setState(() {
         if (_stream.kind == 'video') {
           videoStream = _stream;
@@ -231,7 +231,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
       });
     });
 
-    widget.participant.on("stream-disabled", (Stream _stream) {
+    widget.participant.on(Events.streamDisabled, (Stream _stream) {
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = null;
@@ -243,7 +243,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
       });
     });
 
-    widget.participant.on("stream-paused", (Stream _stream) {
+    widget.participant.on(Events.streamPaused, (Stream _stream) {
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = _stream;
@@ -255,7 +255,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
       });
     });
 
-    widget.participant.on("stream-resumed", (Stream _stream) {
+    widget.participant.on(Events.streamResumed, (Stream _stream) {
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = _stream;
