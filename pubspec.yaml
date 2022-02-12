@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^0.0.9
+  videosdk: ^0.0.10
   http: ^0.13.4
   flutter_dotenv: ^5.0.2
   cupertino_icons: ^1.0.4
@@ -19,6 +19,8 @@ dependencies:
   camera: ^0.9.4+5
   flutter_svg: ^1.0.1
   visibility_detector: ^0.2.2
+  date_time_format: ^2.0.1
+  touch_ripple_effect: ^2.2.3
 
 dev_dependencies:
   flutter_lints: ^1.0.4

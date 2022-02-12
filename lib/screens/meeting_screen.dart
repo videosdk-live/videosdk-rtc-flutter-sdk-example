@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:videosdk/rtc.dart';
+import '/screens/chat_screen.dart';
 
 import '../../navigator_key.dart';
 import '../utils/spacer.dart';
@@ -15,7 +16,7 @@ import 'startup_screen.dart';
 // Meeting Screen
 class MeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
-  final bool micEnabled, webcamEnabled;
+  final bool micEnabled, webcamEnabled, chatEnabled;
   const MeetingScreen({
     Key? key,
     required this.meetingId,
@@ -23,6 +24,7 @@ class MeetingScreen extends StatefulWidget {
     required this.displayName,
     this.micEnabled = true,
     this.webcamEnabled = true,
+    this.chatEnabled = true,
   }) : super(key: key);
 
   @override
@@ -54,6 +56,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //Get statusbar height
+    final statusbarHeight = MediaQuery.of(context).padding.top;
+
     log("Meeting Data: ${widget.meetingId} ${widget.token}");
     return WillPopScope(
       onWillPop: _onWillPopScope,
@@ -159,6 +164,24 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        // Chat
+                        ElevatedButton(
+                          child: const Text('Chat'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            showModalBottomSheet(
+                              context: context,
+                              constraints: BoxConstraints(
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height -
+                                          statusbarHeight),
+                              isScrollControlled: true,
+                              builder: (context) =>
+                                  ChatScreen(meeting: meeting!),
+                            );
+                          },
+                        ),
+
                         // Recording button
                         ElevatedButton(
                           child: Text(
