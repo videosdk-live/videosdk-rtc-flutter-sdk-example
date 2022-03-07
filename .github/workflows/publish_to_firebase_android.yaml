@@ -3,7 +3,7 @@ name: Publish to Firebase Distribution Flutter Android
 on:
   push:
     branches:
-      - 'feature/ci-cd'
+      - master
 
 jobs:
   build:
