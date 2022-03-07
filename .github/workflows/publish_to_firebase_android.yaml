@@ -1,0 +1,59 @@
+name: Publish to Firebase Distribution Flutter Android
+
+on:
+  push:
+    branches:
+      - 'feature/ci-cd'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '11'
+      # 2
+      # Setup the flutter environment.
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable' # 'dev', 'alpha', default to: 'stable'
+          # flutter-version: '1.12.x' # you can also specify exact version of flutter
+
+      - name: Create .env
+        run: touch .env
+      - name: Add AUTH URL
+        run: echo "AUTH_URL= https://api.server.com" >> .env
+
+      # Get flutter dependencies.
+      - run: flutter pub get
+
+      # Build apk.
+      - run: flutter build apk
+      # 3
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+  
+  # deploy-firebase:
+  #   # 1
+  #   needs: [ build ]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # 2
+  #     - uses: actions/download-artifact@master
+  #       with:
+  #         name: app-release.apk
+  #     #3
+  #     - name: upload artifact to Firebase App Distribution
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #         appId: ${{secrets.FIREBASE_APP_ID}}
+  #         token: ${{secrets.FIREBASE_TOKEN}}
+  #         groups: QA
+  #         file: app-release.apk
