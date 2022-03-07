@@ -87,6 +87,11 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
               // Holds available webcams info
               webcams = _meeting.getWebcams();
+
+              //terminate after 10 minutes
+              Future.delayed(const Duration(seconds: 30), () {
+                _meeting.leave();
+              });
             },
           );
 

@@ -26,7 +26,7 @@ jobs:
       - name: Create .env
         run: touch .env
       - name: Add AUTH URL
-        run: echo "AUTH_URL= https://api.server.com" >> .env
+        run: echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
 
       # Get flutter dependencies.
       - run: flutter pub get
@@ -40,20 +40,20 @@ jobs:
           name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
   
-  # deploy-firebase:
-  #   # 1
-  #   needs: [ build ]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # 2
-  #     - uses: actions/download-artifact@master
-  #       with:
-  #         name: app-release.apk
-  #     #3
-  #     - name: upload artifact to Firebase App Distribution
-  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
-  #       with:
-  #         appId: ${{secrets.FIREBASE_APP_ID}}
-  #         token: ${{secrets.FIREBASE_TOKEN}}
-  #         groups: QA
-  #         file: app-release.apk
+  deploy-firebase:
+    # 1
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      # 2
+      - uses: actions/download-artifact@master
+        with:
+          name: app-release.apk
+      #3
+      - name: upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: videosdk-demo
+          file: app-release.apk
