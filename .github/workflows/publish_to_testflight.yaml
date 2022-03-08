@@ -27,6 +27,12 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       # 2
       # Setup the flutter environment.
+      - name: Create .env
+        run: touch .env
+      - name: Add AUTH URL
+        run: |
+          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v1" >>.env
+          echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.2'
