@@ -1,0 +1,52 @@
+name: Publish to Test Flight Flutter IOS
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      # 1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.BUILD_IOS_CERTIFICATE }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+      - name: Install the provisioning profile
+        env:
+          PROVISIONING_CERTIFICATE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      # 2
+      # Setup the flutter environment.
+      - name: Create .env
+        run: touch .env
+      - name: Add AUTH URL
+        run: |
+          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v1" >>.env
+          echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '2.10.2'
+          channel: 'stable'
+#           cache: true
+      # Build ipa.
+      - run: flutter build ipa
+      - name: Export ipa
+        run: xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+      # 3
+      - name: 'Upload app to TestFlight'
+        uses: apple-actions/upload-testflight-build@v1
+        with: 
+          app-path: build-output/ios/example.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}

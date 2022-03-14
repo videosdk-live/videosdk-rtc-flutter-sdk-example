@@ -87,6 +87,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
               // Holds available webcams info
               webcams = _meeting.getWebcams();
+
+              //terminate after 10 minutes
+              Future.delayed(const Duration(minutes: 10), () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Demo app limits meeting to 10 Minutes'))
+                );
+                _meeting.leave();
+              });
             },
           );
 
