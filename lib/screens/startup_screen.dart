@@ -70,7 +70,7 @@ class _StartupScreenState extends State<StartupScreen> {
                           builder: (context) => MeetingScreen(
                             token: _token,
                             meetingId: _meetingID,
-                            displayName: "Chintan Rajpara",
+                            displayName: "Demo User",
                           ),
                         ),
                       );
