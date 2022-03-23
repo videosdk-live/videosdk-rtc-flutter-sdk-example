@@ -1,59 +1,72 @@
-# videosdk_rtc_flutter_sdk_example
+# Video SDK for Flutter (Android and iOS)
+[![Discord](https://img.shields.io/discord/876774498798551130?label=Join%20on%20Discord)](https://discord.gg/kgAvyxtTxv)
+[![Register](https://img.shields.io/badge/Contact-Know%20More-blue)](https://app.videosdk.live/signup)
 
-This is VideoSDK RTC example code for flutter.
+At Video SDK, we’re building tools to help companies create world-class collaborative products with capabilities of live audio/videos, compose cloud recordings/rtmp/hls and interaction APIs
 
-### Setting up flutter app
+## Demo App
+Check out demo [here](https://videosdk.live/prebuilt/)
 
-1. There are 2 options
-   Option 1: Get Auth Token from [VideoSDK Dashboard](https://app.videosdk.live/dashboard)
-   Option 2: Setting up Auth Server [Instructions](https://github.com/videosdk-live/videosdk-rtc-nodejs-sdk-example)
+## Steps to Integrate
 
-2. Clone the repo
+### Prerequisites
+- If your target platform is iOS, your development environment must meet the following requirements:
+  - Flutter 2.0 or later
+  - Dart 2.12.0 or later
+  - macOS
+  - Xcode (Latest version recommended)
+- If your target platform is Android, your development environment must meet the following requirements:
+  - Flutter 2.0 or later
+  - Dart 2.12.0 or later
+  - macOS or Windows
+  - Android Studio (Latest version recommended)
+- If your target platform is iOS, you need a real iOS device.
+- If your target platform is Android, you need an Android simulator or a real Android device.
+- Valid Video SDK [Account](https://app.videosdk.live/)
 
-   ```sh
-   $ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
-   ```
 
-3. Copy the `.env.example` file to `.env` file.
+### Step 1: Clone the sample project
+Clone the repository to your local environment.
+```js
+$ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
+```
 
-   ```sh
-   $ cp .env.example .env
-   ```
+### Step 2: Copy the .env.example file to .env file.
+Open your favorite code editor and copy `.env.example` to `.env` file.
+```js 
+$ cp .env.example .env
+```
 
-4. Either update `AUTH_TOKEN` or `AUTH_URL` in the `.env` file.
+### Step 3: Modify .env file
+Generate temporary token from [Video SDK Account](https://app.videosdk.live/signup).
+```js title=".env"
+AUTH_TOKEN = "TEMPORARY-TOKEN"
+```
 
-   ```
-   AUTH_TOKEN=#YOUR_GENERATED_TOKEN
-   ```
+### Step 4: Install the dependecies
+Install all the dependecies to run the project.
+```js
+flutter pub get
+```
 
-   OR
+### Step 4: Run the sample app
+Bingo, it's time to push the launch button. 
+```js
+flutter run
+```
 
-   ```
-   AUTH_URL=#YOUR_AUTH_SERVER_URL
-   ```
+## Examples
+- [Prebuilt SDK Examples](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
+- [JavaScript SDK Example](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
+- [React JS SDK Example](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
+- [React Native SDK Example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
+- [Flutter SDK Example](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example)
+- [Android SDK Example](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
+- [iOS SDK Example](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
 
-5. Install pub
+## Documentation
+[Read the documentation](https://docs.videosdk.live/) to start using Video SDK.
 
-   ```sh
-   $ flutter pub get
-   ```
-
-6. Run the app
-
-   ```sh
-   $ flutter run
-   ```
-
-## For more information please visit:
-
-### [Guide](https://docs.videosdk.live/docs/guide/video-and-audio-calling-api-sdk/flutter-sdk)
-
-### [API Reference](https://docs.videosdk.live/docs/realtime-communication/sdk-reference/flutter-sdk/setup)
-
-Related
-
-- [Video SDK RTC React Example](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
-- [Video SDK RTC React Native Example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
-- [Video SDK RTC Flutter Example](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example)
-- [Video SDK RTC Android Example](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
-- [Video SDK RTC iOS Example](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
+## Community
+- [Discord](https://discord.gg/Gpmj6eCq5u) - To get involved with the Video SDK community, ask questions and share tips.
+- [Twitter](https://twitter.com/video_sdk) - To receive updates, announcements, blog posts, and general Video SDK tips.
