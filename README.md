@@ -1,11 +1,18 @@
 # Video SDK for Flutter (Android and iOS)
-[![Discord](https://img.shields.io/discord/876774498798551130?label=Join%20on%20Discord)](https://discord.gg/kgAvyxtTxv)
+[![Documentation](https://img.shields.io/badge/Read-Documentation-blue)](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/getting-started)
+[![Firebase](https://img.shields.io/badge/Download%20Android-Firebase-green)](https://appdistribution.firebase.google.com/pub/i/0f3ac650239a944b)
+[![TestFlight](https://img.shields.io/badge/Download%20iOS-TestFlight-blue)](https://testflight.apple.com/join/C1UOYbxh)
+[![Discord](https://img.shields.io/discord/876774498798551130?label=Join%20on%20Discord)](https://discord.gg/bGZtAbwvab)
 [![Register](https://img.shields.io/badge/Contact-Know%20More-blue)](https://app.videosdk.live/signup)
 
 At Video SDK, we’re building tools to help companies create world-class collaborative products with capabilities of live audio/videos, compose cloud recordings/rtmp/hls and interaction APIs
 
 ## Demo App
 Check out demo [here](https://videosdk.live/prebuilt/)
+
+📲 Download the Sample iOS app here: https://testflight.apple.com/join/C1UOYbxh
+
+📱 Download the Sample Android app here: https://appdistribution.firebase.google.com/pub/i/0f3ac650239a944b
 
 ## Steps to Integrate
 
