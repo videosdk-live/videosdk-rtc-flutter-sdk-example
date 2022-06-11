@@ -141,7 +141,7 @@ class _StartupScreenState extends State<StartupScreen> {
       _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
     }
 
-    log("Auth Token: $_AUTH_TOKEN");
+    // log("Auth Token: $_AUTH_TOKEN");
 
     return _AUTH_TOKEN ?? "";
   }
