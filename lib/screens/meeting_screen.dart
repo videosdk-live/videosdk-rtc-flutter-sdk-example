@@ -36,6 +36,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
   final String recordingWebHookURL = "";
 
   Meeting? meeting;
+  bool isMeetingEventsRegistered = false;
 
   // control states
   bool isRecordingOn = false;
@@ -55,6 +56,13 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Stream? remoteParticipantShareStream;
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
@@ -63,6 +71,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     return WillPopScope(
       onWillPop: _onWillPopScope,
       child: MeetingBuilder(
+        maxResolution: 'hd',
         meetingId: widget.meetingId,
         displayName: widget.displayName,
         token: widget.token,
@@ -74,21 +83,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
           icon: "notification_share", // drawable icon name
         ),
         builder: (_meeting) {
-          // Called when joined in meeting
-          _meeting.on(
-            Events.meetingJoined,
-            () {
-              setState(() {
-                meeting = _meeting;
-              });
-
-              // Setting meeting event listeners
-              setMeetingListeners(_meeting);
-
-              // Holds available webcams info
-              webcams = _meeting.getWebcams();
-            },
-          );
+          if (!isMeetingEventsRegistered) {
+            registerMeetingEvents(_meeting);
+            isMeetingEventsRegistered = true;
+          }
 
           // Showing waiting screen
           if (meeting == null) {
@@ -96,10 +94,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
               body: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CircularProgressIndicator(),
-                    verticalSpacer(10),
-                    const Text("waiting to join meeting"),
+                  children: const [
+                    CircularProgressIndicator(),
+                    VerticalSpacer(10),
+                    Text("waiting to join meeting"),
                   ],
                 ),
               ),
@@ -213,7 +211,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                             if (isLiveStreamOn) {
                               _meeting.stopLivestream();
                             } else {
-                              if (liveStreamOptions.length > 0) {
+                              if (liveStreamOptions.isNotEmpty) {
                                 _meeting.startLivestream(liveStreamOptions);
                               } else {
                                 toastMsg(
@@ -221,6 +219,39 @@ class _MeetingScreenState extends State<MeetingScreen> {
                                 );
                               }
                             }
+
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        ElevatedButton(
+                          child: const Text('Low Resolution'),
+                          onPressed: () {
+                            meeting?.participants.forEach((key, value) {
+                              value.setQuality('low');
+                            });
+
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        ElevatedButton(
+                          child: const Text('Med Resolution'),
+                          onPressed: () {
+                            meeting?.participants.forEach((key, value) {
+                              value.setQuality('med');
+                            });
+
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        ElevatedButton(
+                          child: const Text('High Resolution'),
+                          onPressed: () {
+                            meeting?.participants.forEach((key, value) {
+                              value.setQuality('high');
+                            });
 
                             Navigator.pop(context);
                           },
@@ -278,9 +309,22 @@ class _MeetingScreenState extends State<MeetingScreen> {
     );
   }
 
-  void setMeetingListeners(Meeting meeting) {
+  void registerMeetingEvents(Meeting _meeting) {
+    // Called when joined in meeting
+    _meeting.on(
+      Events.meetingJoined,
+      () {
+        setState(() {
+          meeting = _meeting;
+        });
+
+        // Holds available webcams info
+        webcams = _meeting.getWebcams();
+      },
+    );
+
     // Called when meeting is ended
-    meeting.on(Events.meetingLeft, () {
+    _meeting.on(Events.meetingLeft, () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const StartupScreen()),
@@ -288,7 +332,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when recording is started
-    meeting.on(Events.recordingStarted, () {
+    _meeting.on(Events.recordingStarted, () {
       toastMsg("Meeting recording started.");
 
       setState(() {
@@ -297,7 +341,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when recording is stopped
-    meeting.on(Events.recordingStopped, () {
+    _meeting.on(Events.recordingStopped, () {
       toastMsg("Meeting recording stopped.");
 
       setState(() {
@@ -306,7 +350,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when LiveStreaming is started
-    meeting.on(Events.liveStreamStarted, () {
+    _meeting.on(Events.liveStreamStarted, () {
       toastMsg("Meeting live streaming started.");
 
       setState(() {
@@ -315,7 +359,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when LiveStreaming is stopped
-    meeting.on(Events.liveStreamStopped, () {
+    _meeting.on(Events.liveStreamStopped, () {
       toastMsg("Meeting live streaming stopped.");
 
       setState(() {
@@ -324,7 +368,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when mic is requested
-    meeting.on(Events.micRequested, (_data) {
+    _meeting.on(Events.micRequested, (_data) {
       log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
@@ -360,7 +404,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when webcam is requested
-    meeting.on(Events.webcamRequested, (_data) {
+    _meeting.on(Events.webcamRequested, (_data) {
       log("_data => $_data");
       dynamic accept = _data['accept'];
       dynamic reject = _data['reject'];
@@ -396,7 +440,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when stream is enabled
-    meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
+    _meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
       if (_stream.kind == 'video') {
         setState(() {
           videoStream = _stream;
@@ -413,7 +457,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when stream is disabled
-    meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
+    _meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
       if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
         setState(() {
           videoStream = null;
@@ -430,15 +474,61 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
 
     // Called when presenter is changed
-    meeting.on(Events.presenterChanged, (_activePresenterId) {
+    _meeting.on(Events.presenterChanged, (_activePresenterId) {
       Participant? activePresenterParticipant =
-          meeting.participants[_activePresenterId];
+          _meeting.participants[_activePresenterId];
 
       // Get Share Stream
       Stream? _stream = activePresenterParticipant?.streams.values
           .singleWhere((e) => e.kind == "share");
 
       setState(() => remoteParticipantShareStream = _stream);
+    });
+
+    //Entry Event
+    _meeting.on(Events.entryRequested, (data) {
+      var participantId = data['participantId'];
+      var name = data["name"];
+      var allow = data["allow"];
+      var deny = data["deny"];
+
+      showDialog(
+        context: navigatorKey.currentContext!,
+        builder: (context) => AlertDialog(
+          title: const Text("Join Request"),
+          content: Text("Do you want to allow $name to join meeting?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                deny();
+                Navigator.of(context).pop();
+              },
+              child: const Text("Deny"),
+            ),
+            TextButton(
+              onPressed: () {
+                allow();
+
+                Navigator.of(context).pop();
+              },
+              child: const Text("Allow"),
+            ),
+          ],
+        ),
+      );
+    });
+
+    _meeting.on(Events.entryResponded, (data) {
+      var id = data['id'];
+      var decision = data['decision'];
+      if (id == _meeting.localParticipant.id) {
+        if (decision == 'allowed') {
+          toastMsg("Allowed to join the meeting.");
+        } else {
+          toastMsg("Denied to join the meeting.");
+          Navigator.of(context).pop();
+        }
+      }
     });
   }
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '../constants/colors.dart';
 import '../utils/spacer.dart';
 import '../utils/toast.dart';
 import 'join_screen.dart';
@@ -24,36 +25,46 @@ class _StartupScreenState extends State<StartupScreen> {
   String _token = "";
   String _meetingID = "";
 
+  final ButtonStyle _buttonStyle = TextButton.styleFrom(
+    primary: Colors.white,
+    backgroundColor: primaryColor,
+    textStyle: const TextStyle(
+      fontWeight: FontWeight.bold,
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
-    fetchToken().then((token) => setState(() => _token = token));
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      final token = await fetchToken();
+      setState(() => _token = token);
+    });
+  }
+
+  @override
+  setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle _buttonStyle = TextButton.styleFrom(
-      primary: Colors.white,
-      backgroundColor: Theme.of(context).primaryColor,
-      textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("VideoSDK RTC"),
       ),
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: secondaryColor,
       body: SafeArea(
         child: _token.isEmpty
             ? Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CircularProgressIndicator(),
-                    verticalSpacer(12),
-                    const Text("Initialization"),
+                  children: const [
+                    CircularProgressIndicator(),
+                    HorizontalSpacer(12),
+                    Text("Initialization"),
                   ],
                 ),
               )
@@ -62,22 +73,10 @@ class _StartupScreenState extends State<StartupScreen> {
                 children: [
                   TextButton(
                     style: _buttonStyle,
-                    onPressed: () async {
-                      _meetingID = await createMeeting();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MeetingScreen(
-                            token: _token,
-                            meetingId: _meetingID,
-                            displayName: "Chintan Rajpara",
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: onCreateMeetingButtonPressed,
                     child: const Text("CREATE MEETING"),
                   ),
-                  verticalSpacer(20),
+                  const VerticalSpacer(20),
                   const Text(
                     "OR",
                     style: TextStyle(
@@ -86,7 +85,7 @@ class _StartupScreenState extends State<StartupScreen> {
                       fontSize: 24,
                     ),
                   ),
-                  verticalSpacer(20),
+                  const VerticalSpacer(20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: TextField(
@@ -103,27 +102,9 @@ class _StartupScreenState extends State<StartupScreen> {
                       ),
                     ),
                   ),
-                  verticalSpacer(20),
+                  const VerticalSpacer(20),
                   TextButton(
-                    onPressed: () async {
-                      if (_meetingID.isEmpty) {
-                        toastMsg("Please, Enter Valid Meeting ID");
-                        return;
-                      }
-                      if (await validateMeeting(_meetingID)) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => JoinScreen(
-                              meetingId: _meetingID,
-                              token: _token,
-                            ),
-                          ),
-                        );
-                      } else {
-                        toastMsg("Invalid Meeting ID");
-                      }
-                    },
+                    onPressed: onJoinMeetingButtonPressed,
                     style: _buttonStyle,
                     child: const Text("JOIN MEETING"),
                   )
@@ -134,6 +115,10 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<String> fetchToken() async {
+    if (!dotenv.isInitialized) {
+      // Load Environment variables
+      await dotenv.load(fileName: ".env");
+    }
     final String? _AUTH_URL = dotenv.env['AUTH_URL'];
     String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
 
@@ -161,7 +146,7 @@ class _StartupScreenState extends State<StartupScreen> {
     return _AUTH_TOKEN ?? "";
   }
 
-  Future<String> createMeeting() async {
+  Future<void> onCreateMeetingButtonPressed() async {
     final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
     final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings');
@@ -170,23 +155,49 @@ class _StartupScreenState extends State<StartupScreen> {
       "Authorization": _token,
     });
 
-    final meetingId = json.decode(meetingIdResponse.body)['meetingId'];
+    _meetingID = json.decode(meetingIdResponse.body)['meetingId'];
 
-    log("Meeting ID: $meetingId");
+    log("Meeting ID: $_meetingID");
 
-    return meetingId;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MeetingScreen(
+          token: _token,
+          meetingId: _meetingID,
+          displayName: "VideoSDK User",
+        ),
+      ),
+    );
   }
 
-  Future<bool> validateMeeting(String _meetingId) async {
+  Future<void> onJoinMeetingButtonPressed() async {
+    if (_meetingID.isEmpty) {
+      toastMsg("Please, Enter Valid Meeting ID");
+      return;
+    }
+
     final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
     final Uri validateMeetingUrl =
-        Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings/$_meetingId');
+        Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings/$_meetingID');
     final http.Response validateMeetingResponse =
         await http.post(validateMeetingUrl, headers: {
       "Authorization": _token,
     });
 
-    return validateMeetingResponse.statusCode == 200;
+    if (validateMeetingResponse.statusCode == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => JoinScreen(
+            meetingId: _meetingID,
+            token: _token,
+          ),
+        ),
+      );
+    } else {
+      toastMsg("Invalid Meeting ID");
+    }
   }
 }

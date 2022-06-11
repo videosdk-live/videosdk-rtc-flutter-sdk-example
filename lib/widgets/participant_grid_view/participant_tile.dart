@@ -42,6 +42,13 @@ class _ParticipantTileState extends State<ParticipantTile> {
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
       key: Key("tile_${widget.participant.id}"),
@@ -150,11 +157,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                             ? Theme.of(context).backgroundColor
                             : Colors.red,
                       ),
-                      child: Icon(
-                        videoStream != null
-                            ? Icons.videocam
-                            : Icons.videocam_off,
-                        size: 16,
+                      child: videoStream != null ? const Icon(Icons.videocam, size: 16,) : const Icon(Icons.videocam_off, size: 16,
                       ),
                     ),
                     onTap: widget.isLocalParticipant

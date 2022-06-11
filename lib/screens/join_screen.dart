@@ -45,6 +45,7 @@ class _JoinScreenState extends State<JoinScreen> {
       cameraController = CameraController(
         availableCameras[selectedCameraId],
         ResolutionPreset.medium,
+        imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
       cameraController!.initialize().then((_) {
@@ -54,6 +55,13 @@ class _JoinScreenState extends State<JoinScreen> {
     }).catchError((err) {
       log("Error: $err");
     });
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -72,7 +80,7 @@ class _JoinScreenState extends State<JoinScreen> {
             : SingleChildScrollView(
                 child: Column(
                   children: [
-                    verticalSpacer(MediaQuery.of(context).size.height / 7),
+                    VerticalSpacer(MediaQuery.of(context).size.height / 7),
 
                     // Camera Preview
                     Padding(
@@ -147,7 +155,7 @@ class _JoinScreenState extends State<JoinScreen> {
                         ),
                       ),
                     ),
-                    verticalSpacer(16),
+                    const VerticalSpacer(16),
 
                     // Display Name TextField
                     Padding(
@@ -167,7 +175,7 @@ class _JoinScreenState extends State<JoinScreen> {
                         ),
                       ),
                     ),
-                    verticalSpacer(20),
+                    const VerticalSpacer(20),
 
                     // Join Button
                     TextButton(

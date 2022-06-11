@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'constants/colors.dart';
 import 'navigator_key.dart';
 import 'screens/splash_screen.dart';
 
-void main() async {
-  // Load Environment variables
-  await dotenv.load(fileName: ".env");
-
+void main() {
   // Run Flutter App
   runApp(const MyApp());
 }

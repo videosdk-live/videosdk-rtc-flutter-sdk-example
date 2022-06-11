@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 
 // Vertical Spacer
-verticalSpacer([double height = 8.0]) {
-  return SizedBox(height: height);
+class VerticalSpacer extends StatelessWidget {
+  final double height;
+  const VerticalSpacer([this.height = 8.0, Key? key]) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(height: height);
+  }
 }
 
 // Horizontal Spacer
-horizontalSpacer([double width = 8.0]) {
-  return SizedBox(width: width);
+class HorizontalSpacer extends StatelessWidget {
+  final double width;
+  const HorizontalSpacer([this.width = 8.0, Key? key]) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(width: width);
+  }
 }

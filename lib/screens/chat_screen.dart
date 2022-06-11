@@ -32,6 +32,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

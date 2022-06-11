@@ -33,6 +33,13 @@ class _ParticipantGridViewState extends State<ParticipantGridView> {
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 2,
