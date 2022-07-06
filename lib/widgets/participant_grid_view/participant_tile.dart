@@ -33,6 +33,9 @@ class _ParticipantTileState extends State<ParticipantTile> {
     super.initState();
 
     widget.participant.streams.forEach((key, Stream stream) {
+      if (stream.kind == 'video') {
+        onViewPortChange();
+      }
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
