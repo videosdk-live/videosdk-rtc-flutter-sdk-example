@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:videosdk/rtc.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -23,12 +25,17 @@ class _ParticipantTileState extends State<ParticipantTile> {
 
   bool shouldRenderVideo = true;
 
+  GlobalKey _widgetKey = GlobalKey();
+
   @override
   void initState() {
     _initStreamListeners();
     super.initState();
 
     widget.participant.streams.forEach((key, Stream stream) {
+      if (stream.kind == 'video') {
+        onViewPortChange();
+      }
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
@@ -64,6 +71,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
         }
       },
       child: Container(
+        key: _widgetKey,
         margin: const EdgeInsets.all(4.0),
         decoration: BoxDecoration(
           color: Theme.of(context).backgroundColor.withOpacity(1),
@@ -157,8 +165,15 @@ class _ParticipantTileState extends State<ParticipantTile> {
                             ? Theme.of(context).backgroundColor
                             : Colors.red,
                       ),
-                      child: videoStream != null ? const Icon(Icons.videocam, size: 16,) : const Icon(Icons.videocam_off, size: 16,
-                      ),
+                      child: videoStream != null
+                          ? const Icon(
+                              Icons.videocam,
+                              size: 16,
+                            )
+                          : const Icon(
+                              Icons.videocam_off,
+                              size: 16,
+                            ),
                     ),
                     onTap: widget.isLocalParticipant
                         ? null
@@ -221,8 +236,24 @@ class _ParticipantTileState extends State<ParticipantTile> {
     );
   }
 
+  onViewPortChange() {
+    try {
+      final RenderBox renderBox =
+          _widgetKey.currentContext?.findRenderObject() as RenderBox;
+      _widgetKey.currentContext?.size;
+
+      final Size size = renderBox.size;
+      widget.participant.setViewPort(size.width, size.height);
+    } catch (exception) {
+      log("Unable to set Viewport $exception");
+    }
+  }
+
   _initStreamListeners() {
     widget.participant.on(Events.streamEnabled, (Stream _stream) {
+      if (_stream.kind == 'video') {
+        onViewPortChange();
+      }
       setState(() {
         if (_stream.kind == 'video') {
           videoStream = _stream;
@@ -259,6 +290,9 @@ class _ParticipantTileState extends State<ParticipantTile> {
     });
 
     widget.participant.on(Events.streamResumed, (Stream _stream) {
+      if (_stream.kind == 'video') {
+        onViewPortChange();
+      }
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = _stream;

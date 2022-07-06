@@ -3,14 +3,14 @@ description: A Flutter project for VideoSDK Demonstration.
 
 publish_to: "none"
 
-version: 1.0.0+5
+version: 1.0.0+6
 environment:
   sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^0.0.13
+  videosdk: ^0.0.14
   http: ^0.13.4
   flutter_dotenv: ^5.0.2
   cupertino_icons: ^1.0.4
