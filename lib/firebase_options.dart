@@ -49,13 +49,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCUsvi-vZtgTeK9fWqJIhqTLw80Vo_8diw',
-    appId: '1:107235112902:ios:1bb5a20bec255b1b1ea4c7',
+    apiKey: 'AIzaSyBdD-o56meOk8LMVbZABWVZvFH_JOFJ0AM',
+    appId: '1:444875794216:ios:bc1305767eb2ca6339d21d',
     messagingSenderId: '444875794216',
     projectId: 'videosdk-codesample-analytics',
     storageBucket: 'videosdk-codesample-analytics.appspot.com',
     iosClientId:
-        '107235112902-3fk42mqa01dlk08qmj13j4d9k0c69evo.apps.googleusercontent.com',
-    iosBundleId: 'com.app.loginfo',
+        '444875794216-n0fcaoukjij002s72734vonk62924ftr.apps.googleusercontent.com',
+    iosBundleId: 'live.videosdk.flutter.example',
   );
 }
