@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:videosdk/rtc.dart';
+import 'package:videosdk/videosdk.dart';
 import '../widgets/chat/chat_widget.dart';
 
 // ChatScreen
 class ChatScreen extends StatefulWidget {
-  final Meeting meeting;
+  final Room meeting;
   const ChatScreen({
     Key? key,
     required this.meeting,

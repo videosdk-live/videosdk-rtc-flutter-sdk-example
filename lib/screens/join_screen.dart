@@ -28,7 +28,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   // Control Status
   bool isMicOn = true;
-  bool isWebcamOn = true;
+  bool isCameraOn = true;
 
   // Camera Controller
   CameraController? cameraController;
@@ -95,7 +95,7 @@ class _JoinScreenState extends State<JoinScreen> {
                             AspectRatio(
                               aspectRatio:
                                   1 / cameraController!.value.aspectRatio,
-                              child: isWebcamOn
+                              child: isCameraOn
                                   ? CameraPreview(cameraController!)
                                   : Container(
                                       color: Colors.black,
@@ -131,20 +131,20 @@ class _JoinScreenState extends State<JoinScreen> {
 
                                   // Camera Action Button
                                   MeetingActionButton(
-                                    backgroundColor: isWebcamOn
+                                    backgroundColor: isCameraOn
                                         ? Theme.of(context).primaryColor
                                         : Colors.red,
                                     iconColor: Colors.white,
                                     radius: 30,
                                     onPressed: () {
-                                      if (isWebcamOn) {
+                                      if (isCameraOn) {
                                         cameraController?.pausePreview();
                                       } else {
                                         cameraController?.resumePreview();
                                       }
-                                      setState(() => isWebcamOn = !isWebcamOn);
+                                      setState(() => isCameraOn = !isCameraOn);
                                     },
-                                    icon: isWebcamOn
+                                    icon: isCameraOn
                                         ? Icons.videocam
                                         : Icons.videocam_off,
                                   ),
@@ -197,7 +197,7 @@ class _JoinScreenState extends State<JoinScreen> {
                               meetingId: widget.meetingId,
                               displayName: displayName,
                               micEnabled: isMicOn,
-                              webcamEnabled: isWebcamOn,
+                              camEnabled: isCameraOn,
                             ),
                           ),
                         );

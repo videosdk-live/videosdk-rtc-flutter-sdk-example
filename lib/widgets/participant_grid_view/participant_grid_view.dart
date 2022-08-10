@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:videosdk/rtc.dart';
+import 'package:videosdk/videosdk.dart';
 
 import 'participant_tile.dart';
 
 class ParticipantGridView extends StatefulWidget {
-  final Meeting meeting;
+  final Room meeting;
   const ParticipantGridView({
     Key? key,
     required this.meeting,
@@ -55,7 +55,7 @@ class _ParticipantGridViewState extends State<ParticipantGridView> {
     );
   }
 
-  void setMeetingListeners(Meeting _meeting) {
+  void setMeetingListeners(Room _meeting) {
     // Called when participant joined meeting
     _meeting.on(
       Events.participantJoined,

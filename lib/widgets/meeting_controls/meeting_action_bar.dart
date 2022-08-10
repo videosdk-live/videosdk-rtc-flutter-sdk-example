@@ -9,14 +9,14 @@ import 'meeting_action_button.dart';
 class MeetingActionBar extends StatelessWidget {
   // control states
   final bool isMicEnabled,
-      isWebcamEnabled,
+      isCamEnabled,
       isScreenShareEnabled,
       isScreenShareButtonDisabled;
 
   // callback functions
   final void Function() onCallEndButtonPressed,
       onMicButtonPressed,
-      onWebcamButtonPressed,
+      onCameraButtonPressed,
       onSwitchCameraButtonPressed,
       onMoreButtonPressed,
       onScreenShareButtonPressed;
@@ -24,12 +24,12 @@ class MeetingActionBar extends StatelessWidget {
   const MeetingActionBar({
     Key? key,
     required this.isMicEnabled,
-    required this.isWebcamEnabled,
+    required this.isCamEnabled,
     required this.isScreenShareEnabled,
     required this.isScreenShareButtonDisabled,
     required this.onCallEndButtonPressed,
     required this.onMicButtonPressed,
-    required this.onWebcamButtonPressed,
+    required this.onCameraButtonPressed,
     required this.onSwitchCameraButtonPressed,
     required this.onScreenShareButtonPressed,
     required this.onMoreButtonPressed,
@@ -61,22 +61,21 @@ class MeetingActionBar extends StatelessWidget {
             ),
           ),
 
-          // Webcam Control
+          // Camera Control
           Expanded(
             child: MeetingActionButton(
-              onPressed: onWebcamButtonPressed,
-              backgroundColor: isWebcamEnabled
-                  ? hoverColor
-                  : secondaryColor.withOpacity(0.8),
-              icon: isWebcamEnabled ? Icons.videocam : Icons.videocam_off,
+              onPressed: onCameraButtonPressed,
+              backgroundColor:
+                  isCamEnabled ? hoverColor : secondaryColor.withOpacity(0.8),
+              icon: isCamEnabled ? Icons.videocam : Icons.videocam_off,
             ),
           ),
 
-          // Webcam Switch Control
+          // Camera Switch Control
           Expanded(
             child: MeetingActionButton(
               backgroundColor: secondaryColor.withOpacity(0.8),
-              onPressed: isWebcamEnabled ? onSwitchCameraButtonPressed : null,
+              onPressed: isCamEnabled ? onSwitchCameraButtonPressed : null,
               icon: Icons.cameraswitch,
             ),
           ),

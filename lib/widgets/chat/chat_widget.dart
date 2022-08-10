@@ -1,6 +1,6 @@
 import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/material.dart';
-import 'package:videosdk/rtc.dart';
+import 'package:videosdk/videosdk.dart';
 
 class ChatWidget extends StatelessWidget {
   final bool isLocalParticipant;

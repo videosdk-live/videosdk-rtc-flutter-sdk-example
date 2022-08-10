@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:videosdk/rtc.dart';
+import 'package:videosdk/videosdk.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../utils/toast.dart';
@@ -9,9 +9,11 @@ import '../../utils/toast.dart';
 class ParticipantTile extends StatefulWidget {
   final Participant participant;
   final bool isLocalParticipant;
-  const ParticipantTile(
-      {Key? key, required this.participant, this.isLocalParticipant = false})
-      : super(key: key);
+  const ParticipantTile({
+    Key? key,
+    required this.participant,
+    this.isLocalParticipant = false,
+  }) : super(key: key);
 
   @override
   State<ParticipantTile> createState() => _ParticipantTileState();
@@ -25,7 +27,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
 
   bool shouldRenderVideo = true;
 
-  GlobalKey _widgetKey = GlobalKey();
+  final GlobalKey _widgetKey = GlobalKey();
 
   @override
   void initState() {
@@ -33,9 +35,6 @@ class _ParticipantTileState extends State<ParticipantTile> {
     super.initState();
 
     widget.participant.streams.forEach((key, Stream stream) {
-      if (stream.kind == 'video') {
-        onViewPortChange();
-      }
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
@@ -146,10 +145,10 @@ class _ParticipantTileState extends State<ParticipantTile> {
                         ? null
                         : () {
                             if (audioStream != null) {
-                              widget.participant.disableMic();
+                              widget.participant.muteMic();
                             } else {
                               toastMsg("Mic requested");
-                              widget.participant.enableMic();
+                              widget.participant.unmuteMic();
                             }
                           },
                   ),
@@ -180,10 +179,10 @@ class _ParticipantTileState extends State<ParticipantTile> {
                         ? null
                         : () {
                             if (videoStream != null) {
-                              widget.participant.disableWebcam();
+                              widget.participant.disableCam();
                             } else {
-                              toastMsg("Webcam requested");
-                              widget.participant.enableWebcam();
+                              toastMsg("Camera requested");
+                              widget.participant.enableCam();
                             }
                           },
                   ),
