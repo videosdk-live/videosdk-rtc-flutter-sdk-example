@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^1.0.0
+  videosdk: ^1.0.1
   http: ^0.13.4
   flutter_dotenv: ^5.0.2
   cupertino_icons: ^1.0.4
