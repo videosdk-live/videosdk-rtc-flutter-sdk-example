@@ -23,11 +23,9 @@ class _ParticipantTileState extends State<ParticipantTile> {
   Stream? shareStream;
   Stream? videoStream;
   Stream? audioStream;
-  String? quality;
+  String? quality = "high";
 
   bool shouldRenderVideo = true;
-
-  final GlobalKey _widgetKey = GlobalKey();
 
   @override
   void initState() {
@@ -38,7 +36,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
-          onViewPortChange();
+          widget.participant.setQuality(quality);
         } else if (stream.kind == 'audio') {
           audioStream = stream;
         } else if (stream.kind == 'share') {
@@ -71,7 +69,6 @@ class _ParticipantTileState extends State<ParticipantTile> {
         }
       },
       child: Container(
-        key: _widgetKey,
         margin: const EdgeInsets.all(4.0),
         decoration: BoxDecoration(
           color: Theme.of(context).backgroundColor.withOpacity(1),
@@ -236,27 +233,12 @@ class _ParticipantTileState extends State<ParticipantTile> {
     );
   }
 
-  onViewPortChange() {
-    try {
-      final RenderBox renderBox =
-          _widgetKey.currentContext?.findRenderObject() as RenderBox;
-      _widgetKey.currentContext?.size;
-
-      final Size size = renderBox.size;
-      widget.participant.setViewPort(size.width, size.height);
-    } catch (exception) {
-      log("Unable to set Viewport $exception");
-    }
-  }
-
   _initStreamListeners() {
     widget.participant.on(Events.streamEnabled, (Stream _stream) {
-      if (_stream.kind == 'video') {
-        onViewPortChange();
-      }
       setState(() {
         if (_stream.kind == 'video') {
           videoStream = _stream;
+          widget.participant.setQuality(quality);
         } else if (_stream.kind == 'audio') {
           audioStream = _stream;
         } else if (_stream.kind == 'share') {
@@ -290,12 +272,10 @@ class _ParticipantTileState extends State<ParticipantTile> {
     });
 
     widget.participant.on(Events.streamResumed, (Stream _stream) {
-      if (_stream.kind == 'video') {
-        onViewPortChange();
-      }
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = _stream;
+          widget.participant.setQuality(quality);
         } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
           audioStream = _stream;
         } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
