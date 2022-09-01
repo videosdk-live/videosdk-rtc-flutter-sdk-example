@@ -330,7 +330,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, () {
+    _meeting.on(Events.roomLeft, (String? errorMsg) {
+      if (errorMsg != null) {
+        toastMsg("Meeting left due to $errorMsg !!");
+      }
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const StartupScreen()),
