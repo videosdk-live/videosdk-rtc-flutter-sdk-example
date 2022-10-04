@@ -158,6 +158,43 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
+                          ElevatedButton(
+                            child: const Text('CHANGE AUDIO DEVICE'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("Select Audio Device"),
+                                  content: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        reverse: true,
+                                        child: Column(
+                                          children: meeting
+                                              .getAudioOutputDevices()
+                                              .map(
+                                                (e) => ElevatedButton(
+                                                  child: Text(e.label),
+                                                  onPressed: () => {
+                                                    meeting
+                                                        .switchAudioDevice(e),
+                                                    Navigator.pop(context)
+                                                  },
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+
                           // Chat
                           ElevatedButton(
                             child: const Text('Chat'),
