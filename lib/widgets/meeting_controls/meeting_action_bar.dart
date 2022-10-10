@@ -81,22 +81,21 @@ class MeetingActionBar extends StatelessWidget {
           ),
 
           // ScreenShare Control
-          if (Platform.isAndroid)
-            Expanded(
-              child: MeetingActionButton(
-                backgroundColor: isScreenShareEnabled
-                    ? hoverColor
-                    : secondaryColor.withOpacity(0.8),
-                onPressed: isScreenShareButtonDisabled
-                    ? null
-                    : onScreenShareButtonPressed,
-                icon: isScreenShareEnabled
-                    ? Icons.screen_share
-                    : Icons.stop_screen_share,
-                iconColor:
-                    isScreenShareButtonDisabled ? Colors.white30 : Colors.white,
-              ),
+          Expanded(
+            child: MeetingActionButton(
+              backgroundColor: isScreenShareEnabled
+                  ? hoverColor
+                  : secondaryColor.withOpacity(0.8),
+              onPressed: isScreenShareButtonDisabled
+                  ? null
+                  : onScreenShareButtonPressed,
+              icon: isScreenShareEnabled
+                  ? Icons.screen_share
+                  : Icons.stop_screen_share,
+              iconColor:
+                  isScreenShareButtonDisabled ? Colors.white30 : Colors.white,
             ),
+          ),
 
           // More options
           Expanded(
