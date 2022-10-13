@@ -30,10 +30,9 @@ class _ParticipantListState extends State<ParticipantList> {
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: Center(
-            child: Text("Participants (" +
-                (widget.meeting.participants.length + 1).toString() +
-                ")")),
+        title: Text("Participants (" +
+            (widget.meeting.participants.length + 1).toString() +
+            ")"),
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,

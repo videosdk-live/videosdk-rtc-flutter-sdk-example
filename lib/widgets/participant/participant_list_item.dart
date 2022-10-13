@@ -44,7 +44,7 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
         children: [
           Container(
             margin: EdgeInsets.only(right: 10),
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: black500,
               borderRadius: BorderRadius.circular(30),
@@ -57,13 +57,13 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
             widget.participant.isLocal ? "You" : widget.participant.displayName,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           )),
           Container(
             margin: EdgeInsets.only(right: 10),
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: audioStream != null ? black600 : red,
               border: Border.all(color: audioStream != null ? black500 : red),
@@ -72,8 +72,8 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
             child: Icon(audioStream != null ? Icons.mic : Icons.mic_off),
           ),
           Container(
-            margin: EdgeInsets.only(right: 10),
-            padding: const EdgeInsets.all(8),
+            // margin: EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: videoStream != null ? black600 : red,
               border: Border.all(color: videoStream != null ? black500 : red),

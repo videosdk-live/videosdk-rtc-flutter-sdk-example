@@ -44,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: const Center(child: Text("Chat")),
+        title: Text("Chat"),
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,
@@ -116,8 +116,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               .then((value) => msgTextController.clear()),
                       child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 2, vertical: 8),
-                          width: 50,
+                              horizontal: 8, vertical: 8),
+                          width: 45,
                           margin: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: msgTextController.text.trim().isEmpty

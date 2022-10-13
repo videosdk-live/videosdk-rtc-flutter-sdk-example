@@ -65,7 +65,7 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: IntrinsicHeight(
         child: Stack(children: [
           Container(

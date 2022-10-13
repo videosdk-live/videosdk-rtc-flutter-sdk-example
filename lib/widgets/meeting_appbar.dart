@@ -16,10 +16,12 @@ class MeetingAppBar extends StatefulWidget {
   String token;
   Room meeting;
   bool isRecordingOn;
+  bool isFullScreen;
   MeetingAppBar(
       {Key? key,
       required this.meeting,
       required this.token,
+      required this.isFullScreen,
       required this.isRecordingOn})
       : super(key: key);
 
@@ -33,8 +35,6 @@ class MeetingAppBarState extends State<MeetingAppBar> {
 
   List<MediaDeviceInfo> cameras = [];
 
-  bool fullScreen = false;
-
   @override
   void initState() {
     startTimer();
@@ -46,20 +46,18 @@ class MeetingAppBarState extends State<MeetingAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    final statusbarHeight = MediaQuery.of(context).padding.top;
-
     return AnimatedCrossFade(
       duration: const Duration(milliseconds: 300),
-      crossFadeState:
-          !fullScreen ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      crossFadeState: !widget.isFullScreen
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
       secondChild: const SizedBox.shrink(),
       firstChild: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
           children: [
             if (widget.isRecordingOn)
-              Lottie.asset('assets/recording_lottie.json',
-                  height: statusbarHeight),
+              Lottie.asset('assets/recording_lottie.json', height: 35),
             if (widget.isRecordingOn) const HorizontalSpacer(),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -92,6 +90,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
                     ),
                   ],
                 ),
+                // VerticalSpacer(),
                 Text(
                   elapsedTime == null
                       ? "00:00:00"
