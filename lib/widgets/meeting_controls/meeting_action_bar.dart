@@ -94,7 +94,7 @@ class MeetingActionBar extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white30),
+                border: Border.all(color: secondaryColor),
                 color: isMicEnabled ? primaryColor : Colors.white,
               ),
               padding: const EdgeInsets.all(8),
@@ -121,14 +121,46 @@ class MeetingActionBar extends StatelessWidget {
           ),
 
           // Camera Control
-          MeetingActionButton(
-            onPressed: onCameraButtonPressed,
-            icon: isCamEnabled ? Icons.videocam : Icons.videocam_off,
+          TouchRippleEffect(
+            borderRadius: BorderRadius.circular(12),
+            rippleColor: primaryColor,
+            onTap: onCameraButtonPressed,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: secondaryColor),
+                color: isCamEnabled ? primaryColor : Colors.white,
+              ),
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset(
+                isCamEnabled
+                    ? "assets/ic_video.svg"
+                    : "assets/ic_video_off.svg",
+                width: 26,
+                height: 26,
+                color: isCamEnabled ? Colors.white : primaryColor,
+              ),
+            ),
           ),
 
-          MeetingActionButton(
-            onPressed: onChatButtonPressed,
-            icon: Icons.comment,
+          TouchRippleEffect(
+            borderRadius: BorderRadius.circular(12),
+            rippleColor: primaryColor,
+            onTap: onChatButtonPressed,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: secondaryColor),
+                color: primaryColor,
+              ),
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset(
+                "assets/ic_chat.svg",
+                width: 26,
+                height: 26,
+                color: Colors.white,
+              ),
+            ),
           ),
 
           // More options
@@ -179,35 +211,6 @@ class MeetingActionBar extends StatelessWidget {
                   ]),
         ],
       ),
-    );
-  }
-
-  DropdownMenuItem<String> _buildMeetingDropDownItem(
-      String value, String title, String? description, Widget leadingIcon) {
-    return DropdownMenuItem(
-      value: value,
-      child: Row(children: [
-        leadingIcon,
-        const HorizontalSpacer(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
-            ),
-            if (description != null)
-              Text(
-                description,
-                style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w600, color: black400),
-              )
-          ],
-        )
-      ]),
     );
   }
 

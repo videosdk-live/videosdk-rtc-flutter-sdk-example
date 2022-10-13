@@ -161,10 +161,8 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
     );
 
     _meeting.on(Events.presenterChanged, (_presenterId) {
-      log("Presenter Changed " + _presenterId.toString());
       setState(() {
         presenterId = _presenterId;
-        updateView();
       });
     });
 
