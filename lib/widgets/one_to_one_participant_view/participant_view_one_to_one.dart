@@ -8,6 +8,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
+import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/local_screen_share_view.dart';
+import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view.dart';
 import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view.dart';
 
 class ParticipantViewOneToOne extends StatefulWidget {
@@ -41,7 +43,9 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
     setMeetingListeners(widget.meeting);
 
     try {
-      remoteParticipant = widget.meeting.participants.entries.first.value;
+      remoteParticipant = widget.meeting.participants.isNotEmpty
+          ? widget.meeting.participants.entries.first.value
+          : null;
       if (remoteParticipant != null) {
         addParticipantListener(remoteParticipant!, true);
       }
@@ -49,6 +53,13 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
     addParticipantListener(localParticipant!, false);
     super.initState();
     updateView();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -62,174 +73,48 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
                 borderRadius: BorderRadius.circular(12),
                 color: black800,
               ),
-              child: Stack(
-                children: [
-                  largeViewStream != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: RTCVideoView(
-                            largeViewStream?.renderer as RTCVideoRenderer,
-                            objectFit: RTCVideoViewObjectFit
-                                .RTCVideoViewObjectFitCover,
-                          ),
-                        )
-                      : Center(
-                          child: localShareStream == null
-                              ? Container(
-                                  padding: const EdgeInsets.all(30),
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: black700,
-                                  ),
-                                  child: Text(
-                                    remoteParticipant != null
-                                        ? remoteParticipant!
-                                            .displayName.characters.first
-                                            .toUpperCase()
-                                        : localParticipant!
-                                            .displayName.characters.first
-                                            .toUpperCase(),
-                                    style: const TextStyle(fontSize: 50),
-                                  ),
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  // crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                      SvgPicture.asset(
-                                        "assets/ic_screen_share.svg",
-                                        height: 40,
-                                      ),
-                                      const VerticalSpacer(20),
-                                      const Text(
-                                        "You are presenting to everyone",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      const VerticalSpacer(20),
-                                      MaterialButton(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 12, horizontal: 30),
-                                          color: purple,
-                                          child: const Text("Stop Presenting",
-                                              style: TextStyle(fontSize: 16)),
-                                          onPressed: () => {
-                                                widget.meeting
-                                                    .disableScreenShare()
-                                              })
-                                    ]),
-                        ),
-                  if (remoteAudioStream == null &&
-                      remoteShareStream == null &&
-                      localShareStream == null)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: black700,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Icon(
-                            Icons.mic_off,
-                            size: 14,
-                          )),
-                    ),
-                ],
+              child: ParticipantView(
+                avatarBackground: black700,
+                stream: largeViewStream,
+                isMicOn: remoteParticipant != null
+                    ? remoteAudioStream != null
+                    : localAudioStream != null,
+                onStopScreeenSharePressed: () =>
+                    widget.meeting.disableScreenShare(),
+                participantName: remoteParticipant != null
+                    ? remoteParticipant!.displayName
+                    : localParticipant!.displayName,
+                isLocalScreenShare: localShareStream != null,
+                isScreenShare:
+                    remoteShareStream != null || localShareStream != null,
               )),
-          if (remoteShareStream != null)
-            Positioned(
-              bottom: 8,
-              left: 8,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: black700,
-                ),
-                child: Text(remoteShareStream != null
-                    ? "${remoteParticipant?.displayName} is presenting"
-                    : "${remoteParticipant?.displayName}"),
-              ),
-            ),
-          // if (largeParticipant != null)
-          //   ParticipantView(
-          //     participant: largeParticipant!,
-          //     showShare: true,
-          //   ),
           if (remoteParticipant != null || localShareStream != null)
             Positioned(
-              right: 8,
-              bottom: 8,
-              // child: Container(
-              //   height: 160,
-              //   width: 100,
-              //   child: ParticipantView(
-              //       participant: smallParticipant!, showShare: false),
-              // )
-              child: Container(
-                  height: 160,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: black600,
-                  ),
-                  child: Stack(
-                    children: [
-                      smallViewStream != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: RTCVideoView(
-                                smallViewStream?.renderer as RTCVideoRenderer,
-                                objectFit: RTCVideoViewObjectFit
-                                    .RTCVideoViewObjectFitCover,
-                              ),
-                            )
-                          : Center(
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: black500,
-                                ),
-                                child: Text(
-                                  remoteShareStream != null
-                                      ? remoteParticipant!
-                                          .displayName.characters.first
-                                          .toUpperCase()
-                                      : localParticipant!
-                                          .displayName.characters.first
-                                          .toUpperCase(),
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ),
-                            ),
-                      if ((localAudioStream == null &&
+                right: 8,
+                bottom: 8,
+                child: Container(
+                    height: 160,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: black600,
+                    ),
+                    child: ParticipantView(
+                      avatarTextSize: 30,
+                      avatarBackground: black500,
+                      stream: smallViewStream,
+                      isMicOn: (localAudioStream != null &&
                               remoteShareStream == null) ||
-                          (remoteAudioStream == null &&
-                              remoteShareStream != null))
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: black700,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Icon(
-                                Icons.mic_off,
-                                size: 14,
-                              )),
-                        ),
-                    ],
-                  )),
-            ),
+                          (remoteAudioStream != null &&
+                              remoteShareStream != null),
+                      onStopScreeenSharePressed: () =>
+                          widget.meeting.disableScreenShare(),
+                      participantName: remoteShareStream != null
+                          ? remoteParticipant!.displayName
+                          : localParticipant!.displayName,
+                      isLocalScreenShare: false,
+                      isScreenShare: false,
+                    ))),
         ]),
       ),
     );
@@ -241,7 +126,9 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
       Events.participantJoined,
       (Participant participant) {
         setState(() {
-          remoteParticipant = widget.meeting.participants.entries.first.value;
+          remoteParticipant = widget.meeting.participants.isNotEmpty
+              ? widget.meeting.participants.entries.first.value
+              : null;
           if (remoteParticipant != null) {
             addParticipantListener(remoteParticipant!, true);
           }
@@ -261,6 +148,15 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
             updateView();
           });
         }
+        setState(() {
+          remoteParticipant = widget.meeting.participants.isNotEmpty
+              ? widget.meeting.participants.entries.first.value
+              : null;
+          if (remoteParticipant != null) {
+            addParticipantListener(remoteParticipant!, true);
+            updateView();
+          }
+        });
       },
     );
 
@@ -282,29 +178,6 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
 
   void updateView() {
     Stream? _largeViewStream, _smallViewStream;
-    Participant? _largeViewParticipant, _smallViewParticipant;
-    // log("Presenter Id::" + presenterId.toString());
-    // if (presenterId != null) {
-    //   if (presenterId == localParticipant!.id) {
-    //     if (remoteParticipant != null) {
-    //       _smallViewParticipant = remoteParticipant;
-    //     } else {
-    //       _smallViewParticipant = localParticipant;
-    //     }
-    //     _largeViewParticipant = localParticipant;
-    //   } else {
-    //     _largeViewParticipant = remoteParticipant;
-    //     _smallViewParticipant = remoteParticipant;
-    //   }
-    // } else {
-    //   if (remoteParticipant != null) {
-    //     _largeViewParticipant = remoteParticipant;
-    //     _smallViewParticipant = localParticipant;
-    //   } else {
-    //     _largeViewParticipant = localParticipant;
-    //     _smallViewParticipant = null;
-    //   }
-    // }
     if (remoteParticipant != null) {
       if (remoteShareStream != null) {
         _largeViewStream = remoteShareStream;
@@ -327,11 +200,6 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
         _largeViewStream = localVideoStream;
       }
     }
-
-    // setState(() {
-    //   largeParticipant = _largeViewParticipant;
-    //   smallParticipant = _smallViewParticipant;
-    // });
     setState(() {
       largeViewStream = _largeViewStream;
       smallViewStream = _smallViewStream;
@@ -377,8 +245,6 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
           } else {
             localShareStream = _stream;
           }
-          // presenterId = participant.id;
-          // updateView();
         } else if (_stream.kind == 'audio') {
           if (isRemote) {
             remoteAudioStream = _stream;
@@ -404,8 +270,6 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
           } else {
             localShareStream = null;
           }
-          // presenterId = null;
-          // updateView();
         } else if (_stream.kind == 'audio') {
           if (isRemote) {
             remoteAudioStream = null;

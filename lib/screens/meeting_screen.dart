@@ -42,9 +42,6 @@ class MeetingScreen extends StatefulWidget {
 }
 
 class _MeetingScreenState extends State<MeetingScreen> {
-  // Recording Webhook
-  final String recordingWebHookURL = "";
-
   bool isRecordingOn = false;
 
   // Meeting
@@ -97,7 +94,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Widget build(BuildContext context) {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
-    final screenSize = MediaQuery.of(context).size;
 
     return WillPopScope(
       onWillPop: _onWillPopScope,

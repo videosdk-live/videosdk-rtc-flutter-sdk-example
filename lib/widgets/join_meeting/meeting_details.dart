@@ -3,21 +3,21 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 
-class GenerateMeetingWidget extends StatefulWidget {
+class MeetingDetails extends StatefulWidget {
   bool isCreateMeeting;
   Function onClickMeetingJoin;
 
-  GenerateMeetingWidget(
+  MeetingDetails(
       {Key? key,
       required this.isCreateMeeting,
       required this.onClickMeetingJoin})
       : super(key: key);
 
   @override
-  State<GenerateMeetingWidget> createState() => _GenerateMeetingWidgetState();
+  State<MeetingDetails> createState() => _MeetingDetailsState();
 }
 
-class _GenerateMeetingWidgetState extends State<GenerateMeetingWidget> {
+class _MeetingDetailsState extends State<MeetingDetails> {
   String _meetingId = "";
   String _displayName = "";
   String _callType = "";
@@ -33,7 +33,7 @@ class _GenerateMeetingWidgetState extends State<GenerateMeetingWidget> {
                 borderRadius: BorderRadius.circular(12), color: black750),
             child: TextField(
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w500,
               ),
               onChanged: ((value) => _meetingId = value),
@@ -51,7 +51,7 @@ class _GenerateMeetingWidgetState extends State<GenerateMeetingWidget> {
               borderRadius: BorderRadius.circular(12), color: black750),
           child: TextField(
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w500,
             ),
             onChanged: ((value) => _displayName = value),

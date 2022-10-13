@@ -7,7 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:videosdk_flutter_example/widgets/join_meeting/generate_meeting.dart';
+import 'package:videosdk_flutter_example/widgets/join_meeting/meeting_details.dart';
 import 'package:videosdk_flutter_example/widgets/meeting_controls/meeting_action_button.dart';
 
 import '../constants/colors.dart';
@@ -277,7 +277,7 @@ class _StartupScreenState extends State<StartupScreen> {
                                                         })
                                                   }),
                                         if (isJoinMethodSelected)
-                                          GenerateMeetingWidget(
+                                          MeetingDetails(
                                             isCreateMeeting: isCreateMeeting,
                                             onClickMeetingJoin: (meetingId,
                                                     callType, displayName) =>
@@ -373,8 +373,6 @@ class _StartupScreenState extends State<StartupScreen> {
       _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
     }
 
-    // log("Auth Token: $_AUTH_TOKEN");
-
     return _AUTH_TOKEN ?? "";
   }
 
@@ -438,11 +436,4 @@ class _StartupScreenState extends State<StartupScreen> {
       showSnackBarMessage(message: "Invalid Meeting ID", context: context);
     }
   }
-
-  // @override
-  // void dispose() {
-  //   // Dispose Camera Controller
-  //   cameraController?.dispose();
-  //   super.dispose();
-  // }
 }
