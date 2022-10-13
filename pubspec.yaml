@@ -13,8 +13,6 @@ dependencies:
   videosdk: ^1.0.5
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
-  cupertino_icons: ^1.0.5
-  fluttertoast: ^8.0.9
   camera: ^0.10.0
   flutter_svg: ^1.1.5
   visibility_detector: ^0.3.3

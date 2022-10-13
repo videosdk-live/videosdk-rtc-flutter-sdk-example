@@ -144,7 +144,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                             if (audioStream != null) {
                               widget.participant.muteMic();
                             } else {
-                              toastMsg("Mic requested");
+                              // toastMsg("Mic requested");
                               widget.participant.unmuteMic();
                             }
                           },
@@ -178,7 +178,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                             if (videoStream != null) {
                               widget.participant.disableCam();
                             } else {
-                              toastMsg("Camera requested");
+                              // toastMsg("Camera requested");
                               widget.participant.enableCam();
                             }
                           },
@@ -210,7 +210,7 @@ class _ParticipantTileState extends State<ParticipantTile> {
                                       child: const Text("Yes"),
                                       onPressed: () {
                                         widget.participant.remove();
-                                        toastMsg("Participant removed");
+                                        // toastMsg("Participant removed");
                                         Navigator.of(context).pop();
                                       },
                                     ),

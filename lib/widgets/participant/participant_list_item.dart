@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 
@@ -79,8 +80,9 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
               border: Border.all(color: videoStream != null ? black500 : red),
               borderRadius: BorderRadius.circular(30),
             ),
-            child:
-                Icon(videoStream != null ? Icons.videocam : Icons.videocam_off),
+            child: SvgPicture.asset(videoStream != null
+                ? "assets/ic_video.svg"
+                : "assets/ic_video_off.svg"),
           ),
         ],
       ),
