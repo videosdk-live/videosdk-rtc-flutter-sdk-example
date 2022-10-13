@@ -1,6 +1,7 @@
 import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:videosdk_flutter_example/constants/colors.dart';
 
 class ChatWidget extends StatelessWidget {
   final bool isLocalParticipant;
@@ -16,39 +17,37 @@ class ChatWidget extends StatelessWidget {
           isLocalParticipant ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.all(4),
-        padding: const EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: 12.0,
-        ),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(10),
+          color: black600,
         ),
         child: Column(
-          crossAxisAlignment: isLocalParticipant
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               isLocalParticipant ? "You" : message.senderName,
+              textAlign: TextAlign.left,
               style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 10,
+                color: black400,
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               message.message,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
             Text(
               message.timestamp.toLocal().format('h:i a'),
+              textAlign: TextAlign.end,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontStyle: FontStyle.italic),
+                  color: black400, fontSize: 10, fontWeight: FontWeight.w500),
             ),
           ],
         ),

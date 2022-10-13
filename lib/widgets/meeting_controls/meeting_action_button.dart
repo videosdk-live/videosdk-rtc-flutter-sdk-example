@@ -7,17 +7,20 @@ import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 class MeetingActionButton extends StatelessWidget {
   final void Function()? onPressed;
   final IconData icon;
-  final Color backgroundColor, iconColor;
+  final Color backgroundColor, iconColor, borderColor;
   final double radius, iconSize;
+  final Widget? trailingWidget;
 
   const MeetingActionButton({
     Key? key,
     required this.onPressed,
     required this.icon,
-    this.backgroundColor = secondaryColor,
+    this.backgroundColor = primaryColor,
+    this.borderColor = secondaryColor,
     this.iconColor = Colors.white,
-    this.radius = 10,
+    this.radius = 12,
     this.iconSize = 30,
+    this.trailingWidget = null,
   }) : super(key: key);
 
   @override
@@ -27,7 +30,6 @@ class MeetingActionButton extends StatelessWidget {
       rippleColor: backgroundColor,
       onTap: onPressed,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
           border: Border.all(color: Colors.white30),

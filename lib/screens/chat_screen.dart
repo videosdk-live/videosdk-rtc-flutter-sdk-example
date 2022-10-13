@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:videosdk_flutter_example/constants/colors.dart';
 import '../widgets/chat/chat_widget.dart';
 
 // ChatScreen
@@ -41,10 +42,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: const Text("Chat"),
+        title: const Center(child: Text("Chat")),
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: secondaryColor,
+        elevation: 0,
         actions: [
           // Close Button
           IconButton(
@@ -77,28 +80,32 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.fromLTRB(16, 4, 4, 4),
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white54),
-                    borderRadius: BorderRadius.circular(15)),
+                    borderRadius: BorderRadius.circular(10), color: black600),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                         controller: msgTextController,
                         onChanged: (value) => setState(() {
                           msgTextController.text;
                         }),
                         decoration: const InputDecoration(
-                          hintText: "Typing ...",
-                          border: InputBorder.none,
-                          // border: OutlineInputBorder(),
-                        ),
+                            hintText: "Write your message",
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              color: black400,
+                            )),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: msgTextController.text.trim().isEmpty
+                    GestureDetector(
+                      onTap: msgTextController.text.trim().isEmpty
                           ? null
                           : () => widget.meeting.pubSub
                               .publish(
@@ -107,6 +114,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                 const PubSubPublishOptions(persist: true),
                               )
                               .then((value) => msgTextController.clear()),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 2, vertical: 8),
+                          width: 50,
+                          margin: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: msgTextController.text.trim().isEmpty
+                                  ? null
+                                  : purple,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: const Icon(Icons.send)),
                     )
                   ],
                 ),

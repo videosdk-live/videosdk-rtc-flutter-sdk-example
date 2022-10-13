@@ -67,10 +67,6 @@ class _JoinScreenState extends State<JoinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Screen Title
-        title: const Text("VideoSDK RTC"),
-      ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: !(cameraController?.value.isInitialized ?? false)

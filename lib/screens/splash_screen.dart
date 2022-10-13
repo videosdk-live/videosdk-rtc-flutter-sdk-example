@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'startup_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(10, 13, 44, 1),
+      backgroundColor: primaryColor,
       body: Stack(
         children: [
           Center(

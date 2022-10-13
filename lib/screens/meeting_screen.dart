@@ -1,9 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:videosdk_flutter_example/constants/colors.dart';
+import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view_one_to_one.dart';
+import 'package:videosdk_flutter_example/widgets/participant/participant_list.dart';
 import '/screens/chat_screen.dart';
 
 import '../../navigator_key.dart';
@@ -38,6 +47,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
   // Meeting
   late Room meeting;
   bool _joined = false;
+  bool _moreThan2Participants = false;
 
   // control states
   bool isRecordingOn = false;
@@ -55,6 +65,12 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Stream? videoStream;
   Stream? audioStream;
   Stream? remoteParticipantShareStream;
+
+  Duration? elapsedTime;
+
+  Timer? sessionTimer;
+
+  bool fullScreen = false;
 
   @override
   void setState(fn) {
@@ -94,260 +110,268 @@ class _MeetingScreenState extends State<MeetingScreen> {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
 
-    log("Meeting Data: ${widget.meetingId} ${widget.token}");
     return WillPopScope(
       onWillPop: _onWillPopScope,
       child: _joined
           ? Scaffold(
-              backgroundColor:
-                  Theme.of(context).backgroundColor.withOpacity(0.8),
-              floatingActionButton: MeetingActionBar(
-                isMicEnabled: audioStream != null,
-                isCamEnabled: videoStream != null,
-                isScreenShareEnabled: shareStream != null,
-                isScreenShareButtonDisabled:
-                    remoteParticipantShareStream != null,
-                // Called when Call End button is pressed
-                onCallEndButtonPressed: () {
-                  meeting.leave();
-                },
-                // Called when mic button is pressed
-                onMicButtonPressed: () {
-                  if (audioStream != null) {
-                    meeting.muteMic();
-                  } else {
-                    meeting.unmuteMic();
-                  }
-                },
-                // Called when camera button is pressed
-                onCameraButtonPressed: () {
-                  if (videoStream != null) {
-                    meeting.disableCam();
-                  } else {
-                    meeting.enableCam();
-                  }
-                },
-                // Called when switch camera button is pressed
-                onSwitchCameraButtonPressed: () {
-                  final selectedCamId = meeting.selectedCamId;
-
-                  MediaDeviceInfo deviceToSwitch = cameras.firstWhere(
-                    (cam) => cam.deviceId != selectedCamId,
-                  );
-
-                  meeting.changeCam(deviceToSwitch.deviceId);
-                },
-
-                // Called when ScreenShare button is pressed
-                onScreenShareButtonPressed: () {
-                  if (shareStream != null) {
-                    meeting.disableScreenShare();
-                  } else {
-                    meeting.enableScreenShare();
-                  }
-                },
-
-                // Called when more options button is pressed
-                onMoreButtonPressed: () {
-                  // Showing more options dialog box
-                  showDialog<void>(
-                    context: navigatorKey.currentContext!,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text("More options"),
-                      content: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ElevatedButton(
-                            child: const Text('CHANGE AUDIO DEVICE'),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text("Select Audio Device"),
-                                  content: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      SingleChildScrollView(
-                                        reverse: true,
-                                        child: Column(
-                                          children: meeting
-                                              .getAudioOutputDevices()
-                                              .map(
-                                                (e) => ElevatedButton(
-                                                  child: Text(e.label),
-                                                  onPressed: () => {
-                                                    meeting
-                                                        .switchAudioDevice(e),
-                                                    Navigator.pop(context)
-                                                  },
-                                                ),
-                                              )
-                                              .toList(),
-                                        ),
-                                      )
-                                    ],
+              backgroundColor: Theme.of(context).primaryColor,
+              body: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  AnimatedCrossFade(
+                    duration: Duration(milliseconds: 500),
+                    crossFadeState: !fullScreen
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    secondChild: SizedBox.shrink(),
+                    firstChild: AppBar(
+                      automaticallyImplyLeading: false,
+                      title: Row(
+                        children: [
+                          if (isRecordingOn)
+                            Lottie.asset('assets/recording_lottie.json',
+                                height: statusbarHeight),
+                          if (isRecordingOn) HorizontalSpacer(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    widget.meetingId,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                  GestureDetector(
+                                    child: const Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                                      child: Icon(
+                                        Icons.copy,
+                                        size: 16,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(ClipboardData(
+                                          text: widget.meetingId));
+                                      showSnackBarMessage(
+                                          message:
+                                              "Meeting ID has been copied.",
+                                          context: context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                elapsedTime == null
+                                    ? "00:00:00"
+                                    : elapsedTime.toString().split(".").first,
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: black400),
+                              )
+                            ],
                           ),
-
-                          // Chat
-                          ElevatedButton(
-                            child: const Text('Chat'),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              showModalBottomSheet(
-                                context: context,
-                                constraints: BoxConstraints(
-                                    maxHeight:
-                                        MediaQuery.of(context).size.height -
-                                            statusbarHeight),
-                                isScrollControlled: true,
-                                builder: (context) =>
-                                    ChatScreen(meeting: meeting),
-                              );
-                            },
-                          ),
-
-                          // Recording button
-                          ElevatedButton(
-                            child: Text(
-                              isRecordingOn
-                                  ? 'Stop Recording'
-                                  : 'Start Recording',
-                            ),
-                            onPressed: () {
-                              if (isRecordingOn) {
-                                meeting.stopRecording();
-                              } else {
-                                meeting.startRecording(recordingWebHookURL);
-                              }
-
-                              Navigator.pop(context);
-                            },
-                          ),
-
-                          // LiveStream button
-                          ElevatedButton(
-                            child: Text(
-                              isLiveStreamOn
-                                  ? 'Stop Livestream'
-                                  : 'Start Livestream',
-                            ),
-                            onPressed: () {
-                              List liveStreamOptions = [];
-
-                              if (isLiveStreamOn) {
-                                meeting.stopLivestream();
-                              } else {
-                                if (liveStreamOptions.isNotEmpty) {
-                                  meeting.startLivestream(liveStreamOptions);
-                                } else {
-                                  toastMsg(
-                                    "Failed to start livestream. Please add live stream options.",
-                                  );
-                                }
-                              }
-
-                              Navigator.pop(context);
-                            },
-                          ),
-
-                          ElevatedButton(
-                            child: const Text('Low Resolution'),
-                            onPressed: () {
-                              meeting.participants.forEach((key, value) {
-                                value.setQuality('low');
-                              });
-
-                              Navigator.pop(context);
-                            },
-                          ),
-
-                          ElevatedButton(
-                            child: const Text('Med Resolution'),
-                            onPressed: () {
-                              meeting.participants.forEach((key, value) {
-                                value.setQuality('med');
-                              });
-
-                              Navigator.pop(context);
-                            },
-                          ),
-
-                          ElevatedButton(
-                            child: const Text('High Resolution'),
-                            onPressed: () {
-                              meeting.participants.forEach((key, value) {
-                                value.setQuality('high');
-                              });
-
-                              Navigator.pop(context);
-                            },
-                          )
                         ],
                       ),
+                      actions: [
+                        // Recording status
+                        IconButton(
+                          icon: SvgPicture.asset("assets/ic_switch_camera.svg"),
+                          onPressed: () {
+                            MediaDeviceInfo newCam = cameras.firstWhere(
+                                (camera) =>
+                                    camera.deviceId != meeting.selectedCamId);
+                            meeting.changeCam(newCam.deviceId);
+                          },
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerFloat,
-              appBar: AppBar(
-                title: Text(widget.meetingId),
-                actions: [
-                  // Recording status
-                  if (isRecordingOn)
-                    SvgPicture.asset("assets/recording_on.svg"),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                        onDoubleTap: () => {
+                              setState(() {
+                                fullScreen = !fullScreen;
+                              })
+                            },
+                        child: ParticipantViewOneToOne(meeting: meeting)),
+                  ),
+                  AnimatedCrossFade(
+                    duration: Duration(milliseconds: 500),
+                    crossFadeState: !fullScreen
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    secondChild: SizedBox.shrink(),
+                    firstChild: MeetingActionBar(
+                      isMicEnabled: audioStream != null,
+                      isCamEnabled: videoStream != null,
+                      isScreenShareEnabled: shareStream != null,
+                      isRecordingOn: isRecordingOn,
+                      // Called when Call End button is pressed
+                      onCallEndButtonPressed: () {
+                        meeting.end();
+                      },
 
-                  // Copy meeting id button
-                  IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.meetingId));
-                      toastMsg("Meeting ID has been copied.");
-                    },
+                      onCallLeaveButtonPressed: () {
+                        meeting.leave();
+                      },
+                      // Called when mic button is pressed
+                      onMicButtonPressed: () {
+                        if (audioStream != null) {
+                          meeting.muteMic();
+                        } else {
+                          meeting.unmuteMic();
+                        }
+                      },
+                      // Called when camera button is pressed
+                      onCameraButtonPressed: () {
+                        if (videoStream != null) {
+                          meeting.disableCam();
+                        } else {
+                          meeting.enableCam();
+                        }
+                      },
+
+                      onSwitchMicButtonPressed: (details) async {
+                        List<MediaDeviceInfo> outptuDevice =
+                            meeting.getAudioOutputDevices();
+                        await showMenu(
+                          context: context,
+                          color: black700,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          position: RelativeRect.fromLTRB(
+                              details.globalPosition.dx,
+                              details.globalPosition.dy - 145,
+                              100,
+                              100),
+                          items: outptuDevice.map((e) {
+                            return PopupMenuItem(
+                                value: e, child: Text(e.label));
+                          }).toList(),
+                          elevation: 8.0,
+                        ).then((value) {
+                          if (value != null) {
+                            meeting.switchAudioDevice(value);
+                          }
+                        });
+                      },
+
+                      onChatButtonPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height -
+                                  statusbarHeight),
+                          isScrollControlled: true,
+                          builder: (context) => ChatScreen(meeting: meeting),
+                        );
+                      },
+
+                      // Called when more options button is pressed
+                      onMoreOptionSelected: (option) {
+                        // Showing more options dialog box
+                        if (option == "screenshare") {
+                          if (remoteParticipantShareStream == null) {
+                            if (shareStream == null) {
+                              meeting.enableScreenShare();
+                            } else {
+                              meeting.disableScreenShare();
+                            }
+                          } else {
+                            showSnackBarMessage(
+                                message: "Someone is already presenting",
+                                context: context);
+                          }
+                        } else if (option == "recording") {
+                          if (isRecordingOn) {
+                            meeting.stopRecording();
+                          } else {
+                            meeting.startRecording("");
+                          }
+                        } else if (option == "participants") {
+                          showModalBottomSheet(
+                            context: context,
+                            // constraints: BoxConstraints(
+                            //     maxHeight: MediaQuery.of(context).size.height -
+                            //         statusbarHeight),
+                            isScrollControlled: false,
+                            builder: (context) =>
+                                ParticipantList(meeting: meeting),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ],
-              ),
-              body: Padding(
-                  padding: const EdgeInsets.only(bottom: 80.0),
-                  child: Column(
-                    children: [
-                      if (remoteParticipantShareStream != null ||
-                          shareStream != null)
-                        AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Container(
-                            color: Colors.black,
-                            child: RTCVideoView(
-                              remoteParticipantShareStream != null
-                                  ? remoteParticipantShareStream!.renderer!
-                                  : shareStream!.renderer!,
-                            ),
-                          ),
+              ))
+          : _moreThan2Participants
+              ? Scaffold(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "OOPS!!",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700),
                         ),
-                      Expanded(
-                        child: ParticipantGridView(meeting: meeting),
-                      ),
-                    ],
-                  )))
-          : Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    CircularProgressIndicator(),
-                    VerticalSpacer(10),
-                    Text("waiting to join meeting"),
-                  ],
+                        const VerticalSpacer(20),
+                        const Text(
+                          "Maximun 2 participants can join this meeting",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        const VerticalSpacer(10),
+                        const Text(
+                          "Please try again later",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        const VerticalSpacer(20),
+                        MaterialButton(
+                          onPressed: () {
+                            meeting.leave();
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          color: purple,
+                          child:
+                              const Text("Ok", style: TextStyle(fontSize: 16)),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              : Scaffold(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Lottie.asset("assets/joining_lottie.json", width: 100),
+                        const VerticalSpacer(20),
+                        const Text("Creating a Room",
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
     );
   }
 
@@ -356,20 +380,30 @@ class _MeetingScreenState extends State<MeetingScreen> {
     _meeting.on(
       Events.roomJoined,
       () {
-        setState(() {
-          meeting = _meeting;
-          _joined = true;
-        });
+        if (_meeting.participants.length > 1) {
+          setState(() {
+            meeting = _meeting;
+            _moreThan2Participants = true;
+          });
+        } else {
+          setState(() {
+            meeting = _meeting;
+            _joined = true;
+          });
 
-        // Holds available cameras info
-        cameras = _meeting.getCameras();
+          subscribeToChatMessages(_meeting);
+          startTimer();
+          // Holds available cameras info
+          cameras = _meeting.getCameras();
+        }
       },
     );
 
     // Called when meeting is ended
     _meeting.on(Events.roomLeft, (String? errorMsg) {
       if (errorMsg != null) {
-        toastMsg("Meeting left due to $errorMsg !!");
+        showSnackBarMessage(
+            message: "Meeting left due to $errorMsg !!", context: context);
       }
       Navigator.pushAndRemoveUntil(
           context,
@@ -379,7 +413,8 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
     // Called when recording is started
     _meeting.on(Events.recordingStarted, () {
-      toastMsg("Meeting recording started.");
+      showSnackBarMessage(
+          message: "Meeting recording started", context: context);
 
       setState(() {
         isRecordingOn = true;
@@ -388,101 +423,12 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
     // Called when recording is stopped
     _meeting.on(Events.recordingStopped, () {
-      toastMsg("Meeting recording stopped.");
+      showSnackBarMessage(
+          message: "Meeting recording stopped", context: context);
 
       setState(() {
         isRecordingOn = false;
       });
-    });
-
-    // Called when LiveStreaming is started
-    _meeting.on(Events.liveStreamStarted, () {
-      toastMsg("Meeting live streaming started.");
-
-      setState(() {
-        isLiveStreamOn = true;
-      });
-    });
-
-    // Called when LiveStreaming is stopped
-    _meeting.on(Events.liveStreamStopped, () {
-      toastMsg("Meeting live streaming stopped.");
-
-      setState(() {
-        isLiveStreamOn = false;
-      });
-    });
-
-    // Called when mic is requested
-    _meeting.on(Events.micRequested, (_data) {
-      log("_data => $_data");
-      dynamic accept = _data['accept'];
-      dynamic reject = _data['reject'];
-
-      log("accept => $accept reject => $reject");
-
-      // Mic Request Dialog
-      showDialog(
-        context: navigatorKey.currentContext!,
-        builder: (context) => AlertDialog(
-          title: const Text("Mic requested?"),
-          content: const Text("Do you want to turn on your mic? "),
-          actions: [
-            TextButton(
-              onPressed: () {
-                reject();
-
-                Navigator.of(context).pop();
-              },
-              child: const Text("Reject"),
-            ),
-            TextButton(
-              onPressed: () {
-                accept();
-
-                Navigator.of(context).pop();
-              },
-              child: const Text("Accept"),
-            ),
-          ],
-        ),
-      );
-    });
-
-    // Called when camera is requested
-    _meeting.on(Events.cameraRequested, (_data) {
-      log("_data => $_data");
-      dynamic accept = _data['accept'];
-      dynamic reject = _data['reject'];
-
-      log("accept => $accept reject => $reject");
-
-      // camera Request Dialog
-      showDialog(
-        context: navigatorKey.currentContext!,
-        builder: (context) => AlertDialog(
-          title: const Text("Camera requested?"),
-          content: const Text("Do you want to turn on your Camera? "),
-          actions: [
-            TextButton(
-              onPressed: () {
-                reject();
-
-                Navigator.of(context).pop();
-              },
-              child: const Text("Reject"),
-            ),
-            TextButton(
-              onPressed: () {
-                accept();
-
-                Navigator.of(context).pop();
-              },
-              child: const Text("Accept"),
-            ),
-          ],
-        ),
-      );
     });
 
     // Called when stream is enabled
@@ -531,54 +477,68 @@ class _MeetingScreenState extends State<MeetingScreen> {
       setState(() => remoteParticipantShareStream = _stream);
     });
 
-    //Entry Event
-    _meeting.on(Events.entryRequested, (data) {
-      // var participantId = data['participantId'];
-      var name = data["name"];
-      var allow = data["allow"];
-      var deny = data["deny"];
+    _meeting.on(
+        Events.participantLeft,
+        (participant) => {
+              if (_moreThan2Participants)
+                {
+                  if (_meeting.participants.length < 2)
+                    {
+                      setState(() {
+                        _joined = true;
+                        _moreThan2Participants = false;
+                      }),
+                      subscribeToChatMessages(_meeting),
+                      startTimer()
+                    }
+                }
+            });
+  }
 
-      showDialog(
-        context: navigatorKey.currentContext!,
-        builder: (context) => AlertDialog(
-          title: const Text("Join Request"),
-          content: Text("Do you want to allow $name to join meeting?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                deny();
-                Navigator.of(context).pop();
-              },
-              child: const Text("Deny"),
-            ),
-            TextButton(
-              onPressed: () {
-                allow();
-
-                Navigator.of(context).pop();
-              },
-              child: const Text("Allow"),
-            ),
-          ],
-        ),
-      );
-    });
-
-    _meeting.on(Events.entryResponded, (data) {
-      var id = data['id'];
-      var decision = data['decision'];
-      if (id == _meeting.localParticipant.id) {
-        if (decision == 'allowed') {
-          toastMsg("Allowed to join the meeting.");
-        } else {
-          toastMsg("Denied to join the meeting.");
-          Navigator.of(context).pop();
+  void subscribeToChatMessages(Room meeting) {
+    meeting.pubSub.subscribe("CHAT", (message) {
+      if (message.senderId != meeting.localParticipant.id) {
+        if (mounted) {
+          showSnackBarMessage(
+              message: message.senderName + ": " + message.message,
+              context: context);
         }
       }
     });
   }
 
+  Future<void> startTimer() async {
+    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
+
+    final Uri getMeetingIdUrl = Uri.parse(
+        '$_VIDEOSDK_API_ENDPOINT/sessions?roomId=${widget.meetingId}');
+    final http.Response meetingIdResponse =
+        await http.get(getMeetingIdUrl, headers: {
+      "Authorization": widget.token,
+    });
+    List<dynamic> sessions = jsonDecode(meetingIdResponse.body)['data'];
+    DateTime sessionStartTime = DateTime.parse((sessions.first)['start']);
+    final difference = DateTime.now().difference(sessionStartTime);
+
+    setState(() {
+      elapsedTime = difference;
+      sessionTimer = Timer.periodic(
+        const Duration(seconds: 1),
+        (timer) {
+          setState(() {
+            elapsedTime = Duration(
+                seconds: elapsedTime != null ? elapsedTime!.inSeconds + 1 : 0);
+          });
+        },
+      );
+    });
+    // log("session start time" + session.data[0].start.toString());
+  }
+
   Future<bool> _onWillPopScope() async {
+    if (sessionTimer != null) {
+      sessionTimer!.cancel();
+    }
     meeting.leave();
     return true;
   }
