@@ -316,8 +316,6 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
       if (remoteShareStream != null || localShareStream != null) {
         if (remoteVideoStream != null) {
           _smallViewStream = remoteVideoStream;
-        } else if (localVideoStream != null) {
-          _smallViewStream = localVideoStream;
         }
       } else {
         _smallViewStream = localVideoStream;

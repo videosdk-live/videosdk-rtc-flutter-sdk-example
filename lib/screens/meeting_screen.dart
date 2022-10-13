@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,6 +9,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
+import 'package:videosdk_flutter_example/widgets/joining/participnat_limit_reached.dart';
+import 'package:videosdk_flutter_example/widgets/joining/waiting_to_join.dart';
+import 'package:videosdk_flutter_example/widgets/meeting_appbar.dart';
 import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view_one_to_one.dart';
 import 'package:videosdk_flutter_example/widgets/participant/participant_list.dart';
 import '/screens/chat_screen.dart';
@@ -44,31 +45,18 @@ class _MeetingScreenState extends State<MeetingScreen> {
   // Recording Webhook
   final String recordingWebHookURL = "";
 
+  bool isRecordingOn = false;
+
   // Meeting
   late Room meeting;
   bool _joined = false;
   bool _moreThan2Participants = false;
-
-  // control states
-  bool isRecordingOn = false;
-  bool isLiveStreamOn = false;
-
-  // List of controls
-  List<MediaDeviceInfo> cameras = [];
-  List<MediaDeviceInfo> mics = [];
-  String? selectedMicId;
-
-  String? activePresenterId;
 
   // Streams
   Stream? shareStream;
   Stream? videoStream;
   Stream? audioStream;
   Stream? remoteParticipantShareStream;
-
-  Duration? elapsedTime;
-
-  Timer? sessionTimer;
 
   bool fullScreen = false;
 
@@ -109,6 +97,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Widget build(BuildContext context) {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
+    final screenSize = MediaQuery.of(context).size;
 
     return WillPopScope(
       onWillPop: _onWillPopScope,
@@ -118,78 +107,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
               body: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  AnimatedCrossFade(
-                    duration: Duration(milliseconds: 500),
-                    crossFadeState: !fullScreen
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    secondChild: SizedBox.shrink(),
-                    firstChild: AppBar(
-                      automaticallyImplyLeading: false,
-                      title: Row(
-                        children: [
-                          if (isRecordingOn)
-                            Lottie.asset('assets/recording_lottie.json',
-                                height: statusbarHeight),
-                          if (isRecordingOn) HorizontalSpacer(),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    widget.meetingId,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    child: const Padding(
-                                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                      child: Icon(
-                                        Icons.copy,
-                                        size: 16,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      Clipboard.setData(ClipboardData(
-                                          text: widget.meetingId));
-                                      showSnackBarMessage(
-                                          message:
-                                              "Meeting ID has been copied.",
-                                          context: context);
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                elapsedTime == null
-                                    ? "00:00:00"
-                                    : elapsedTime.toString().split(".").first,
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: black400),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        // Recording status
-                        IconButton(
-                          icon: SvgPicture.asset("assets/ic_switch_camera.svg"),
-                          onPressed: () {
-                            MediaDeviceInfo newCam = cameras.firstWhere(
-                                (camera) =>
-                                    camera.deviceId != meeting.selectedCamId);
-                            meeting.changeCam(newCam.deviceId);
-                          },
-                        ),
-                      ],
-                    ),
+                  MeetingAppBar(
+                    meeting: meeting,
+                    token: widget.token,
+                    isRecordingOn: isRecordingOn,
                   ),
                   Expanded(
                     child: GestureDetector(
@@ -201,7 +122,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         child: ParticipantViewOneToOne(meeting: meeting)),
                   ),
                   AnimatedCrossFade(
-                    duration: Duration(milliseconds: 500),
+                    duration: Duration(milliseconds: 300),
                     crossFadeState: !fullScreen
                         ? CrossFadeState.showFirst
                         : CrossFadeState.showSecond,
@@ -239,16 +160,18 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       onSwitchMicButtonPressed: (details) async {
                         List<MediaDeviceInfo> outptuDevice =
                             meeting.getAudioOutputDevices();
+
                         await showMenu(
                           context: context,
                           color: black700,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           position: RelativeRect.fromLTRB(
-                              details.globalPosition.dx,
-                              details.globalPosition.dy - 145,
-                              100,
-                              100),
+                            20,
+                            details.globalPosition.dy - 140,
+                            details.globalPosition.dx - 20,
+                            140,
+                          ),
                           items: outptuDevice.map((e) {
                             return PopupMenuItem(
                                 value: e, child: Text(e.label));
@@ -310,68 +233,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
                 ],
               ))
           : _moreThan2Participants
-              ? Scaffold(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  body: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          "OOPS!!",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        const VerticalSpacer(20),
-                        const Text(
-                          "Maximun 2 participants can join this meeting",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        const VerticalSpacer(10),
-                        const Text(
-                          "Please try again later",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        const VerticalSpacer(20),
-                        MaterialButton(
-                          onPressed: () {
-                            meeting.leave();
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          color: purple,
-                          child:
-                              const Text("Ok", style: TextStyle(fontSize: 16)),
-                        )
-                      ],
-                    ),
-                  ),
+              ? ParticipantLimitReached(
+                  meeting: meeting,
                 )
-              : Scaffold(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  body: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Lottie.asset("assets/joining_lottie.json", width: 100),
-                        const VerticalSpacer(20),
-                        const Text("Creating a Room",
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  ),
-                ),
+              : const WaitingToJoin(),
     );
   }
 
@@ -392,9 +257,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
           });
 
           subscribeToChatMessages(_meeting);
-          startTimer();
-          // Holds available cameras info
-          cameras = _meeting.getCameras();
         }
       },
     );
@@ -489,7 +351,6 @@ class _MeetingScreenState extends State<MeetingScreen> {
                         _moreThan2Participants = false;
                       }),
                       subscribeToChatMessages(_meeting),
-                      startTimer()
                     }
                 }
             });
@@ -507,38 +368,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
     });
   }
 
-  Future<void> startTimer() async {
-    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
-
-    final Uri getMeetingIdUrl = Uri.parse(
-        '$_VIDEOSDK_API_ENDPOINT/sessions?roomId=${widget.meetingId}');
-    final http.Response meetingIdResponse =
-        await http.get(getMeetingIdUrl, headers: {
-      "Authorization": widget.token,
-    });
-    List<dynamic> sessions = jsonDecode(meetingIdResponse.body)['data'];
-    DateTime sessionStartTime = DateTime.parse((sessions.first)['start']);
-    final difference = DateTime.now().difference(sessionStartTime);
-
-    setState(() {
-      elapsedTime = difference;
-      sessionTimer = Timer.periodic(
-        const Duration(seconds: 1),
-        (timer) {
-          setState(() {
-            elapsedTime = Duration(
-                seconds: elapsedTime != null ? elapsedTime!.inSeconds + 1 : 0);
-          });
-        },
-      );
-    });
-    // log("session start time" + session.data[0].start.toString());
-  }
-
   Future<bool> _onWillPopScope() async {
-    if (sessionTimer != null) {
-      sessionTimer!.cancel();
-    }
     meeting.leave();
     return true;
   }
