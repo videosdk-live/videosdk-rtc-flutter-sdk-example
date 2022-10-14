@@ -129,6 +129,8 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
           remoteParticipant = widget.meeting.participants.isNotEmpty
               ? widget.meeting.participants.entries.first.value
               : null;
+          updateView();
+
           if (remoteParticipant != null) {
             addParticipantListener(remoteParticipant!, true);
           }
@@ -181,7 +183,7 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
         _largeViewStream = remoteShareStream;
       } else if (localShareStream != null) {
         _largeViewStream = null;
-      } else if (remoteVideoStream != null) {
+      } else {
         _largeViewStream = remoteVideoStream;
       }
       if (remoteShareStream != null || localShareStream != null) {

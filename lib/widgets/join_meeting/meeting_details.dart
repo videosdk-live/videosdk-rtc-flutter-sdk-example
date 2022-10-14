@@ -71,17 +71,18 @@ class _MeetingDetailsState extends State<MeetingDetails> {
             color: purple,
             child: const Text("Join Meeting", style: TextStyle(fontSize: 16)),
             onPressed: () {
-              if (_displayName.isEmpty) {
+              if (_displayName.trim().isEmpty) {
                 showSnackBarMessage(
                     message: "Please enter name", context: context);
                 return;
               }
-              if (!widget.isCreateMeeting && _meetingId.isEmpty) {
+              if (!widget.isCreateMeeting && _meetingId.trim().isEmpty) {
                 showSnackBarMessage(
-                    message: "Please meeting id", context: context);
+                    message: "Please enter meeting id", context: context);
                 return;
               }
-              widget.onClickMeetingJoin(_meetingId, _callType, _displayName);
+              widget.onClickMeetingJoin(
+                  _meetingId.trim(), _callType, _displayName.trim());
             }),
       ],
     );

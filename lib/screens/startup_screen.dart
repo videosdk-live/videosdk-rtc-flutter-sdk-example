@@ -5,6 +5,7 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:videosdk_flutter_example/widgets/join_meeting/meeting_details.dart';
@@ -38,23 +39,18 @@ class _StartupScreenState extends State<StartupScreen> {
   // Camera Controller
   CameraController? cameraController;
 
-  final ButtonStyle _buttonStyle = TextButton.styleFrom(
-    primary: Colors.white,
-    backgroundColor: primaryColor,
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.bold,
-    ),
-  );
-
   @override
   void initState() {
+    initCameraPreview();
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final token = await fetchToken();
       setState(() => _token = token);
     });
-
-    initCameraPreview();
   }
 
   @override
@@ -71,229 +67,206 @@ class _StartupScreenState extends State<StartupScreen> {
         child: Scaffold(
           backgroundColor: primaryColor,
           body: SafeArea(
-            child: _token.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        CircularProgressIndicator(),
-                        HorizontalSpacer(12),
-                        Text("Initialization"),
-                      ],
-                    ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(36.0),
-                    child: LayoutBuilder(
-                      builder: (BuildContext context,
-                          BoxConstraints viewportConstraints) {
-                        return SingleChildScrollView(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                                minHeight: viewportConstraints.maxHeight),
-                            child: IntrinsicHeight(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // Camera Preview
-                                  Container(
-                                    constraints: BoxConstraints(
-                                      maxHeight:
-                                          (MediaQuery.of(context).size.height *
-                                              .4),
-                                      // maxWidth: (MediaQuery.of(context).size.width * .40),
-                                    ),
-                                    child: Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        (cameraController == null) && isCameraOn
-                                            ? !(cameraController
-                                                        ?.value.isInitialized ??
-                                                    false)
-                                                ? Container(
-                                                    child: const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                        // color: black800,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
-                                                  )
+            child: LayoutBuilder(
+              builder:
+                  (BuildContext context, BoxConstraints viewportConstraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minHeight: viewportConstraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Camera Preview
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 40, horizontal: 36),
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxHeight:
+                                      (MediaQuery.of(context).size.height *
+                                          0.6 *
+                                          9 /
+                                          16),
+                                  // maxWidth: (MediaQuery.of(context).size.width * .40),
+                                ),
+                                child: Stack(
+                                  alignment: Alignment.topCenter,
+                                  children: [
+                                    (cameraController == null) && isCameraOn
+                                        ? !(cameraController
+                                                    ?.value.isInitialized ??
+                                                false)
+                                            ? Container(
+                                                child: const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                              )
+                                            : Container(
+                                                child: const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12)),
+                                              )
+                                        : AspectRatio(
+                                            aspectRatio: 1 / 1.55,
+                                            child: isCameraOn
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    child: CameraPreview(
+                                                        cameraController!))
                                                 : Container(
                                                     child: const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
+                                                      child: Text(
+                                                        "Camera is turned off",
+                                                      ),
                                                     ),
                                                     decoration: BoxDecoration(
-                                                        // color: black800,
+                                                        color: black800,
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(12)),
-                                                  )
-                                            : AspectRatio(
-                                                aspectRatio: 1 / 1.55,
-                                                // (cameraController == null
-                                                //     ? 1.55
-                                                //     : cameraController!
-                                                //         .value.aspectRatio),
-                                                child: isCameraOn
-                                                    ? ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                        child: CameraPreview(
-                                                            cameraController!))
-                                                    : Container(
-                                                        child: const Center(
-                                                          child: Text(
-                                                            "Camera is turned off",
-                                                          ),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                            color: black800,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12)),
-                                                      ),
-                                              ),
-                                        Positioned(
-                                          bottom: 16,
-                                          left: 60,
-                                          right: 60,
+                                                  ),
+                                          ),
+                                    Positioned(
+                                      bottom: 16,
 
-                                          // Meeting ActionBar
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              // Mic Action Button
-                                              ElevatedButton(
-                                                onPressed: () => setState(
-                                                  () => isMicOn = !isMicOn,
-                                                ),
-                                                child: Icon(
-                                                    isMicOn
-                                                        ? Icons.mic
-                                                        : Icons.mic_off,
-                                                    color: isMicOn
-                                                        ? grey
-                                                        : Colors.white),
-                                                style: ElevatedButton.styleFrom(
-                                                  shape: CircleBorder(),
-                                                  padding: EdgeInsets.all(12),
-                                                  primary: isMicOn
-                                                      ? Colors.white
-                                                      : red,
-                                                  onPrimary: Colors.black,
-                                                ),
+                                      // Meeting ActionBar
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            // Mic Action Button
+                                            ElevatedButton(
+                                              onPressed: () => setState(
+                                                () => isMicOn = !isMicOn,
                                               ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  if (isCameraOn) {
-                                                    cameraController?.dispose();
-                                                    cameraController = null;
-                                                  } else {
-                                                    initCameraPreview();
-                                                    // cameraController?.resumePreview();
-                                                  }
-                                                  setState(() =>
-                                                      isCameraOn = !isCameraOn);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  shape: CircleBorder(),
-                                                  padding: EdgeInsets.all(12),
-                                                  primary: isCameraOn
-                                                      ? Colors.white
-                                                      : red,
-                                                ),
-                                                child: Icon(
-                                                  isCameraOn
-                                                      ? Icons.videocam
-                                                      : Icons.videocam_off,
-                                                  color: isCameraOn
+                                              child: Icon(
+                                                  isMicOn
+                                                      ? Icons.mic
+                                                      : Icons.mic_off,
+                                                  color: isMicOn
                                                       ? grey
-                                                      : Colors.white,
-                                                ),
+                                                      : Colors.white),
+                                              style: ElevatedButton.styleFrom(
+                                                shape: CircleBorder(),
+                                                padding: EdgeInsets.all(12),
+                                                primary: isMicOn
+                                                    ? Colors.white
+                                                    : red,
+                                                onPrimary: Colors.black,
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (isCameraOn) {
+                                                  cameraController?.dispose();
+                                                  cameraController = null;
+                                                } else {
+                                                  initCameraPreview();
+                                                  // cameraController?.resumePreview();
+                                                }
+                                                setState(() =>
+                                                    isCameraOn = !isCameraOn);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                shape: CircleBorder(),
+                                                padding: EdgeInsets.all(12),
+                                                primary: isCameraOn
+                                                    ? Colors.white
+                                                    : red,
+                                              ),
+                                              child: Icon(
+                                                isCameraOn
+                                                    ? Icons.videocam
+                                                    : Icons.videocam_off,
+                                                color: isCameraOn
+                                                    ? grey
+                                                    : Colors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        if (!isJoinMethodSelected)
-                                          MaterialButton(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12)),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16),
-                                              color: purple,
-                                              child: const Text(
-                                                  "Create Meeting",
-                                                  style:
-                                                      TextStyle(fontSize: 16)),
-                                              onPressed: () => {
-                                                    setState(() => {
-                                                          isCreateMeeting =
-                                                              true,
-                                                          isJoinMethodSelected =
-                                                              true
-                                                        })
-                                                  }),
-                                        const VerticalSpacer(16),
-                                        if (!isJoinMethodSelected)
-                                          MaterialButton(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12)),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16),
-                                              color: black750,
-                                              child: const Text("Join Meeting",
-                                                  style:
-                                                      TextStyle(fontSize: 16)),
-                                              onPressed: () => {
-                                                    setState(() => {
-                                                          isCreateMeeting =
-                                                              false,
-                                                          isJoinMethodSelected =
-                                                              true
-                                                        })
-                                                  }),
-                                        if (isJoinMethodSelected)
-                                          MeetingDetails(
-                                            isCreateMeeting: isCreateMeeting,
-                                            onClickMeetingJoin: (meetingId,
-                                                    callType, displayName) =>
-                                                _onClickMeetingJoin(meetingId,
-                                                    callType, displayName),
-                                          ),
-                                      ],
-                                    ),
-                                  )
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    )),
+                          Padding(
+                            padding: const EdgeInsets.all(36.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (!isJoinMethodSelected)
+                                  MaterialButton(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      color: purple,
+                                      child: const Text("Create Meeting",
+                                          style: TextStyle(fontSize: 16)),
+                                      onPressed: () => {
+                                            setState(() => {
+                                                  isCreateMeeting = true,
+                                                  isJoinMethodSelected = true
+                                                })
+                                          }),
+                                const VerticalSpacer(16),
+                                if (!isJoinMethodSelected)
+                                  MaterialButton(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      color: black750,
+                                      child: const Text("Join Meeting",
+                                          style: TextStyle(fontSize: 16)),
+                                      onPressed: () => {
+                                            setState(() => {
+                                                  isCreateMeeting = false,
+                                                  isJoinMethodSelected = true
+                                                })
+                                          }),
+                                if (isJoinMethodSelected)
+                                  MeetingDetails(
+                                    isCreateMeeting: isCreateMeeting,
+                                    onClickMeetingJoin: (meetingId, callType,
+                                            displayName) =>
+                                        _onClickMeetingJoin(
+                                            meetingId, callType, displayName),
+                                  ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ));
   }
@@ -377,17 +350,17 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<void> createAndJoinMeeting(callType, displayName) async {
-    // final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
+    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
-    // final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/rooms');
-    // final http.Response meetingIdResponse =
-    //     await http.post(getMeetingIdUrl, headers: {
-    //   "Authorization": _token,
-    // });
+    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/rooms');
+    final http.Response meetingIdResponse =
+        await http.post(getMeetingIdUrl, headers: {
+      "Authorization": _token,
+    });
 
-    // _meetingID = json.decode(meetingIdResponse.body)['roomId'];
+    _meetingID = json.decode(meetingIdResponse.body)['roomId'];
 
-    // log("Meeting ID: $_meetingID");
+    log("Meeting ID: $_meetingID");
 
     Navigator.push(
       context,
@@ -415,7 +388,7 @@ class _StartupScreenState extends State<StartupScreen> {
     final Uri validateMeetingUrl =
         Uri.parse('$_VIDEOSDK_API_ENDPOINT/rooms/validate/$meetingId');
     final http.Response validateMeetingResponse =
-        await http.post(validateMeetingUrl, headers: {
+        await http.get(validateMeetingUrl, headers: {
       "Authorization": _token,
     });
 
@@ -435,5 +408,16 @@ class _StartupScreenState extends State<StartupScreen> {
     } else {
       showSnackBarMessage(message: "Invalid Meeting ID", context: context);
     }
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 }

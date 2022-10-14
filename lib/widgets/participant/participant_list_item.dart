@@ -56,7 +56,7 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
           Expanded(
               child: Text(
             widget.participant.isLocal ? "You" : widget.participant.displayName,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -74,7 +74,7 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
           ),
           Container(
             // margin: EdgeInsets.only(right: 10),
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: videoStream != null ? black600 : red,
               border: Border.all(color: videoStream != null ? black500 : red),

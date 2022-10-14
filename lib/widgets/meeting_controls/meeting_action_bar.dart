@@ -11,7 +11,8 @@ import 'meeting_action_button.dart';
 // Meeting ActionBar
 class MeetingActionBar extends StatelessWidget {
   // control states
-  final bool isMicEnabled, isCamEnabled, isScreenShareEnabled, isRecordingOn;
+  final bool isMicEnabled, isCamEnabled, isScreenShareEnabled;
+  final String recordingState;
 
   // callback functions
   final void Function() onCallEndButtonPressed,
@@ -28,7 +29,7 @@ class MeetingActionBar extends StatelessWidget {
     required this.isMicEnabled,
     required this.isCamEnabled,
     required this.isScreenShareEnabled,
-    required this.isRecordingOn,
+    required this.recordingState,
     required this.onCallEndButtonPressed,
     required this.onCallLeaveButtonPressed,
     required this.onMicButtonPressed,
@@ -188,7 +189,11 @@ class MeetingActionBar extends StatelessWidget {
               itemBuilder: (context) => <PopupMenuEntry>[
                     _buildMeetingPoupItem(
                       "recording",
-                      isRecordingOn ? "Stop Recording" : "Start Recording",
+                      recordingState == "STARTED"
+                          ? "Stop Recording"
+                          : recordingState == "STARTING"
+                              ? "Recording is starting"
+                              : "Start Recording",
                       null,
                       SvgPicture.asset("assets/ic_recording.svg"),
                     ),

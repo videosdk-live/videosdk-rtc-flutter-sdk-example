@@ -11,18 +11,19 @@ import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
+import 'package:videosdk_flutter_example/widgets/app_bar/recording_indicator.dart';
 
 class MeetingAppBar extends StatefulWidget {
   String token;
   Room meeting;
-  bool isRecordingOn;
+  String recordingState;
   bool isFullScreen;
   MeetingAppBar(
       {Key? key,
       required this.meeting,
       required this.token,
       required this.isFullScreen,
-      required this.isRecordingOn})
+      required this.recordingState})
       : super(key: key);
 
   @override
@@ -40,7 +41,6 @@ class MeetingAppBarState extends State<MeetingAppBar> {
     startTimer();
     // Holds available cameras info
     cameras = widget.meeting.getCameras();
-
     super.initState();
   }
 
@@ -56,9 +56,12 @@ class MeetingAppBarState extends State<MeetingAppBar> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            if (widget.isRecordingOn)
-              Lottie.asset('assets/recording_lottie.json', height: 35),
-            if (widget.isRecordingOn) const HorizontalSpacer(),
+            if (widget.recordingState == "STARTING" ||
+                widget.recordingState == "STARTED")
+              RecordingIndicator(recordingState: widget.recordingState),
+            if (widget.recordingState == "STARTING" ||
+                widget.recordingState == "STARTED")
+              const HorizontalSpacer(),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -11,7 +11,7 @@ import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/joining/participnat_limit_reached.dart';
 import 'package:videosdk_flutter_example/widgets/joining/waiting_to_join.dart';
-import 'package:videosdk_flutter_example/widgets/meeting_appbar.dart';
+import 'package:videosdk_flutter_example/widgets/app_bar/meeting_appbar.dart';
 import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view_one_to_one.dart';
 import 'package:videosdk_flutter_example/widgets/participant/participant_list.dart';
 import '/screens/chat_screen.dart';
@@ -43,7 +43,8 @@ class MeetingScreen extends StatefulWidget {
 
 class _MeetingScreenState extends State<MeetingScreen> {
   bool isRecordingOn = false;
-
+  bool showChatSnackbar = true;
+  String recordingState = "STOPPED";
   // Meeting
   late Room meeting;
   bool _joined = false;
@@ -67,6 +68,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
@@ -107,7 +112,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                       MeetingAppBar(
                         meeting: meeting,
                         token: widget.token,
-                        isRecordingOn: isRecordingOn,
+                        recordingState: recordingState,
                         isFullScreen: fullScreen,
                       ),
                       Expanded(
@@ -129,7 +134,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
                           isMicEnabled: audioStream != null,
                           isCamEnabled: videoStream != null,
                           isScreenShareEnabled: shareStream != null,
-                          isRecordingOn: isRecordingOn,
+                          recordingState: recordingState,
                           // Called when Call End button is pressed
                           onCallEndButtonPressed: () {
                             meeting.end();
@@ -184,6 +189,9 @@ class _MeetingScreenState extends State<MeetingScreen> {
                           },
 
                           onChatButtonPressed: () {
+                            setState(() {
+                              showChatSnackbar = false;
+                            });
                             showModalBottomSheet(
                               context: context,
                               constraints: BoxConstraints(
@@ -191,9 +199,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
                                       MediaQuery.of(context).size.height -
                                           statusbarHeight),
                               isScrollControlled: true,
-                              builder: (context) =>
-                                  ChatScreen(meeting: meeting),
-                            );
+                              builder: (context) => ChatScreen(
+                                  key: const Key("ChatScreen"),
+                                  meeting: meeting),
+                            ).whenComplete(() => {
+                                  setState(() {
+                                    showChatSnackbar = true;
+                                  })
+                                });
                           },
 
                           // Called when more options button is pressed
@@ -212,9 +225,16 @@ class _MeetingScreenState extends State<MeetingScreen> {
                                     context: context);
                               }
                             } else if (option == "recording") {
-                              if (isRecordingOn) {
+                              if (recordingState == "STARTED") {
                                 meeting.stopRecording();
+                              } else if (recordingState == "STARTING") {
+                                showSnackBarMessage(
+                                    message: "Recording is in starting state",
+                                    context: context);
                               } else {
+                                setState(() {
+                                  recordingState = "STARTING";
+                                });
                                 meeting.startRecording("");
                               }
                             } else if (option == "participants") {
@@ -281,17 +301,16 @@ class _MeetingScreenState extends State<MeetingScreen> {
           message: "Meeting recording started", context: context);
 
       setState(() {
-        isRecordingOn = true;
+        recordingState = "STARTED";
       });
     });
-
     // Called when recording is stopped
     _meeting.on(Events.recordingStopped, () {
       showSnackBarMessage(
           message: "Meeting recording stopped", context: context);
 
       setState(() {
-        isRecordingOn = false;
+        recordingState = "STOPPED";
       });
     });
 
@@ -362,9 +381,13 @@ class _MeetingScreenState extends State<MeetingScreen> {
     meeting.pubSub.subscribe("CHAT", (message) {
       if (message.senderId != meeting.localParticipant.id) {
         if (mounted) {
-          showSnackBarMessage(
-              message: message.senderName + ": " + message.message,
-              context: context);
+          // print("navigator key");
+          // print(navigatorKey.currentWidget?.key.toString());
+          if (showChatSnackbar) {
+            showSnackBarMessage(
+                message: message.senderName + ": " + message.message,
+                context: context);
+          }
         }
       }
     });
@@ -373,5 +396,16 @@ class _MeetingScreenState extends State<MeetingScreen> {
   Future<bool> _onWillPopScope() async {
     meeting.leave();
     return true;
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 }

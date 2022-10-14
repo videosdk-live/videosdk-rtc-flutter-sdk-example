@@ -23,7 +23,7 @@ void showSnackBarMessage(
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       content: Row(
         children: [
           if (icon != null) icon,
