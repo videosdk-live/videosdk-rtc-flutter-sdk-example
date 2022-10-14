@@ -36,6 +36,8 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
   Participant? localParticipant, remoteParticipant;
   String? activeSpeakerId, presenterId;
 
+  bool isSmallViewLeftAligned = false;
+
   @override
   void initState() {
     localParticipant = widget.meeting.localParticipant;
@@ -91,31 +93,49 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
               )),
           if (remoteParticipant != null || localShareStream != null)
             Positioned(
-                right: 8,
+                right: isSmallViewLeftAligned ? null : 8,
+                left: isSmallViewLeftAligned ? 8 : null,
                 bottom: 8,
-                child: Container(
-                    height: 160,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: black600,
-                    ),
-                    child: ParticipantView(
-                      avatarTextSize: 30,
-                      avatarBackground: black500,
-                      stream: smallViewStream,
-                      isMicOn: (localAudioStream != null &&
-                              remoteShareStream == null) ||
-                          (remoteAudioStream != null &&
-                              remoteShareStream != null),
-                      onStopScreeenSharePressed: () =>
-                          widget.meeting.disableScreenShare(),
-                      participantName: remoteShareStream != null
-                          ? remoteParticipant!.displayName
-                          : localParticipant!.displayName,
-                      isLocalScreenShare: false,
-                      isScreenShare: false,
-                    ))),
+                child: GestureDetector(
+                  onHorizontalDragUpdate: (details) {
+                    // Note: Sensitivity is integer used when you don't want to mess up vertical drag
+                    int sensitivity = 8;
+                    if (details.delta.dx > sensitivity) {
+                      // Right Swipe
+                      setState(() {
+                        isSmallViewLeftAligned = false;
+                      });
+                    } else if (details.delta.dx < -sensitivity) {
+                      //Left Swipe
+                      setState(() {
+                        isSmallViewLeftAligned = true;
+                      });
+                    }
+                  },
+                  child: Container(
+                      height: 160,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: black600,
+                      ),
+                      child: ParticipantView(
+                        avatarTextSize: 30,
+                        avatarBackground: black500,
+                        stream: smallViewStream,
+                        isMicOn: (localAudioStream != null &&
+                                remoteShareStream == null) ||
+                            (remoteAudioStream != null &&
+                                remoteShareStream != null),
+                        onStopScreeenSharePressed: () =>
+                            widget.meeting.disableScreenShare(),
+                        participantName: remoteShareStream != null
+                            ? remoteParticipant!.displayName
+                            : localParticipant!.displayName,
+                        isLocalScreenShare: false,
+                        isScreenShare: false,
+                      )),
+                )),
         ]),
       ),
     );
