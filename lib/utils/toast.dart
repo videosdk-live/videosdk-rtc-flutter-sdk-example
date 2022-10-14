@@ -1,17 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-
-// Toast
-// void toastMsg(String msg) {
-//   Fluttertoast.showToast(
-//     msg: msg,
-//     toastLength: Toast.LENGTH_LONG,
-//     timeInSecForIosWeb: 1,
-//     textColor: Colors.white,
-//     fontSize: 16.0,
-//   );
-// }
 
 void showSnackBarMessage(
     {required String message,
@@ -21,7 +9,7 @@ void showSnackBarMessage(
   ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       content: Row(

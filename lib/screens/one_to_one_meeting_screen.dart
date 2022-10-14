@@ -1,12 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lottie/lottie.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/joining/participnat_limit_reached.dart';
@@ -16,18 +11,15 @@ import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/par
 import 'package:videosdk_flutter_example/widgets/participant/participant_list.dart';
 import '/screens/chat_screen.dart';
 
-import '../../navigator_key.dart';
-import '../utils/spacer.dart';
 import '../utils/toast.dart';
 import '../widgets/meeting_controls/meeting_action_bar.dart';
-import '../widgets/participant_grid_view/participant_grid_view.dart';
-import 'startup_screen.dart';
+import 'join_screen.dart';
 
 // Meeting Screen
-class MeetingScreen extends StatefulWidget {
+class OneToOneMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const MeetingScreen({
+  const OneToOneMeetingScreen({
     Key? key,
     required this.meetingId,
     required this.token,
@@ -38,10 +30,10 @@ class MeetingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MeetingScreenState createState() => _MeetingScreenState();
+  _OneToOneMeetingScreenState createState() => _OneToOneMeetingScreenState();
 }
 
-class _MeetingScreenState extends State<MeetingScreen> {
+class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "STOPPED";
@@ -291,7 +283,7 @@ class _MeetingScreenState extends State<MeetingScreen> {
       }
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const StartupScreen()),
+          MaterialPageRoute(builder: (context) => const JoinScreen()),
           (route) => false);
     });
 
