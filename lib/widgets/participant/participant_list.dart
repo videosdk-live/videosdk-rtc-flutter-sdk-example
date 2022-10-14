@@ -30,23 +30,38 @@ class _ParticipantListState extends State<ParticipantList> {
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: Text("Participants (" +
-            (widget.meeting.participants.length + 1).toString() +
-            ")"),
+        flexibleSpace: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    "Participants (" +
+                        (widget.meeting.participants.length + 1).toString() +
+                        ")",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,
         actions: [
           // Close Button
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-          ),
         ],
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
             children: [
               Expanded(

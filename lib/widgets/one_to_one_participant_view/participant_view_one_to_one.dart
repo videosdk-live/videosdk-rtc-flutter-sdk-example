@@ -65,7 +65,7 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
       child: IntrinsicHeight(
         child: Stack(children: [
           Container(
@@ -87,6 +87,7 @@ class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
                 isLocalScreenShare: localShareStream != null,
                 isScreenShare:
                     remoteShareStream != null || localShareStream != null,
+                avatarTextSize: 40,
               )),
           if (remoteParticipant != null || localShareStream != null)
             Positioned(

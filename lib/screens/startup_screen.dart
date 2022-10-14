@@ -80,133 +80,124 @@ class _StartupScreenState extends State<StartupScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Camera Preview
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 40, horizontal: 36),
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  maxHeight:
-                                      (MediaQuery.of(context).size.height *
-                                          0.6 *
-                                          9 /
-                                          16),
-                                  // maxWidth: (MediaQuery.of(context).size.width * .40),
-                                ),
-                                child: Stack(
-                                  alignment: Alignment.topCenter,
-                                  children: [
-                                    (cameraController == null) && isCameraOn
-                                        ? !(cameraController
-                                                    ?.value.isInitialized ??
-                                                false)
-                                            ? Container(
-                                                child: const Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12)),
-                                              )
-                                            : Container(
-                                                child: const Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12)),
-                                              )
-                                        : AspectRatio(
-                                            aspectRatio: 1 / 1.55,
-                                            child: isCameraOn
-                                                ? ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    child: CameraPreview(
-                                                        cameraController!))
-                                                : Container(
-                                                    child: const Center(
-                                                      child: Text(
-                                                        "Camera is turned off",
-                                                      ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 100, horizontal: 36),
+                            child: SizedBox(
+                              height: 300,
+                              width: 200,
+                              child: Stack(
+                                alignment: Alignment.topCenter,
+                                children: [
+                                  (cameraController == null) && isCameraOn
+                                      ? !(cameraController
+                                                  ?.value.isInitialized ??
+                                              false)
+                                          ? Container(
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                            )
+                                          : Container(
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                            )
+                                      : AspectRatio(
+                                          aspectRatio: 1 / 1.55,
+                                          child: isCameraOn
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  child: CameraPreview(
+                                                    cameraController!,
+                                                  ))
+                                              : Container(
+                                                  child: const Center(
+                                                    child: Text(
+                                                      "Camera is turned off",
                                                     ),
-                                                    decoration: BoxDecoration(
-                                                        color: black800,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12)),
                                                   ),
-                                          ),
-                                    Positioned(
-                                      bottom: 16,
-
-                                      // Meeting ActionBar
-                                      child: Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            // Mic Action Button
-                                            ElevatedButton(
-                                              onPressed: () => setState(
-                                                () => isMicOn = !isMicOn,
-                                              ),
-                                              child: Icon(
-                                                  isMicOn
-                                                      ? Icons.mic
-                                                      : Icons.mic_off,
-                                                  color: isMicOn
-                                                      ? grey
-                                                      : Colors.white),
-                                              style: ElevatedButton.styleFrom(
-                                                shape: CircleBorder(),
-                                                padding: EdgeInsets.all(12),
-                                                primary: isMicOn
-                                                    ? Colors.white
-                                                    : red,
-                                                onPrimary: Colors.black,
-                                              ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                if (isCameraOn) {
-                                                  cameraController?.dispose();
-                                                  cameraController = null;
-                                                } else {
-                                                  initCameraPreview();
-                                                  // cameraController?.resumePreview();
-                                                }
-                                                setState(() =>
-                                                    isCameraOn = !isCameraOn);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                shape: CircleBorder(),
-                                                padding: EdgeInsets.all(12),
-                                                primary: isCameraOn
-                                                    ? Colors.white
-                                                    : red,
-                                              ),
-                                              child: Icon(
-                                                isCameraOn
-                                                    ? Icons.videocam
-                                                    : Icons.videocam_off,
-                                                color: isCameraOn
-                                                    ? grey
-                                                    : Colors.white,
-                                              ),
-                                            ),
-                                          ],
+                                                  decoration: BoxDecoration(
+                                                      color: black800,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12)),
+                                                ),
                                         ),
+                                  Positioned(
+                                    bottom: 16,
+
+                                    // Meeting ActionBar
+                                    child: Center(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Mic Action Button
+                                          ElevatedButton(
+                                            onPressed: () => setState(
+                                              () => isMicOn = !isMicOn,
+                                            ),
+                                            child: Icon(
+                                                isMicOn
+                                                    ? Icons.mic
+                                                    : Icons.mic_off,
+                                                color: isMicOn
+                                                    ? grey
+                                                    : Colors.white),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: CircleBorder(),
+                                              padding: EdgeInsets.all(12),
+                                              primary:
+                                                  isMicOn ? Colors.white : red,
+                                              onPrimary: Colors.black,
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              if (isCameraOn) {
+                                                cameraController?.dispose();
+                                                cameraController = null;
+                                              } else {
+                                                initCameraPreview();
+                                                // cameraController?.resumePreview();
+                                              }
+                                              setState(() =>
+                                                  isCameraOn = !isCameraOn);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              shape: CircleBorder(),
+                                              padding: EdgeInsets.all(12),
+                                              primary: isCameraOn
+                                                  ? Colors.white
+                                                  : red,
+                                            ),
+                                            child: Icon(
+                                              isCameraOn
+                                                  ? Icons.videocam
+                                                  : Icons.videocam_off,
+                                              color: isCameraOn
+                                                  ? grey
+                                                  : Colors.white,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

@@ -37,7 +37,7 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12),
-      margin: EdgeInsets.all(5),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
       decoration: BoxDecoration(
           color: black600, borderRadius: BorderRadius.circular(10)),
       child: Row(
@@ -58,8 +58,8 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
             widget.participant.isLocal ? "You" : widget.participant.displayName,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           )),
           Container(

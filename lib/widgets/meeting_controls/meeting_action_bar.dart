@@ -49,6 +49,7 @@ class MeetingActionBar extends StatelessWidget {
           PopupMenuButton(
               position: PopupMenuPosition.under,
               padding: EdgeInsets.all(0),
+              color: black700,
               icon: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -223,9 +224,10 @@ class MeetingActionBar extends StatelessWidget {
       String value, String title, String? description, Widget leadingIcon) {
     return PopupMenuItem(
       value: value,
+      padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
       child: Row(children: [
         leadingIcon,
-        const HorizontalSpacer(),
+        const HorizontalSpacer(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -233,14 +235,15 @@ class MeetingActionBar extends StatelessWidget {
               title,
               style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white),
             ),
+            if (description != null) VerticalSpacer(4),
             if (description != null)
               Text(
                 description,
                 style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w600, color: black400),
+                    fontSize: 12, fontWeight: FontWeight.w500, color: black400),
               )
           ],
         )

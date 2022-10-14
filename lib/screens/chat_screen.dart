@@ -44,16 +44,35 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: Text("Chat"),
+        flexibleSpace: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    "Chat",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,
         actions: [
           // Close Button
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.close),
+          //   onPressed: () => Navigator.pop(context),
+          // ),
         ],
       ),
       body: SafeArea(
@@ -89,8 +108,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     Expanded(
                       child: TextField(
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                         controller: msgTextController,
                         onChanged: (value) => setState(() {

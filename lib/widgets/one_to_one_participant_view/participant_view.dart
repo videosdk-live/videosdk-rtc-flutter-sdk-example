@@ -62,9 +62,9 @@ class ParticipantView extends StatelessWidget {
                   color: black700,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.mic_off,
-                  size: 14,
+                  size: avatarTextSize / 2,
                 )),
           ),
         if (isScreenShare)
