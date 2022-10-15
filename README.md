@@ -10,15 +10,11 @@ At Video SDK, we’re building tools to help companies create world-class collab
 
 ## Demo App
 
----
-
 📲 Download the sample iOS app here: https://testflight.apple.com/join/C1UOYbxh
 
 📱 Download the sample Android app here: https://appdistribution.firebase.google.com/pub/i/0f3ac650239a944b
 
 ## Features
-
----
 
 - [x] Real-time video and audio conferencing
 - [x] Enable/disable camera
@@ -33,8 +29,6 @@ At Video SDK, we’re building tools to help companies create world-class collab
 
 ## Setup Guide
 
----
-
 - Sign up on [VideoSDK](https://app.videosdk.live/) and visit [API Keys](https://app.videosdk.live/api-keys) section to get your API key and Secret key.
 
 - Get familiarized with [API key and Secret key](https://docs.videosdk.live/android/guide/video-and-audio-calling-api-sdk/signup-and-create-api)
@@ -44,8 +38,6 @@ At Video SDK, we’re building tools to help companies create world-class collab
 <br/>
 
 ## Prerequisites
-
----
 
 - If your target platform is iOS, your development environment must meet the following requirements:
   - Flutter 2.0 or later
@@ -64,8 +56,6 @@ At Video SDK, we’re building tools to help companies create world-class collab
 <br/>
 
 ## Run the Sample App
-
----
 
 ### 1. Clone the sample project
 
@@ -111,8 +101,6 @@ flutter run
 
 ## Key Concepts
 
----
-
 - `Meeting` - A Meeting represents Real time audio and video communication.
 
   **`Note : Don't confuse with Room and Meeting keyword, both are same thing 😃`**
@@ -124,8 +112,6 @@ flutter run
 <br/>
 
 ## Android Permission
-
----
 
 Add all the following permissions to AndroidManifest.xml file.
 
@@ -154,8 +140,6 @@ Add all the following permissions to AndroidManifest.xml file.
 
 ## iOS Permission
 
----
-
 Add the following entry to your Info.plist file, located at `<project root>/ios/Runner/Info.plist`:
 
 ```
@@ -165,11 +149,13 @@ Add the following entry to your Info.plist file, located at `<project root>/ios/
 <string>$(PRODUCT_NAME) Microphone Usage!</string>
 ```
 
+## iOS Screen share Setup
+
+Please refer to this documentation guide to [setup screenshare for iOS](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/extras/flutter-ios-screen-share)
+
 <br/>
 
 ## Token Generation
-
----
 
 Token is used to create and validate a meeting using API and also initialise a meeting.
 
@@ -188,8 +174,6 @@ Token is used to create and validate a meeting using API and also initialise a m
 <br/>
 
 ## API: Create and Validate meeting
-
----
 
 - `create meeting` - Please refer this [documentation](https://docs.videosdk.live/api-reference/realtime-communication/create-room) to create meeting.
 - `validate meeting`- Please refer this [documentation](https://docs.videosdk.live/api-reference/realtime-communication/validate-room) to validate the meetingId.
@@ -221,8 +205,6 @@ Token is used to create and validate a meeting using API and also initialise a m
 
 ## [Mute/Unmute Local Audio](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/mic-controls)
 
----
-
 ```js
 // unmute mic
 room.unmuteMic();
@@ -234,8 +216,6 @@ room.muteMic();
 <br/>
 
 ## [Change Audio Device](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/switch-audio-output)
-
----
 
 - The `meeting.getAudioOutputDevices()` function allows a participant to list all of the attached audio devices (e.g., Bluetooth and Earphone).
 
@@ -257,8 +237,6 @@ room.switchAudioOutput(mediaDeviceInfo);
 
 ## [Enable/Disable Local Webcam](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/camera-controls)
 
----
-
 ```js
 // enable webcam
 room.enableCam();
@@ -271,8 +249,6 @@ room.disableCam();
 
 ## [Switch Local Webcam](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/camera-controls)
 
----
-
 ```js
 // switch webcam
 room.changeCam(deviceId);
@@ -281,8 +257,6 @@ room.changeCam(deviceId);
 <br/>
 
 ## [Chat](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/pubsub)
-
----
 
 - The chat feature allows participants to send and receive messages about specific topics to which they have subscribed.
 
@@ -312,8 +286,6 @@ void messageHandler(msg){
 
 ## [Leave or End Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/leave-end-room)
 
----
-
 ```js
 // Only one participant will leave/exit the meeting; the rest of the participants will remain.
 room.leave();
@@ -325,8 +297,6 @@ room.end();
 <br/>
 
 ## [Listen for Room Events](https://docs.videosdk.live/flutter/api/sdk-reference/room-class/events)
-
----
 
 By registering callback handlers, VideoSDK sends callbacks to the client app whenever there is a change or update in the meeting after a user joins.
 
@@ -377,8 +347,6 @@ By registering callback handlers, VideoSDK sends callbacks to the client app whe
 
 ## [Listen for Participant Events](https://docs.videosdk.live/flutter/api/sdk-reference/participant-class/events)
 
----
-
 By registering callback handlers, VideoSDK sends callbacks to the client app whenever a participant's video, audio, or screen share stream is enabled or disabled.
 
 ```js
@@ -397,8 +365,6 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 <br/>
 
 ## Project Description
-
----
 
 <br/>
 
@@ -419,15 +385,11 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 ## Project Structure
 
----
-
 - We have seprated screens and widget in following folder structure:
   - `one-to-one` - It includes all files related to OneToOne meeting.
   - `common` - It inclues all the files that are used in both meeting type (OneToOne and Group calls).
 
 ### Common Content
-
----
 
 **1. Create or join Meeting**
 
@@ -485,8 +447,6 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 ### One-to-one
 
----
-
 - `one_to_one_meeting_screen.dart`: It contains the complete layout for one to one meeting.
 
 - `one_to_one_meeting_container.dart`: It contains the logic to render the participants in the miniview and large view.
@@ -494,8 +454,6 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 - `participant_view.dart`: It is used to display the individual stream of the participant.
 
 ## Examples
-
----
 
 - [Prebuilt SDK Examples](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
 - [JavaScript SDK Example](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
@@ -507,15 +465,11 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 ## Documentation
 
----
-
 [Read the documentation](https://docs.videosdk.live/) to start using Video SDK.
 
 <br/>
 
 ## Community
-
----
 
 - [Discord](https://discord.gg/Gpmj6eCq5u) - To get involved with the Video SDK community, ask questions and share tips.
 - [Twitter](https://twitter.com/video_sdk) - To receive updates, announcements, blog posts, and general Video SDK tips.
