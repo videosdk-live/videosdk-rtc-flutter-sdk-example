@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
+import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/recording_indicator.dart';
@@ -124,16 +125,8 @@ class MeetingAppBarState extends State<MeetingAppBar> {
   }
 
   Future<void> startTimer() async {
-    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
-
-    final Uri getMeetingIdUrl = Uri.parse(
-        '$_VIDEOSDK_API_ENDPOINT/sessions?roomId=${widget.meeting.id}');
-    final http.Response meetingIdResponse =
-        await http.get(getMeetingIdUrl, headers: {
-      "Authorization": widget.token,
-    });
-    List<dynamic> sessions = jsonDecode(meetingIdResponse.body)['data'];
-    DateTime sessionStartTime = DateTime.parse((sessions.first)['start']);
+    dynamic session = await fetchSession(widget.token, widget.meeting.id);
+    DateTime sessionStartTime = DateTime.parse(session['start']);
     final difference = DateTime.now().difference(sessionStartTime);
 
     setState(() {

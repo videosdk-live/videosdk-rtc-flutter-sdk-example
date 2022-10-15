@@ -1,13 +1,11 @@
 // ignore_for_file: non_constant_identifier_names, dead_code
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_details/meeting_details.dart';
 
 import '../../constants/colors.dart';
@@ -25,7 +23,6 @@ class JoinScreen extends StatefulWidget {
 
 class _JoinScreenState extends State<JoinScreen> {
   String _token = "";
-  String _meetingID = "";
 
   // Control Status
   bool isMicOn = false;
@@ -46,7 +43,7 @@ class _JoinScreenState extends State<JoinScreen> {
       DeviceOrientation.portraitDown,
     ]);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final token = await fetchToken();
+      final token = await fetchToken(context);
       setState(() => _token = token);
     });
   }
@@ -305,58 +302,14 @@ class _JoinScreenState extends State<JoinScreen> {
     }
   }
 
-  Future<String> fetchToken() async {
-    if (!dotenv.isInitialized) {
-      // Load Environment variables
-      await dotenv.load(fileName: ".env");
-    }
-    final String? _AUTH_URL = dotenv.env['AUTH_URL'];
-    String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
-
-    if ((_AUTH_TOKEN?.isEmpty ?? true) && (_AUTH_URL?.isEmpty ?? true)) {
-      showSnackBarMessage(
-          message: "Please set the environment variables", context: context);
-      throw Exception("Either AUTH_TOKEN or AUTH_URL is not set in .env file");
-      return "";
-    }
-
-    if ((_AUTH_TOKEN?.isNotEmpty ?? false) &&
-        (_AUTH_URL?.isNotEmpty ?? false)) {
-      showSnackBarMessage(
-          message: "Please set only one environment variable",
-          context: context);
-      throw Exception("Either AUTH_TOKEN or AUTH_URL can be set in .env file");
-      return "";
-    }
-
-    if (_AUTH_URL?.isNotEmpty ?? false) {
-      final Uri getTokenUrl = Uri.parse('$_AUTH_URL/get-token');
-      final http.Response tokenResponse = await http.get(getTokenUrl);
-      _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
-    }
-
-    return _AUTH_TOKEN ?? "";
-  }
-
   Future<void> createAndJoinMeeting(callType, displayName) async {
-    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
-
-    final Uri getMeetingIdUrl = Uri.parse('$_VIDEOSDK_API_ENDPOINT/rooms');
-    final http.Response meetingIdResponse =
-        await http.post(getMeetingIdUrl, headers: {
-      "Authorization": _token,
-    });
-
-    _meetingID = json.decode(meetingIdResponse.body)['roomId'];
-
-    log("Meeting ID: $_meetingID");
-
+    var _meetingID = await createMeeting(_token);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OneToOneMeetingScreen(
           token: _token,
-          meetingId: "wyea-c8vp-ivt6",
+          meetingId: _meetingID,
           displayName: displayName,
           micEnabled: isMicOn,
           camEnabled: isCameraOn,
@@ -372,16 +325,8 @@ class _JoinScreenState extends State<JoinScreen> {
       return;
     }
 
-    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
-
-    final Uri validateMeetingUrl =
-        Uri.parse('$_VIDEOSDK_API_ENDPOINT/rooms/validate/$meetingId');
-    final http.Response validateMeetingResponse =
-        await http.get(validateMeetingUrl, headers: {
-      "Authorization": _token,
-    });
-
-    if (validateMeetingResponse.statusCode == 200) {
+    var validMeeting = await validateMeeting(_token, meetingId);
+    if (validMeeting) {
       Navigator.push(
         context,
         MaterialPageRoute(

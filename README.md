@@ -120,6 +120,8 @@ flutter run
 - `Participant` - Participant represents someone who is attending the meeting's session, `local partcipant` represents self (You), for this self, other participants are `remote participants`.
 - `Stream` - Stream means video or audio media content that is either published by `local participant` or `remote participants`.
 
+<br/>
+
 ## Android Permission
 
 ---
@@ -189,17 +191,17 @@ Token is used to create and validate a meeting using API and also initialise a m
 
 <br/>
 
-## [Initialize a Meeting](https://docs.videosdk.live/flutter/api/sdk-reference/initMeeting)
+## [Initialize a Meeting](https://docs.videosdk.live/flutter/api/sdk-reference/videosdk-class/methods#createroom)
 
 - You can initialize the meeting using `createRoom()` method. `createRoom()` will generate a new `Room` object and the initiated meeting will be returned.
 
 ```js
   Room room = VideoSDK.createRoom(
-        roomId: widget.meetingId,
-        token: widget.token,
-        displayName: widget.displayName,
-        micEnabled: widget.micEnabled,
-        camEnabled: widget.camEnabled,
+        roomId: "abcd-efgh-ijkl",
+        token: "YOUR TOKEN",
+        displayName: "GUEST",
+        micEnabled: true,
+        camEnabled: true,
         maxResolution: 'hd',
         defaultCameraIndex: 1,
         notification: const NotificationInfo(
@@ -287,11 +289,11 @@ room.pubSub.publish(String topic,String message, PubSubPublishOptions pubSubPubl
 
 
 //subscribe
-PubSubMessages pubSubMessageList = meeting.pubSub.subscribe(String topic, Function(PubSubMessage) messageHandler)
+PubSubMessages pubSubMessageList = room.pubSub.subscribe(String topic, Function(PubSubMessage) messageHandler)
 
 
 //unsubscribe
-meeting.pubSub.unsubscribe(topic, Function(PubSubMessage) messageHandler);
+room.pubSub.unsubscribe(topic, Function(PubSubMessage) messageHandler);
 
 
 // Message Handler
@@ -303,7 +305,7 @@ void messageHandler(msg){
 
 <br/>
 
-## [Leave or End Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/leave-end-meeting)
+## [Leave or End Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/leave-end-room)
 
 ---
 
@@ -324,42 +326,42 @@ room.end();
 By registering callback handlers, VideoSDK sends callbacks to the client app whenever there is a change or update in the meeting after a user joins.
 
 ```js
-    _meeting.on(
+    room.on(
       Events.roomJoined,
       () {
         // This event will be emitted when a localParticipant(you) successfully joined the meeting.
       },
     );
 
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
+    room.on(Events.roomLeft, (String? errorMsg) {
       // This event will be emitted when a localParticipant(you) left the meeting.
       // [errorMsg]: It will have the message if meeting was left due to some error like Network problem
     });
 
-    _meeting.on(Events.recordingStarted, () {
+    room.on(Events.recordingStarted, () {
       // This event will be emitted when recording of the meeting is started.
     });
 
-    _meeting.on(Events.recordingStopped, () {
+    room.on(Events.recordingStopped, () {
       // This event will be emitted when recording of the meeting is stopped.
     });
 
-    _meeting.on(Events.presenterChanged, (_activePresenterId) {
+    room.on(Events.presenterChanged, (_activePresenterId) {
       // This event will be emitted when any participant starts or stops screen sharing.
       // [participantId]: Id of participant who shares the screen.
     });
 
-    _meeting.on(Events.speakerChanged, (_activeSpeakerId) {
+    room.on(Events.speakerChanged, (_activeSpeakerId) {
       // This event will be emitted when a active speaker changed.
       // [participantId] : Id of active speaker
     });
 
-    _meeting.on(Events.participantJoined, (Participant participant) {
+    room.on(Events.participantJoined, (Participant participant) {
       // This event will be emitted when a new participant joined the meeting.
       // [participant]: new participant who joined the meeting
     });
 
-    _meeting.on(Events.participantLeft, (participantId) => {
+    room.on(Events.participantLeft, (participantId) => {
       // This event will be emitted when a joined participant left the meeting.
       // [participantId]: id of participant who left the meeting
     });
@@ -406,7 +408,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 - **One-to-One meeting** - The One-to-One meeting allows 2 participants to join a meeting in the app.
 
-- **Group Meeting** - **_COMING SOON_**
+- **Group Meeting** - 🔜 **_COMING SOON_**
 
 <br/>
 
@@ -424,17 +426,19 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 **1. Create or join Meeting**
 
-- `join_screen.dart`: It shows the user with the option to create or join a meeting and to initiate webcam and mic status. It includes the API calss to craete and validate a meeting.
+- `join_screen.dart`: It shows the user with the option to create or join a meeting and to initiate webcam and mic status.
+
+  - `api.dart` : It incldes all the API calls for create and validate meeting.
 
   - `meeting_details.dart`: This widget allows user to enter the meetingId and name for the meeting.
 
-  - It will show following if `Join Meeting` is clicked
+  - If `Join Meeting` is clicked, it will show following:
 
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
     - `EditText for MeetingId` - This edit text will contain the meeting Id that you want to join.
     - `Join Meeting Button` - This button will call api for join meeting with meetingId that you
 
-  - It will show following if `Create Meeting` is clicked
+  - If `Create Meeting` is clicked, it will show following:
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
     - `Join Meeting Button` - This button will call api for join meeting with meetingId that you
 
@@ -444,7 +448,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 **2. PartcipantList**
 
-- `participant_list.dart` and `participant_list_item.dart` files used to show ParticipantList.
+- `participant_list.dart` and `participant_list_item.dart` files are used to show Participant list.
   <p align="center">
   <img width="250" height="450" src="https://www.linkpicture.com/q/img_participantList.jpg"/>
   </p>
@@ -468,7 +472,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 **4. Meeting Top Bar**
 
-- `meeting_appbar.dart`: It contains the meeting times, switch camera option and recording indicatior.
+- `meeting_appbar.dart`: It contains the meeting timer, switch camera option and recording indicatior.
 
 **5. Chat**
 
@@ -480,7 +484,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 - `one_to_one_meeting_screen.dart`: It contains the complete layout for one to one meeting.
 
-- `participant_view_one_to_one.dart`: It contains teh logic to render the participants in the miniview and large view.
+- `participant_view_one_to_one.dart`: It contains the logic to render the participants in the miniview and large view.
 
 - `participant_view.dart`: It is used to display the individual stream of the participant.
 
