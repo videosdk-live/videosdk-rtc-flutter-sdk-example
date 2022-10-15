@@ -6,12 +6,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lottie/lottie.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
-import 'package:videosdk_flutter_example/widgets/app_bar/recording_indicator.dart';
+import 'package:videosdk_flutter_example/widgets/common/app_bar/recording_indicator.dart';
 
 class MeetingAppBar extends StatefulWidget {
   String token;

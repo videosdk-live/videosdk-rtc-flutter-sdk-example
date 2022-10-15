@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import '../widgets/chat/chat_widget.dart';
+import '../../widgets/common/chat/chat_widget.dart';
 
 // ChatScreen
 class ChatScreen extends StatefulWidget {
@@ -67,13 +67,6 @@ class _ChatScreenState extends State<ChatScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,
-        actions: [
-          // Close Button
-          // IconButton(
-          //   icon: const Icon(Icons.close),
-          //   onPressed: () => Navigator.pop(context),
-          // ),
-        ],
       ),
       body: SafeArea(
         child: Padding(

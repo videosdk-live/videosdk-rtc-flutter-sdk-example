@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view.dart';
+import 'package:videosdk_flutter_example/widgets/one-to-one/participant_view.dart';
 
 class ParticipantViewOneToOne extends StatefulWidget {
   final Room meeting;

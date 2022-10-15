@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'constants/colors.dart';
 import 'navigator_key.dart';
-import 'screens/splash_screen.dart';
+import 'screens/common/splash_screen.dart';
 
 void main() {
   // Run Flutter App

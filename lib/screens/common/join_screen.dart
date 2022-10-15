@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:videosdk_flutter_example/widgets/join_meeting/meeting_details.dart';
+import 'package:videosdk_flutter_example/widgets/common/meeting_details/meeting_details.dart';
 
-import '../constants/colors.dart';
-import '../utils/spacer.dart';
-import '../utils/toast.dart';
-import 'one_to_one_meeting_screen.dart';
+import '../../constants/colors.dart';
+import '../../utils/spacer.dart';
+import '../../utils/toast.dart';
+import '../one-to-one/one_to_one_meeting_screen.dart';
 
 // Join Screen
 class JoinScreen extends StatefulWidget {

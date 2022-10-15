@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 
-import '../../constants/colors.dart';
-import 'meeting_action_button.dart';
+import '../../../constants/colors.dart';
 
 // Meeting ActionBar
 class MeetingActionBar extends StatelessWidget {

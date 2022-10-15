@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/local_screen_share_view.dart';
+import 'package:videosdk_flutter_example/widgets/one-to-one/local_screen_share_view.dart';
 
 class ParticipantView extends StatelessWidget {
   Stream? stream;

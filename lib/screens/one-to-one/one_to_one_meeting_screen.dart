@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import 'package:videosdk_flutter_example/widgets/joining/participnat_limit_reached.dart';
-import 'package:videosdk_flutter_example/widgets/joining/waiting_to_join.dart';
-import 'package:videosdk_flutter_example/widgets/app_bar/meeting_appbar.dart';
-import 'package:videosdk_flutter_example/widgets/one_to_one_participant_view/participant_view_one_to_one.dart';
-import 'package:videosdk_flutter_example/widgets/participant/participant_list.dart';
-import '/screens/chat_screen.dart';
+import 'package:videosdk_flutter_example/widgets/common/joining/participant_limit_reached.dart';
+import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
+import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
+import 'package:videosdk_flutter_example/widgets/one-to-one/participant_view_one_to_one.dart';
+import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
+import '../common/chat_screen.dart';
 
-import '../utils/toast.dart';
-import '../widgets/meeting_controls/meeting_action_bar.dart';
-import 'join_screen.dart';
+import '../../utils/toast.dart';
+import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
+import '../common/join_screen.dart';
 
 // Meeting Screen
 class OneToOneMeetingScreen extends StatefulWidget {
