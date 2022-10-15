@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import '../../widgets/common/chat/chat_widget.dart';
+import 'chat_widget.dart';
 
 // ChatScreen
-class ChatScreen extends StatefulWidget {
+class ChatView extends StatefulWidget {
   final Room meeting;
-  const ChatScreen({
+  const ChatView({
     Key? key,
     required this.meeting,
   }) : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatViewState createState() => _ChatViewState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatViewState extends State<ChatView> {
   // MessageTextController
   final msgTextController = TextEditingController();
 

@@ -7,9 +7,9 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/participant_limit_reached.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
-import 'package:videosdk_flutter_example/widgets/one-to-one/participant_view_one_to_one.dart';
+import 'package:videosdk_flutter_example/widgets/one-to-one/one_to_one_meeting_container.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import '../common/chat_screen.dart';
+import '../../widgets/common/chat/chat_view.dart';
 
 import '../../utils/toast.dart';
 import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
@@ -114,7 +114,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                     fullScreen = !fullScreen;
                                   })
                                 },
-                            child: ParticipantViewOneToOne(meeting: meeting)),
+                            child: OneToOneMeetingContainer(meeting: meeting)),
                       ),
                       AnimatedCrossFade(
                         duration: Duration(milliseconds: 300),
@@ -191,7 +191,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                       MediaQuery.of(context).size.height -
                                           statusbarHeight),
                               isScrollControlled: true,
-                              builder: (context) => ChatScreen(
+                              builder: (context) => ChatView(
                                   key: const Key("ChatScreen"),
                                   meeting: meeting),
                             ).whenComplete(() => {

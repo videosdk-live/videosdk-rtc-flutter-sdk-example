@@ -4,17 +4,17 @@ import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/one-to-one/participant_view.dart';
 
-class ParticipantViewOneToOne extends StatefulWidget {
+class OneToOneMeetingContainer extends StatefulWidget {
   final Room meeting;
-  const ParticipantViewOneToOne({Key? key, required this.meeting})
+  const OneToOneMeetingContainer({Key? key, required this.meeting})
       : super(key: key);
 
   @override
-  State<ParticipantViewOneToOne> createState() =>
-      _ParticipantViewOneToOneState();
+  State<OneToOneMeetingContainer> createState() =>
+      _OneToOneMeetingContainerState();
 }
 
-class _ParticipantViewOneToOneState extends State<ParticipantViewOneToOne> {
+class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
   Stream? localVideoStream;
   Stream? localShareStream;
   Stream? localAudioStream;

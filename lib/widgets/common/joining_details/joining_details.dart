@@ -3,21 +3,21 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 
-class MeetingDetails extends StatefulWidget {
+class JoiningDetails extends StatefulWidget {
   bool isCreateMeeting;
   Function onClickMeetingJoin;
 
-  MeetingDetails(
+  JoiningDetails(
       {Key? key,
       required this.isCreateMeeting,
       required this.onClickMeetingJoin})
       : super(key: key);
 
   @override
-  State<MeetingDetails> createState() => _MeetingDetailsState();
+  State<JoiningDetails> createState() => _JoiningDetailsState();
 }
 
-class _MeetingDetailsState extends State<MeetingDetails> {
+class _JoiningDetailsState extends State<JoiningDetails> {
   String _meetingId = "";
   String _displayName = "";
   String _callType = "";

@@ -6,7 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
-import 'package:videosdk_flutter_example/widgets/common/meeting_details/meeting_details.dart';
+import 'package:videosdk_flutter_example/widgets/common/joining_details/joining_details.dart';
 
 import '../../constants/colors.dart';
 import '../../utils/spacer.dart';
@@ -28,8 +28,8 @@ class _JoinScreenState extends State<JoinScreen> {
   bool isMicOn = false;
   bool isCameraOn = false;
 
-  bool isJoinMethodSelected = false;
-  bool isCreateMeeting = false;
+  bool? isJoinMeetingSelected;
+  bool? isCreateMeetingSelected;
 
   // Camera Controller
   CameraController? cameraController;
@@ -202,7 +202,8 @@ class _JoinScreenState extends State<JoinScreen> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (!isJoinMethodSelected)
+                                if (isJoinMeetingSelected == null &&
+                                    isCreateMeetingSelected == null)
                                   MaterialButton(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -214,12 +215,14 @@ class _JoinScreenState extends State<JoinScreen> {
                                           style: TextStyle(fontSize: 16)),
                                       onPressed: () => {
                                             setState(() => {
-                                                  isCreateMeeting = true,
-                                                  isJoinMethodSelected = true
+                                                  isCreateMeetingSelected =
+                                                      true,
+                                                  isJoinMeetingSelected = true
                                                 })
                                           }),
                                 const VerticalSpacer(16),
-                                if (!isJoinMethodSelected)
+                                if (isJoinMeetingSelected == null &&
+                                    isCreateMeetingSelected == null)
                                   MaterialButton(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -231,13 +234,15 @@ class _JoinScreenState extends State<JoinScreen> {
                                           style: TextStyle(fontSize: 16)),
                                       onPressed: () => {
                                             setState(() => {
-                                                  isCreateMeeting = false,
-                                                  isJoinMethodSelected = true
+                                                  isCreateMeetingSelected =
+                                                      false,
+                                                  isJoinMeetingSelected = true
                                                 })
                                           }),
-                                if (isJoinMethodSelected)
-                                  MeetingDetails(
-                                    isCreateMeeting: isCreateMeeting,
+                                if (isJoinMeetingSelected != null &&
+                                    isCreateMeetingSelected != null)
+                                  JoiningDetails(
+                                    isCreateMeeting: isCreateMeetingSelected!,
                                     onClickMeetingJoin: (meetingId, callType,
                                             displayName) =>
                                         _onClickMeetingJoin(
@@ -258,9 +263,10 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   Future<bool> _onWillPopScope() async {
-    if (isJoinMethodSelected) {
+    if (isJoinMeetingSelected != null && isCreateMeetingSelected != null) {
       setState(() {
-        isJoinMethodSelected = false;
+        isJoinMeetingSelected = null;
+        isCreateMeetingSelected = null;
       });
       return false;
     } else {
@@ -295,7 +301,7 @@ class _JoinScreenState extends State<JoinScreen> {
     if (displayName.toString().isEmpty) {
       displayName = "Guest";
     }
-    if (isCreateMeeting) {
+    if (isCreateMeetingSelected!) {
       createAndJoinMeeting(callType, displayName);
     } else {
       joinMeeting(callType, displayName, meetingId);

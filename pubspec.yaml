@@ -15,7 +15,6 @@ dependencies:
   flutter_dotenv: ^5.0.2
   camera: ^0.10.0
   flutter_svg: ^1.1.5
-  visibility_detector: ^0.3.3
   date_time_format: ^2.0.1
   touch_ripple_effect: ^2.2.3
   lottie: ^1.4.2

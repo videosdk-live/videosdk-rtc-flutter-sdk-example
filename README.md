@@ -20,14 +20,13 @@ At Video SDK, we’re building tools to help companies create world-class collab
 
 ---
 
-- [x] Real-time aideo and audio conferencing
+- [x] Real-time video and audio conferencing
 - [x] Enable/disable camera
 - [x] Mute/unmute mic
 - [x] Switch between front and back camera
 - [x] Change audio device
 - [x] Screen share
 - [x] Chat
-- [x] Raise hand
 - [x] Recording
 
 <br/>
@@ -115,7 +114,9 @@ flutter run
 ---
 
 - `Meeting` - A Meeting represents Real time audio and video communication.
-  **`Note : Room and Meeting are same thing.`**
+
+  **`Note : Don't confuse with Room and Meeting keyword, both are same thing 😃`**
+
 - `Sessions` - A particular duration you spend in a given meeting is a referred as session, you can have multiple session of a particular meetingId.
 - `Participant` - Participant represents someone who is attending the meeting's session, `local partcipant` represents self (You), for this self, other participants are `remote participants`.
 - `Stream` - Stream means video or audio media content that is either published by `local participant` or `remote participants`.
@@ -129,10 +130,14 @@ flutter run
 Add all the following permissions to AndroidManifest.xml file.
 
 ```
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <!-- Needed to communicate with already-paired Bluetooth devices. (Legacy up to Android 11) -->
     <uses-permission
@@ -236,14 +241,14 @@ room.muteMic();
 
 ```js
  // get connected audio devices
- List<MediaDeviceInfo> outputDevice = meeting.getAudioOutputDevices()
+ List<MediaDeviceInfo> outputDevice = room.getAudioOutputDevices()
 ```
 
 - Local participant can change the audio device using `switchAudioOutput(MediaDeviceInfo device)` method of `Room` class.
 
 ```js
 // change mic
-meeting.switchAudioOutput(mediaDeviceInfo);
+room.switchAudioOutput(mediaDeviceInfo);
 ```
 
 - Please consult our documentation [Change Audio Device](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/switch-audio-output) for more infromation.
@@ -319,7 +324,7 @@ room.end();
 
 <br/>
 
-## [Listening for Room Events](https://docs.videosdk.live/flutter/api/sdk-reference/room-class/events)
+## [Listen for Room Events](https://docs.videosdk.live/flutter/api/sdk-reference/room-class/events)
 
 ---
 
@@ -430,7 +435,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
   - `api.dart` : It incldes all the API calls for create and validate meeting.
 
-  - `meeting_details.dart`: This widget allows user to enter the meetingId and name for the meeting.
+  - `joining_details.dart`: This widget allows user to enter the meetingId and name for the meeting.
 
   - If `Join Meeting` is clicked, it will show following:
 
@@ -484,7 +489,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 - `one_to_one_meeting_screen.dart`: It contains the complete layout for one to one meeting.
 
-- `participant_view_one_to_one.dart`: It contains the logic to render the participants in the miniview and large view.
+- `one_to_one_meeting_container.dart`: It contains the logic to render the participants in the miniview and large view.
 
 - `participant_view.dart`: It is used to display the individual stream of the participant.
 
