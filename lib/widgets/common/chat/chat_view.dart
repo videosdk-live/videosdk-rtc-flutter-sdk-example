@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
-import '../widgets/chat/chat_widget.dart';
+import 'package:videosdk_flutter_example/constants/colors.dart';
+import 'chat_widget.dart';
 
 // ChatScreen
-class ChatScreen extends StatefulWidget {
+class ChatView extends StatefulWidget {
   final Room meeting;
-  const ChatScreen({
+  const ChatView({
     Key? key,
     required this.meeting,
   }) : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatViewState createState() => _ChatViewState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatViewState extends State<ChatView> {
   // MessageTextController
   final msgTextController = TextEditingController();
 
@@ -41,17 +42,31 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: secondaryColor,
       appBar: AppBar(
-        title: const Text("Chat"),
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).backgroundColor,
-        actions: [
-          // Close Button
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+        flexibleSpace: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    "Chat",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-        ],
+        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: secondaryColor,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Padding(
@@ -77,28 +92,32 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.fromLTRB(16, 4, 4, 4),
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white54),
-                    borderRadius: BorderRadius.circular(15)),
+                    borderRadius: BorderRadius.circular(10), color: black600),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                         controller: msgTextController,
                         onChanged: (value) => setState(() {
                           msgTextController.text;
                         }),
                         decoration: const InputDecoration(
-                          hintText: "Typing ...",
-                          border: InputBorder.none,
-                          // border: OutlineInputBorder(),
-                        ),
+                            hintText: "Write your message",
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              color: black400,
+                            )),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: msgTextController.text.trim().isEmpty
+                    GestureDetector(
+                      onTap: msgTextController.text.trim().isEmpty
                           ? null
                           : () => widget.meeting.pubSub
                               .publish(
@@ -107,6 +126,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                 const PubSubPublishOptions(persist: true),
                               )
                               .then((value) => msgTextController.clear()),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          width: 45,
+                          margin: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: msgTextController.text.trim().isEmpty
+                                  ? null
+                                  : purple,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: const Icon(Icons.send)),
                     )
                   ],
                 ),

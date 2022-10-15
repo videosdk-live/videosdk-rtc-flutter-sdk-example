@@ -1,19 +1,15 @@
 PODS:
-  - camera (0.0.1):
+  - camera_avfoundation (0.0.1):
     - Flutter
   - Flutter (1.0.0)
   - flutter_foreground_task (0.0.1):
     - Flutter
-  - flutter_webrtc (0.2.2):
+  - flutter_webrtc (0.9.4):
     - Flutter
-    - Libyuv (= 1703)
-    - WebRTC-SDK (= 92.4515.07)
+    - WebRTC-SDK (= 104.5112.02)
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
-  - Libyuv (1703)
-  - package_info_plus (0.4.5):
-    - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
   - shared_preferences_ios (0.0.1):
@@ -23,15 +19,14 @@ PODS:
     - Flutter
   - videosdk (0.0.1):
     - Flutter
-  - WebRTC-SDK (92.4515.07)
+  - WebRTC-SDK (104.5112.02)
 
 DEPENDENCIES:
-  - camera (from `.symlinks/plugins/camera/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
   - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
-  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - touch_ripple_effect (from `.symlinks/plugins/touch_ripple_effect/ios`)
@@ -39,13 +34,12 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Libyuv
     - Toast
     - WebRTC-SDK
 
 EXTERNAL SOURCES:
-  camera:
-    :path: ".symlinks/plugins/camera/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
   flutter_foreground_task:
@@ -54,8 +48,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
-  package_info_plus:
-    :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
   shared_preferences_ios:
@@ -66,20 +58,18 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/videosdk/ios"
 
 SPEC CHECKSUMS:
-  camera: 9993f92f2c793e87b65e35f3a23c70582afb05b1
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
-  flutter_webrtc: 6b71a1fc1d931a3dfe879e578ea10e2e6cd84f53
+  flutter_webrtc: aa130dfe1eca6625c2e2e51ce830abb495bdb06e
   fluttertoast: 16fbe6039d06a763f3533670197d01fc73459037
-  Libyuv: 5f79ced0ee66e60a612ca97de1e6ccacd187a437
-  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   touch_ripple_effect: 5b850cbec069237959ef95e7e81e7ee7f934ac76
   videosdk: a23c2981afcefd8ac781c7778d39669282441093
-  WebRTC-SDK: 540a44f2e30e89c75e331d5c4a372253ba668233
+  WebRTC-SDK: e0589abeb63db07a4ca1f45c82ba0f1a72e61622
 
-PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
+PODFILE CHECKSUM: 3dc5f977e7387d69d133563136ad5fb1231b0214
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
