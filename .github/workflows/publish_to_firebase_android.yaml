@@ -27,7 +27,7 @@ jobs:
         run: touch .env
       - name: Add AUTH URL
         run: |
-          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v1" >>.env
+          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v2" >>.env
           echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
 
       # Get flutter dependencies.
