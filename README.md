@@ -31,9 +31,9 @@ At Video SDK, we’re building tools to help companies create world-class collab
 
 - Sign up on [VideoSDK](https://app.videosdk.live/) and visit [API Keys](https://app.videosdk.live/api-keys) section to get your API key and Secret key.
 
-- Get familiarized with [API key and Secret key](https://docs.videosdk.live/android/guide/video-and-audio-calling-api-sdk/signup-and-create-api)
+- Get familiarized with [API key and Secret key](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/signup-and-create-api)
 
-- Get familiarized with [Token](https://docs.videosdk.live/android/guide/video-and-audio-calling-api-sdk/server-setup)
+- Get familiarized with [Token](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/server-setup)
 
 <br/>
 
@@ -403,21 +403,21 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
     - `EditText for MeetingId` - This edit text will contain the meeting Id that you want to join.
-    - `Join Meeting Button` - This button will call api for join meeting with meetingId that you
+    - `Join Meeting Button` - This button will call api for join meeting with meetingId that you entered.
 
   - If `Create Meeting` is clicked, it will show following:
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
-    - `Join Meeting Button` - This button will call api for join meeting with meetingId that you
+    - `Join Meeting Button` - This button will call api for join meeting with a new meetingId
 
   <p align="center">
-  <img width="230" height="450" src="https://www.linkpicture.com/q/img_CreateOrJoinFragment.jpg"/>
+  <img width="230" height="450" src="./assets/create_join.gif"/>
   </p>
 
 **2. PartcipantList**
 
 - `participant_list.dart` and `participant_list_item.dart` files are used to show Participant list.
   <p align="center">
-  <img width="250" height="450" src="https://www.linkpicture.com/q/img_participantList.jpg"/>
+  <img width="250" height="500" src="./assets/participants.jpg"/>
   </p>
 
 **3. Meeting Actions**
@@ -426,15 +426,15 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
   - **MoreOptions**:
     <p align="center">
-    <img width="350" height="250" src="https://www.linkpicture.com/q/img_MoreOptionList.jpg"/>
+    <img width="200" height="400" src="./assets/more_options.gif"/>
     </p>
   - **AudioDeviceList**:
     <p align="center">
-    <img width="350" height="250" src="https://www.linkpicture.com/q/img_AudioDeviceList.jpg"/>
+    <img width="200" height="400" src="./assets/audio_device.gif"/>
     </p>
   - **LeaveOrEndDialog**:
     <p align="center">
-    <img width="350" height="250" src="https://www.linkpicture.com/q/img_LeaveorEndDialog.jpg"/>
+    <img width="200" height="400" src="./assets/end_call.gif"/>
     </p>
 
 **4. Meeting Top Bar**
@@ -444,6 +444,10 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 **5. Chat**
 
 - `chat_screen.dart`: It contains the chat screen made using PubSub.
+
+  <p align="center">
+  <img width="250" height="500" src="./assets/chat.jpg"/>
+  </p>
 
 ### One-to-one
 
