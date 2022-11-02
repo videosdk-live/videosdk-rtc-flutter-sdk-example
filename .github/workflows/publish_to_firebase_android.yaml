@@ -57,5 +57,5 @@ jobs:
         with:
           appId: ${{secrets.FIREBASE_APP_ID}}
           token: ${{secrets.FIREBASE_TOKEN}}
-          groups: videosdk-demo
+          groups: flutter-android-demo
           file: app-release.apk
