@@ -45,6 +45,9 @@ Future<String> createMeeting(String _token) async {
     "Authorization": _token,
   });
 
+  if (meetingIdResponse.statusCode != 200) {
+    throw Exception(json.decode(meetingIdResponse.body)["error"]);
+  }
   var _meetingID = json.decode(meetingIdResponse.body)['roomId'];
   return _meetingID;
 }
@@ -58,6 +61,10 @@ Future<bool> validateMeeting(String token, String meetingId) async {
       await http.get(validateMeetingUrl, headers: {
     "Authorization": token,
   });
+
+  if (validateMeetingResponse.statusCode != 200) {
+    throw Exception(json.decode(validateMeetingResponse.body)["error"]);
+  }
 
   return validateMeetingResponse.statusCode == 200;
 }
