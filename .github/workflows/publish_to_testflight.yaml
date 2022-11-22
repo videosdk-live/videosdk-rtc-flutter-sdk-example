@@ -21,11 +21,15 @@ jobs:
       - name: Install the provisioning profile
         env:
           PROVISIONING_CERTIFICATE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
+          BROADCAST_PROVISIONING_CERTIFICATE_BASE64: ${{ secrets.BROADCAST_PROVISIONING_PROFILE }}
         run: |
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          BROADCAST_PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          echo -n "$BROADCAST_PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $BROADCAST_PP_PATH
+          cp $BROADCAST_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       # 2
       # Setup the flutter environment.
       - name: Create .env

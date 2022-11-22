@@ -12,6 +12,8 @@
 	<dict>
 		<key>live.videosdk.flutter.example</key>
 		<string>Flutter iOS Example</string>
+		<key>live.videosdk.flutter.example.FlutterBroadcast</key>
+		<string>Flutter iOS Example Broadcast</string>
 	</dict>
 </dict>
 </plist>
