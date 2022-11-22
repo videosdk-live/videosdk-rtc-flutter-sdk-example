@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/testflight-workflow
 
 jobs:
   build:
@@ -31,22 +32,22 @@ jobs:
         run: touch .env
       - name: Add AUTH URL
         run: |
-          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v1" >>.env
+          echo "VIDEOSDK_API_ENDPOINT=https://api.videosdk.live/v2" >>.env
           echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '2.10.2'
-          channel: 'stable'
-#           cache: true
+          flutter-version: "3.0.5"
+          channel: "stable"
+      #           cache: true
       # Build ipa.
       - run: flutter build ipa
       - name: Export ipa
         run: xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
       # 3
-      - name: 'Upload app to TestFlight'
+      - name: "Upload app to TestFlight"
         uses: apple-actions/upload-testflight-build@v1
-        with: 
-          app-path: 'build-output/ios/Flutter VideoSDK App.ipa'
+        with:
+          app-path: "build-output/ios/Flutter VideoSDK App.ipa"
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
