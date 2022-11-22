@@ -27,7 +27,7 @@ jobs:
           echo -n "$PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $PP_PATH
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          BROADCAST_PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          BROADCAST_PP_PATH=$RUNNER_TEMP/build__broadcast_pp.mobileprovision
           echo -n "$BROADCAST_PROVISIONING_CERTIFICATE_BASE64" | base64 --decode --output $BROADCAST_PP_PATH
           cp $BROADCAST_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       # 2
