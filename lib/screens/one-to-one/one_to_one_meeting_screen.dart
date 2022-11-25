@@ -72,6 +72,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
+      multiStream: false,
       defaultCameraIndex: 1,
       notification: const NotificationInfo(
         title: "Video SDK",
