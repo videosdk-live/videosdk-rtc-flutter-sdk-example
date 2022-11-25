@@ -15,12 +15,15 @@ void showSnackBarMessage(
       content: Row(
         children: [
           if (icon != null) icon,
-          Text(
-            message,
-            style: TextStyle(
-              color: messageColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: messageColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.fade,
             ),
           )
         ],

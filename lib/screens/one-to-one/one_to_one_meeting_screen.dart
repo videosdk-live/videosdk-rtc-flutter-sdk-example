@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -72,6 +73,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
+      multiStream: false,
       defaultCameraIndex: 1,
       notification: const NotificationInfo(
         title: "Video SDK",
@@ -366,6 +368,16 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                       subscribeToChatMessages(_meeting),
                     }
                 }
+            });
+
+    _meeting.on(
+        Events.error,
+        (error) => {
+              showSnackBarMessage(
+                  message: error['name'].toString() +
+                      " :: " +
+                      error['message'].toString(),
+                  context: context)
             });
   }
 
