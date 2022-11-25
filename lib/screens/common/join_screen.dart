@@ -309,19 +309,23 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   Future<void> createAndJoinMeeting(callType, displayName) async {
-    var _meetingID = await createMeeting(_token);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OneToOneMeetingScreen(
-          token: _token,
-          meetingId: _meetingID,
-          displayName: displayName,
-          micEnabled: isMicOn,
-          camEnabled: isCameraOn,
+    try {
+      var _meetingID = await createMeeting(_token);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OneToOneMeetingScreen(
+            token: _token,
+            meetingId: _meetingID,
+            displayName: displayName,
+            micEnabled: isMicOn,
+            camEnabled: isCameraOn,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (error) {
+      showSnackBarMessage(message: error.toString(), context: context);
+    }
   }
 
   Future<void> joinMeeting(callType, displayName, meetingId) async {
@@ -330,7 +334,6 @@ class _JoinScreenState extends State<JoinScreen> {
           message: "Please enter Valid Meeting ID", context: context);
       return;
     }
-
     var validMeeting = await validateMeeting(_token, meetingId);
     if (validMeeting) {
       Navigator.push(
