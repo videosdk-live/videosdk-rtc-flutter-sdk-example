@@ -21,12 +21,34 @@ class _JoiningDetailsState extends State<JoiningDetails> {
   String _meetingId = "";
   String _displayName = "";
   String _callType = "";
-
+  String meetingMode = "GROUP";
+  List<String> meetingModes = ["ONE_TO_ONE", "GROUP"];
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        DropdownButton<String>(
+          value: meetingMode,
+          icon: const Icon(Icons.arrow_downward),
+          elevation: 16,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+          ),
+          onChanged: (String? value) {
+            // This is called when the user selects an item.
+            setState(() {
+              meetingMode = value!;
+            });
+          },
+          items: meetingModes.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+        const VerticalSpacer(16),
         if (!widget.isCreateMeeting)
           Container(
             decoration: BoxDecoration(

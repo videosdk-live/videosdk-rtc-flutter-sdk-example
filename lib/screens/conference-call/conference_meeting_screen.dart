@@ -1,25 +1,23 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
-import 'package:videosdk_flutter_example/widgets/common/joining/participant_limit_reached.dart';
-import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
+import 'package:videosdk_flutter_example/screens/common/join_screen.dart';
+import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
-import 'package:videosdk_flutter_example/widgets/one-to-one/one_to_one_meeting_container.dart';
+import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
+import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
+import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import '../../widgets/common/chat/chat_view.dart';
+import 'package:videosdk_flutter_example/widgets/conference-call/conference_meeting_container.dart';
 
-import '../../utils/toast.dart';
-import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
-import '../common/join_screen.dart';
-
-// Meeting Screen
-class OneToOneMeetingScreen extends StatefulWidget {
+class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const OneToOneMeetingScreen({
+  const ConfereneceMeetingScreen({
     Key? key,
     required this.meetingId,
     required this.token,
@@ -30,17 +28,17 @@ class OneToOneMeetingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _OneToOneMeetingScreenState createState() => _OneToOneMeetingScreenState();
+  State<ConfereneceMeetingScreen> createState() =>
+      _ConfereneceMeetingScreenState();
 }
 
-class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
+class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "STOPPED";
   // Meeting
   late Room meeting;
   bool _joined = false;
-  bool _moreThan2Participants = false;
 
   // Streams
   Stream? shareStream;
@@ -115,7 +113,8 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                     fullScreen = !fullScreen;
                                   })
                                 },
-                            child: OneToOneMeetingContainer(meeting: meeting)),
+                            child:
+                                ConferenceMeetingContainer(meeting: meeting)),
                       ),
                       AnimatedCrossFade(
                         duration: Duration(milliseconds: 300),
@@ -233,9 +232,6 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                             } else if (option == "participants") {
                               showModalBottomSheet(
                                 context: context,
-                                // constraints: BoxConstraints(
-                                //     maxHeight: MediaQuery.of(context).size.height -
-                                //         statusbarHeight),
                                 isScrollControlled: false,
                                 builder: (context) =>
                                     ParticipantList(meeting: meeting),
@@ -247,11 +243,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                     ],
                   )),
             )
-          : _moreThan2Participants
-              ? ParticipantLimitReached(
-                  meeting: meeting,
-                )
-              : const WaitingToJoin(),
+          : const WaitingToJoin(),
     );
   }
 
@@ -260,19 +252,12 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     _meeting.on(
       Events.roomJoined,
       () {
-        if (_meeting.participants.length > 1) {
-          setState(() {
-            meeting = _meeting;
-            _moreThan2Participants = true;
-          });
-        } else {
-          setState(() {
-            meeting = _meeting;
-            _joined = true;
-          });
+        setState(() {
+          meeting = _meeting;
+          _joined = true;
+        });
 
-          subscribeToChatMessages(_meeting);
-        }
+        subscribeToChatMessages(_meeting);
       },
     );
 
@@ -354,22 +339,6 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     });
 
     _meeting.on(
-        Events.participantLeft,
-        (participant) => {
-              if (_moreThan2Participants)
-                {
-                  if (_meeting.participants.length < 2)
-                    {
-                      setState(() {
-                        _joined = true;
-                        _moreThan2Participants = false;
-                      }),
-                      subscribeToChatMessages(_meeting),
-                    }
-                }
-            });
-
-    _meeting.on(
         Events.error,
         (error) => {
               showSnackBarMessage(
@@ -384,8 +353,6 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     meeting.pubSub.subscribe("CHAT", (message) {
       if (message.senderId != meeting.localParticipant.id) {
         if (mounted) {
-          // print("navigator key");
-          // print(navigatorKey.currentWidget?.key.toString());
           if (showChatSnackbar) {
             showSnackBarMessage(
                 message: message.senderName + ": " + message.message,
