@@ -4,10 +4,10 @@ import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 
 class JoiningDetails extends StatefulWidget {
-  bool isCreateMeeting;
-  Function onClickMeetingJoin;
+  final bool isCreateMeeting;
+  final Function onClickMeetingJoin;
 
-  JoiningDetails(
+  const JoiningDetails(
       {Key? key,
       required this.isCreateMeeting,
       required this.onClickMeetingJoin})
@@ -20,7 +20,6 @@ class JoiningDetails extends StatefulWidget {
 class _JoiningDetailsState extends State<JoiningDetails> {
   String _meetingId = "";
   String _displayName = "";
-  String _callType = "";
   String meetingMode = "GROUP";
   List<String> meetingModes = ["ONE_TO_ONE", "GROUP"];
   @override
@@ -28,25 +27,33 @@ class _JoiningDetailsState extends State<JoiningDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DropdownButton<String>(
-          value: meetingMode,
-          icon: const Icon(Icons.arrow_downward),
-          elevation: 16,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
+        Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12), color: black750),
+          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: meetingMode,
+              icon: const Icon(Icons.arrow_drop_down),
+              elevation: 16,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+              onChanged: (String? value) {
+                setState(() {
+                  meetingMode = value!;
+                });
+              },
+              alignment: AlignmentDirectional.center,
+              isExpanded: true,
+              items: meetingModes.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
           ),
-          onChanged: (String? value) {
-            // This is called when the user selects an item.
-            setState(() {
-              meetingMode = value!;
-            });
-          },
-          items: meetingModes.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
         ),
         const VerticalSpacer(16),
         if (!widget.isCreateMeeting)
@@ -67,7 +74,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                   border: InputBorder.none),
             ),
           ),
-        const VerticalSpacer(16),
+        if (!widget.isCreateMeeting) const VerticalSpacer(16),
         Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12), color: black750),
@@ -104,7 +111,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                 return;
               }
               widget.onClickMeetingJoin(
-                  _meetingId.trim(), _callType, _displayName.trim());
+                  _meetingId.trim(), meetingMode, _displayName.trim());
             }),
       ],
     );
