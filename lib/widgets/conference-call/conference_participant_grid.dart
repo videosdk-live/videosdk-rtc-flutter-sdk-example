@@ -19,6 +19,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
   String? presenterId;
   int numberofColumns = 1;
   int numberOfMaxOnScreenParticipants = 6;
+  String quality = "high";
 
   Map<String, Participant> participants = {};
   Map<String, Participant> onScreenParticipants = {};
@@ -69,6 +70,16 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: ParticipantGridTile(
+                        key: Key(onScreenParticipants.values
+                            .toList()
+                            .sublist(
+                                i * numberofColumns,
+                                (i + 1) * numberofColumns >
+                                        onScreenParticipants.length
+                                    ? onScreenParticipants.length
+                                    : (i + 1) * numberofColumns)
+                            .elementAt(j)
+                            .id),
                         participant: onScreenParticipants.values
                             .toList()
                             .sublist(
@@ -77,7 +88,9 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
                                         onScreenParticipants.length
                                     ? onScreenParticipants.length
                                     : (i + 1) * numberofColumns)
-                            .elementAt(j)),
+                            .elementAt(j),
+                        activeSpeakerId: activeSpeakerId,
+                        quality: quality),
                   ),
                 )
             ],
@@ -91,6 +104,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.on(
       Events.participantJoined,
       (Participant participant) {
+        // addParticipantListener(participant);
         final newParticipants = participants;
         newParticipants[participant.id] = participant;
         setState(() {
@@ -109,6 +123,16 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
         newParticipants.remove(participantId);
         setState(() {
           participants = newParticipants;
+          updateOnScreenParticipants();
+        });
+      },
+    );
+
+    _meeting.on(
+      Events.speakerChanged,
+      (_activeSpeakerId) {
+        setState(() {
+          activeSpeakerId = _activeSpeakerId;
           updateOnScreenParticipants();
         });
       },
@@ -147,6 +171,16 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     });
   }
 
+  addParticipantListener(Participant participant) {
+    participant.on(Events.streamEnabled, (Stream stream) {
+      if (stream.kind == "video") {
+        if (!stream.track.paused) {
+          stream.track.pause();
+        }
+      }
+    });
+  }
+
   updateOnScreenParticipants() {
     Map<String, Participant> newScreenParticipants = <String, Participant>{};
     participants.values
@@ -159,6 +193,14 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
         .forEach((participant) {
       newScreenParticipants.putIfAbsent(participant.id, () => participant);
     });
+    if (!newScreenParticipants.containsKey(activeSpeakerId) &&
+        activeSpeakerId != null) {
+      newScreenParticipants.remove(newScreenParticipants.keys.last);
+      newScreenParticipants.putIfAbsent(
+          activeSpeakerId!,
+          () => participants.values
+              .firstWhere((element) => element.id == activeSpeakerId));
+    }
     if (!listEquals(newScreenParticipants.keys.toList(),
         onScreenParticipants.keys.toList())) {
       setState(() {
@@ -167,9 +209,14 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
                 numberOfMaxOnScreenParticipants == 2
             ? 2
             : 1;
+        quality = newScreenParticipants.length > 4
+            ? "low"
+            : newScreenParticipants.length > 2
+                ? "medium"
+                : "high";
       });
     }
-    pauseInvisibleParticipants();
+    // pauseInvisibleParticipants();
   }
 
   pauseInvisibleParticipants() {

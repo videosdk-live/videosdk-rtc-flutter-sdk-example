@@ -5,11 +5,15 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 class ParticipantGridTile extends StatefulWidget {
   final Participant participant;
   final bool isLocalParticipant;
-  const ParticipantGridTile({
-    Key? key,
-    required this.participant,
-    this.isLocalParticipant = false,
-  }) : super(key: key);
+  final String? activeSpeakerId;
+  final String? quality;
+  const ParticipantGridTile(
+      {Key? key,
+      required this.participant,
+      required this.quality,
+      this.isLocalParticipant = false,
+      required this.activeSpeakerId})
+      : super(key: key);
 
   @override
   State<ParticipantGridTile> createState() => _ParticipantGridTileState();
@@ -28,6 +32,9 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
+          // if (stream.track.paused) {
+          //   stream.track.resume();
+          // }
         } else if (stream.kind == 'audio') {
           audioStream = stream;
         }
@@ -48,6 +55,10 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: black800,
+        border: widget.activeSpeakerId != null &&
+                widget.activeSpeakerId == widget.participant.id
+            ? Border.all(color: Colors.blueAccent)
+            : null,
       ),
       child: Stack(
         children: [
@@ -111,6 +122,7 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (_stream.kind == 'video') {
           videoStream = _stream;
+          widget.participant.setQuality(widget.quality);
         } else if (_stream.kind == 'audio') {
           audioStream = _stream;
         }
@@ -141,6 +153,7 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
           videoStream = _stream;
+          widget.participant.setQuality(widget.quality);
         } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
           audioStream = _stream;
         }
@@ -152,7 +165,9 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   void dispose() {
     widget.participant.streams.forEach((key, stream) {
       // if (stream.kind == 'video') {
-      //   stream.track.pause();
+      //   if (!stream.track.paused) {
+      //     stream.track.pause();
+      //   }
       // }
     });
     super.dispose();
