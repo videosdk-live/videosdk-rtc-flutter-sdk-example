@@ -118,11 +118,11 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                             child: OneToOneMeetingContainer(meeting: meeting)),
                       ),
                       AnimatedCrossFade(
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         crossFadeState: !fullScreen
                             ? CrossFadeState.showFirst
                             : CrossFadeState.showSecond,
-                        secondChild: SizedBox.shrink(),
+                        secondChild: const SizedBox.shrink(),
                         firstChild: MeetingActionBar(
                           isMicEnabled: audioStream != null,
                           isCamEnabled: videoStream != null,
@@ -228,7 +228,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                 setState(() {
                                   recordingState = "STARTING";
                                 });
-                                meeting.startRecording("");
+                                meeting.startRecording();
                               }
                             } else if (option == "participants") {
                               showModalBottomSheet(

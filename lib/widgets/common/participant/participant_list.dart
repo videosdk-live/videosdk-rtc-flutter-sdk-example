@@ -39,7 +39,8 @@ class _ParticipantListState extends State<ParticipantList> {
                     "Participants (" +
                         (widget.meeting.participants.length + 1).toString() +
                         ")",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 18),
                   ),
                 ),
               ),
@@ -53,9 +54,6 @@ class _ParticipantListState extends State<ParticipantList> {
         automaticallyImplyLeading: false,
         backgroundColor: secondaryColor,
         elevation: 0,
-        actions: [
-          // Close Button
-        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -63,13 +61,11 @@ class _ParticipantListState extends State<ParticipantList> {
           child: Column(
             children: [
               Expanded(
-                child: _participants == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: _participants.values.length,
-                        itemBuilder: (context, index) => ParticipantListItem(
-                            participant: _participants.values.elementAt(index)),
-                      ),
+                child: ListView.builder(
+                  itemCount: _participants.values.length,
+                  itemBuilder: (context, index) => ParticipantListItem(
+                      participant: _participants.values.elementAt(index)),
+                ),
               ),
             ],
           ),

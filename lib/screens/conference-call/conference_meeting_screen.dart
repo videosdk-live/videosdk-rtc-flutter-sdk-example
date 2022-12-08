@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/screens/common/join_screen.dart';
@@ -12,7 +9,8 @@ import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import 'package:videosdk_flutter_example/widgets/conference-call/conference_meeting_container.dart';
+import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
+import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
 
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -113,15 +111,21 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                     fullScreen = !fullScreen;
                                   })
                                 },
-                            child:
-                                ConferenceMeetingContainer(meeting: meeting)),
+                            child: Column(
+                              children: [
+                                ConferenseScreenShareView(meeting: meeting),
+                                Flexible(
+                                    child: ConferenceParticipantGrid(
+                                        meeting: meeting))
+                              ],
+                            )),
                       ),
                       AnimatedCrossFade(
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         crossFadeState: !fullScreen
                             ? CrossFadeState.showFirst
                             : CrossFadeState.showSecond,
-                        secondChild: SizedBox.shrink(),
+                        secondChild: const SizedBox.shrink(),
                         firstChild: MeetingActionBar(
                           isMicEnabled: audioStream != null,
                           isCamEnabled: videoStream != null,
@@ -227,7 +231,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                 setState(() {
                                   recordingState = "STARTING";
                                 });
-                                meeting.startRecording("");
+                                meeting.startRecording();
                               }
                             } else if (option == "participants") {
                               showModalBottomSheet(

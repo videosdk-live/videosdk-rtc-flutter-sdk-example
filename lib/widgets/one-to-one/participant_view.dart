@@ -5,15 +5,15 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 
 class ParticipantView extends StatelessWidget {
-  Stream? stream;
-  bool isMicOn = false;
-  Color? avatarBackground;
-  String participantName = "A";
-  bool isLocalScreenShare;
-  bool isScreenShare;
-  double avatarTextSize;
-  Function() onStopScreeenSharePressed;
-  ParticipantView(
+  final Stream? stream;
+  final bool isMicOn;
+  final Color? avatarBackground;
+  final String participantName;
+  final bool isLocalScreenShare;
+  final bool isScreenShare;
+  final double avatarTextSize;
+  final Function() onStopScreeenSharePressed;
+  const ParticipantView(
       {Key? key,
       required this.stream,
       required this.isMicOn,

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 
 class ParticipantLimitReached extends StatelessWidget {
-  Room meeting;
-  ParticipantLimitReached({Key? key, required this.meeting}) : super(key: key);
+  final Room meeting;
+  const ParticipantLimitReached({Key? key, required this.meeting})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

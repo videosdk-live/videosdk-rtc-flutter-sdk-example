@@ -30,7 +30,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
         Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12), color: black750),
-          padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: meetingMode,
@@ -44,12 +44,19 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                   meetingMode = value!;
                 });
               },
-              alignment: AlignmentDirectional.center,
+              borderRadius: BorderRadius.circular(12),
+              dropdownColor: black750,
+              alignment: AlignmentDirectional.centerStart,
               isExpanded: true,
               items: meetingModes.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Center(
+                    child: Text(
+                      value == "GROUP" ? "Group Call" : "One to One Call",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 );
               }).toList(),
             ),
