@@ -33,7 +33,7 @@ class ConfereneceMeetingScreen extends StatefulWidget {
 class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
-  String recordingState = "STOPPED";
+  String recordingState = "RECORDING_STOPPED";
   // Meeting
   late Room meeting;
   bool _joined = false;
@@ -221,16 +221,19 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                     context: context);
                               }
                             } else if (option == "recording") {
-                              if (recordingState == "STARTED") {
+                              if (recordingState == "RECORDING_STOPPING") {
+                                showSnackBarMessage(
+                                    message: "Recording is in stopping state",
+                                    context: context);
+                              } else if (recordingState ==
+                                  "RECORDING_STARTED") {
                                 meeting.stopRecording();
-                              } else if (recordingState == "STARTING") {
+                              } else if (recordingState ==
+                                  "RECORDING_STARTING") {
                                 showSnackBarMessage(
                                     message: "Recording is in starting state",
                                     context: context);
                               } else {
-                                setState(() {
-                                  recordingState = "STARTING";
-                                });
                                 meeting.startRecording();
                               }
                             } else if (option == "participants") {
@@ -278,21 +281,14 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     });
 
     // Called when recording is started
-    _meeting.on(Events.recordingStarted, () {
+    _meeting.on(Events.recordingStateChanged, (String status) {
       showSnackBarMessage(
-          message: "Meeting recording started", context: context);
+          message:
+              "Meeting recording ${status == "RECORDING_STARTING" ? "is starting" : status == "RECORDING_STARTED" ? "started" : status == "RECORDING_STOPPING" ? "is stopping" : "stopped"}",
+          context: context);
 
       setState(() {
-        recordingState = "STARTED";
-      });
-    });
-    // Called when recording is stopped
-    _meeting.on(Events.recordingStopped, () {
-      showSnackBarMessage(
-          message: "Meeting recording stopped", context: context);
-
-      setState(() {
-        recordingState = "STOPPED";
+        recordingState = status;
       });
     });
 

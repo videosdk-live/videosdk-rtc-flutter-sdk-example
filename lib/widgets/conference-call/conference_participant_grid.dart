@@ -29,7 +29,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     localParticipant = widget.meeting.localParticipant;
     participants.putIfAbsent(localParticipant.id, () => localParticipant);
     participants.addAll(widget.meeting.participants);
-
+    presenterId = widget.meeting.activePresenterId;
     updateOnScreenParticipants();
     // Setting meeting event listeners
     setMeetingListeners(widget.meeting);
@@ -141,7 +141,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.on(Events.presenterChanged, (_presenterId) {
       setState(() {
         presenterId = _presenterId;
-        numberOfMaxOnScreenParticipants = presenterId != null ? 2 : 6;
+        numberOfMaxOnScreenParticipants = _presenterId != null ? 2 : 6;
         updateOnScreenParticipants();
       });
     });
@@ -205,15 +205,23 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
         onScreenParticipants.keys.toList())) {
       setState(() {
         onScreenParticipants = newScreenParticipants;
-        numberofColumns = newScreenParticipants.length > 2 ||
-                numberOfMaxOnScreenParticipants == 2
-            ? 2
-            : 1;
         quality = newScreenParticipants.length > 4
             ? "low"
             : newScreenParticipants.length > 2
                 ? "medium"
                 : "high";
+      });
+    }
+    if (numberofColumns !=
+        (newScreenParticipants.length > 2 ||
+                numberOfMaxOnScreenParticipants == 2
+            ? 2
+            : 1)) {
+      setState(() {
+        numberofColumns = newScreenParticipants.length > 2 ||
+                numberOfMaxOnScreenParticipants == 2
+            ? 2
+            : 1;
       });
     }
     // pauseInvisibleParticipants();

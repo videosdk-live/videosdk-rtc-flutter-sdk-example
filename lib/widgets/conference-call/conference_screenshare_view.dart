@@ -95,8 +95,9 @@ class _ConferenseScreenShareViewState extends State<ConferenseScreenShareView> {
                           borderRadius: BorderRadius.circular(12),
                           color: black700,
                         ),
-                        child: Text(
-                            "${isLocalScreenShare ? "You" : _presenterParticipant!.displayName} is presenting"),
+                        child: Text(isLocalScreenShare
+                            ? "You are presenting"
+                            : "${_presenterParticipant!.displayName} is presenting"),
                       ),
                     ),
                   ],

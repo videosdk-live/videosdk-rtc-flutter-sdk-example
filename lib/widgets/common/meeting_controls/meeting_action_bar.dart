@@ -187,9 +187,9 @@ class MeetingActionBar extends StatelessWidget {
               itemBuilder: (context) => <PopupMenuEntry>[
                     _buildMeetingPoupItem(
                       "recording",
-                      recordingState == "STARTED"
+                      recordingState == "RECORDING_STARTED"
                           ? "Stop Recording"
-                          : recordingState == "STARTING"
+                          : recordingState == "RECORDING_STARTING"
                               ? "Recording is starting"
                               : "Start Recording",
                       null,

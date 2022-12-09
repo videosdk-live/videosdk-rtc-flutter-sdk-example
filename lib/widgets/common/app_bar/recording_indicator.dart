@@ -18,16 +18,21 @@ class _RecordingIndicatorState extends State<RecordingIndicator>
   void initState() {
     _animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
-    _animationController.repeat(reverse: true);
+    if (widget.recordingState == "RECORDING_STARTING" ||
+        widget.recordingState == "RECORDING_STOPPING") {
+      _animationController.repeat(reverse: true);
+    }
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant RecordingIndicator oldWidget) {
-    if (widget.recordingState == "STARTED" ||
-        widget.recordingState == "STOPPED") {
+    if (widget.recordingState == "RECORDING_STARTED" ||
+        widget.recordingState == "RECORDING_STOPPED") {
       _animationController.stop();
       _animationController.forward();
+    } else {
+      _animationController.repeat(reverse: true);
     }
     super.didUpdateWidget(oldWidget);
   }

@@ -53,11 +53,13 @@ class MeetingAppBarState extends State<MeetingAppBar> {
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
           child: Row(
             children: [
-              if (widget.recordingState == "STARTING" ||
-                  widget.recordingState == "STARTED")
+              if (widget.recordingState == "RECORDING_STARTING" ||
+                  widget.recordingState == "RECORDING_STOPPING" ||
+                  widget.recordingState == "RECORDING_STARTED")
                 RecordingIndicator(recordingState: widget.recordingState),
-              if (widget.recordingState == "STARTING" ||
-                  widget.recordingState == "STARTED")
+              if (widget.recordingState == "RECORDING_STARTING" ||
+                  widget.recordingState == "RECORDING_STOPPING" ||
+                  widget.recordingState == "RECORDING_STARTED")
                 const HorizontalSpacer(),
               Expanded(
                 child: Column(
