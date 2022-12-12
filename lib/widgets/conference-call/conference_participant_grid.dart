@@ -94,7 +94,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
                   ),
                 )
             ],
-          ))
+          )),
       ],
     );
   }
@@ -104,7 +104,6 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.on(
       Events.participantJoined,
       (Participant participant) {
-        // addParticipantListener(participant);
         final newParticipants = participants;
         newParticipants[participant.id] = participant;
         setState(() {
@@ -171,16 +170,6 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     });
   }
 
-  addParticipantListener(Participant participant) {
-    participant.on(Events.streamEnabled, (Stream stream) {
-      if (stream.kind == "video") {
-        if (!stream.track.paused) {
-          stream.track.pause();
-        }
-      }
-    });
-  }
-
   updateOnScreenParticipants() {
     Map<String, Participant> newScreenParticipants = <String, Participant>{};
     participants.values
@@ -224,24 +213,5 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
             : 1;
       });
     }
-    // pauseInvisibleParticipants();
-  }
-
-  pauseInvisibleParticipants() {
-    participants.forEach((key, value) {
-      if (!onScreenParticipants.containsKey(key)) {
-        value.streams.forEach((key, value) {
-          if (value.kind == "video") {
-            value.track.pause();
-          }
-        });
-      } else {
-        value.streams.forEach((key, value) {
-          if (value.kind == "video") {
-            value.track.resume();
-          }
-        });
-      }
-    });
   }
 }

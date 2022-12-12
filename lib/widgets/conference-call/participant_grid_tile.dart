@@ -32,9 +32,7 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
-          // if (stream.track.paused) {
-          //   stream.track.resume();
-          // }
+          widget.participant.setQuality(widget.quality);
         } else if (stream.kind == 'audio') {
           audioStream = stream;
         }
@@ -159,17 +157,5 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
         }
       });
     });
-  }
-
-  @override
-  void dispose() {
-    widget.participant.streams.forEach((key, stream) {
-      // if (stream.kind == 'video') {
-      //   if (!stream.track.paused) {
-      //     stream.track.pause();
-      //   }
-      // }
-    });
-    super.dispose();
   }
 }
