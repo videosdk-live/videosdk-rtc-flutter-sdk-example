@@ -17,14 +17,12 @@ Future<String> fetchToken(BuildContext context) async {
     showSnackBarMessage(
         message: "Please set the environment variables", context: context);
     throw Exception("Either AUTH_TOKEN or AUTH_URL is not set in .env file");
-    return "";
   }
 
   if ((_AUTH_TOKEN?.isNotEmpty ?? false) && (_AUTH_URL?.isNotEmpty ?? false)) {
     showSnackBarMessage(
         message: "Please set only one environment variable", context: context);
     throw Exception("Either AUTH_TOKEN or AUTH_URL can be set in .env file");
-    return "";
   }
 
   if (_AUTH_URL?.isNotEmpty ?? false) {
@@ -73,7 +71,7 @@ Future<dynamic> fetchSession(String token, String meetingId) async {
   final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
   final Uri getMeetingIdUrl =
-      Uri.parse('$_VIDEOSDK_API_ENDPOINT/sessions?roomId=${meetingId}');
+      Uri.parse('$_VIDEOSDK_API_ENDPOINT/sessions?roomId=$meetingId');
   final http.Response meetingIdResponse =
       await http.get(getMeetingIdUrl, headers: {
     "Authorization": token,

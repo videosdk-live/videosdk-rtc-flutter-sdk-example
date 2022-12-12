@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:videosdk_flutter_example/screens/conference-call/conference_meeting_screen.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining_details/joining_details.dart';
 
@@ -153,8 +154,8 @@ class _JoinScreenState extends State<JoinScreen> {
                                                     ? grey
                                                     : Colors.white),
                                             style: ElevatedButton.styleFrom(
-                                              shape: CircleBorder(),
-                                              padding: EdgeInsets.all(12),
+                                              shape: const CircleBorder(),
+                                              padding: const EdgeInsets.all(12),
                                               primary:
                                                   isMicOn ? Colors.white : red,
                                               onPrimary: Colors.black,
@@ -173,8 +174,8 @@ class _JoinScreenState extends State<JoinScreen> {
                                                   isCameraOn = !isCameraOn);
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              shape: CircleBorder(),
-                                              padding: EdgeInsets.all(12),
+                                              shape: const CircleBorder(),
+                                              padding: const EdgeInsets.all(12),
                                               primary: isCameraOn
                                                   ? Colors.white
                                                   : red,
@@ -311,18 +312,33 @@ class _JoinScreenState extends State<JoinScreen> {
   Future<void> createAndJoinMeeting(callType, displayName) async {
     try {
       var _meetingID = await createMeeting(_token);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OneToOneMeetingScreen(
-            token: _token,
-            meetingId: _meetingID,
-            displayName: displayName,
-            micEnabled: isMicOn,
-            camEnabled: isCameraOn,
+      if (callType == "GROUP") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfereneceMeetingScreen(
+              token: _token,
+              meetingId: _meetingID,
+              displayName: displayName,
+              micEnabled: isMicOn,
+              camEnabled: isCameraOn,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OneToOneMeetingScreen(
+              token: _token,
+              meetingId: _meetingID,
+              displayName: displayName,
+              micEnabled: isMicOn,
+              camEnabled: isCameraOn,
+            ),
+          ),
+        );
+      }
     } catch (error) {
       showSnackBarMessage(message: error.toString(), context: context);
     }
@@ -336,18 +352,33 @@ class _JoinScreenState extends State<JoinScreen> {
     }
     var validMeeting = await validateMeeting(_token, meetingId);
     if (validMeeting) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OneToOneMeetingScreen(
-            token: _token,
-            meetingId: meetingId,
-            displayName: displayName,
-            micEnabled: isMicOn,
-            camEnabled: isCameraOn,
+      if (callType == "GROUP") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfereneceMeetingScreen(
+              token: _token,
+              meetingId: meetingId,
+              displayName: displayName,
+              micEnabled: isMicOn,
+              camEnabled: isCameraOn,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OneToOneMeetingScreen(
+              token: _token,
+              meetingId: meetingId,
+              displayName: displayName,
+              micEnabled: isMicOn,
+              camEnabled: isCameraOn,
+            ),
+          ),
+        );
+      }
     } else {
       showSnackBarMessage(message: "Invalid Meeting ID", context: context);
     }

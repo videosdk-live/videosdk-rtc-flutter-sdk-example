@@ -45,7 +45,7 @@ class MeetingActionBar extends StatelessWidget {
         children: [
           PopupMenuButton(
               position: PopupMenuPosition.under,
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               color: black700,
               icon: Container(
                 decoration: BoxDecoration(
@@ -59,7 +59,7 @@ class MeetingActionBar extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              offset: Offset(0, -185),
+              offset: const Offset(0, -185),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -108,7 +108,7 @@ class MeetingActionBar extends StatelessWidget {
                       onTapDown: (details) =>
                           {onSwitchMicButtonPressed(details)},
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: Icon(
                           Icons.arrow_drop_down,
                           color: isMicEnabled ? Colors.white : primaryColor,
@@ -165,7 +165,7 @@ class MeetingActionBar extends StatelessWidget {
           // More options
           PopupMenuButton(
               position: PopupMenuPosition.under,
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               color: black700,
               icon: Container(
                 decoration: BoxDecoration(
@@ -179,7 +179,7 @@ class MeetingActionBar extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              offset: Offset(0, -250),
+              offset: const Offset(0, -250),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -187,9 +187,9 @@ class MeetingActionBar extends StatelessWidget {
               itemBuilder: (context) => <PopupMenuEntry>[
                     _buildMeetingPoupItem(
                       "recording",
-                      recordingState == "STARTED"
+                      recordingState == "RECORDING_STARTED"
                           ? "Stop Recording"
-                          : recordingState == "STARTING"
+                          : recordingState == "RECORDING_STARTING"
                               ? "Recording is starting"
                               : "Start Recording",
                       null,
@@ -221,7 +221,7 @@ class MeetingActionBar extends StatelessWidget {
       String value, String title, String? description, Widget leadingIcon) {
     return PopupMenuItem(
       value: value,
-      padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+      padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
       child: Row(children: [
         leadingIcon,
         const HorizontalSpacer(12),
@@ -235,7 +235,7 @@ class MeetingActionBar extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: Colors.white),
             ),
-            if (description != null) VerticalSpacer(4),
+            if (description != null) const VerticalSpacer(4),
             if (description != null)
               Text(
                 description,

@@ -1,11 +1,9 @@
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 
 class RecordingIndicator extends StatefulWidget {
-  String recordingState;
-  RecordingIndicator({Key? key, required this.recordingState})
+  final String recordingState;
+  const RecordingIndicator({Key? key, required this.recordingState})
       : super(key: key);
 
   @override
@@ -18,21 +16,23 @@ class _RecordingIndicatorState extends State<RecordingIndicator>
 
   @override
   void initState() {
-    // TODO: implement initState
-
     _animationController =
-        new AnimationController(vsync: this, duration: Duration(seconds: 1));
-    _animationController.repeat(reverse: true);
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    if (widget.recordingState == "RECORDING_STARTING" ||
+        widget.recordingState == "RECORDING_STOPPING") {
+      _animationController.repeat(reverse: true);
+    }
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant RecordingIndicator oldWidget) {
-    // TODO: implement didUpdateWidget
-    if (widget.recordingState == "STARTED" ||
-        widget.recordingState == "STOPPED") {
+    if (widget.recordingState == "RECORDING_STARTED" ||
+        widget.recordingState == "RECORDING_STOPPED") {
       _animationController.stop();
       _animationController.forward();
+    } else {
+      _animationController.repeat(reverse: true);
     }
     super.didUpdateWidget(oldWidget);
   }

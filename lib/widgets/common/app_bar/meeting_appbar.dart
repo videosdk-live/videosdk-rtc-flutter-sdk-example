@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
@@ -14,11 +11,11 @@ import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/recording_indicator.dart';
 
 class MeetingAppBar extends StatefulWidget {
-  String token;
-  Room meeting;
-  String recordingState;
-  bool isFullScreen;
-  MeetingAppBar(
+  final String token;
+  final Room meeting;
+  final String recordingState;
+  final bool isFullScreen;
+  const MeetingAppBar(
       {Key? key,
       required this.meeting,
       required this.token,
@@ -56,11 +53,13 @@ class MeetingAppBarState extends State<MeetingAppBar> {
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
           child: Row(
             children: [
-              if (widget.recordingState == "STARTING" ||
-                  widget.recordingState == "STARTED")
+              if (widget.recordingState == "RECORDING_STARTING" ||
+                  widget.recordingState == "RECORDING_STOPPING" ||
+                  widget.recordingState == "RECORDING_STARTED")
                 RecordingIndicator(recordingState: widget.recordingState),
-              if (widget.recordingState == "STARTING" ||
-                  widget.recordingState == "STARTED")
+              if (widget.recordingState == "RECORDING_STARTING" ||
+                  widget.recordingState == "RECORDING_STOPPING" ||
+                  widget.recordingState == "RECORDING_STARTED")
                 const HorizontalSpacer(),
               Expanded(
                 child: Column(

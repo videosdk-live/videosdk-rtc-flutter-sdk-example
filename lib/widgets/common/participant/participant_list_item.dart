@@ -36,15 +36,15 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
       decoration: BoxDecoration(
           color: black600, borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            margin: EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(right: 10),
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: black500,
@@ -63,7 +63,7 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
             ),
           )),
           Container(
-            margin: EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(right: 10),
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: audioStream != null ? black600 : red,
