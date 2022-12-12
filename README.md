@@ -379,7 +379,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 - **One-to-One meeting** - The One-to-One meeting allows 2 participants to join a meeting in the app.
 
-- **Group Meeting** - 🔜 **_COMING SOON_**
+- **Group Meeting** - The Group meeting allows any number of participants to join a meeting in the app with maximum 6 participants on screen.
 
 <br/>
 
@@ -388,6 +388,7 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 - We have seprated screens and widget in following folder structure:
   - `one-to-one` - It includes all files related to OneToOne meeting.
   - `common` - It inclues all the files that are used in both meeting type (OneToOne and Group calls).
+  - `conference-call` - It includes all files related to the conference call.
 
 ### Common Content
 
@@ -401,11 +402,14 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
   - If `Join Meeting` is clicked, it will show following:
 
+    - `Dropdown for Meeting Type` - These dropdown is to select the meeting mode: Group Call or One To One call.
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
     - `EditText for MeetingId` - This edit text will contain the meeting Id that you want to join.
     - `Join Meeting Button` - This button will call api for join meeting with meetingId that you entered.
 
   - If `Create Meeting` is clicked, it will show following:
+
+    - `Dropdown for Meeting Type` - These dropdown is to select the meeting mode: Group Call or One To One call.
     - `EditText for ParticipantName` - This edit text will contain name of the participant.
     - `Join Meeting Button` - This button will call api for join meeting with a new meetingId
 
@@ -456,6 +460,14 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 - `one_to_one_meeting_container.dart`: It contains the logic to render the participants in the miniview and large view.
 
 - `participant_view.dart`: It is used to display the individual stream of the participant.
+
+### conference-call
+
+- `conference_participant_grid.dart`: It contains the management of participant grid.
+
+- `participant_grid_tile.dart`: It contains the widget for a single participant which is displayed int he grid.
+
+- `conference_screenshare_view.dart`: It contains the widget which will dislpay the screenshare in the meeting.
 
 ## Examples
 
