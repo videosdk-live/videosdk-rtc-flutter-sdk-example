@@ -17,3 +17,5 @@ const Color grey = Color.fromRGBO(29, 41, 57, 1);
 const Color red = Color.fromRGBO(255, 93, 93, 1);
 const Color purple = Color.fromRGBO(85, 104, 254, 1);
 const Color textGray = Color.fromRGBO(154, 159, 156, 1);
+const Color yellow = Color.fromRGBO(250, 167, 19, 1);
+const Color green = Color.fromRGBO(59, 165, 93, 1);
