@@ -17,11 +17,21 @@ class _CallStatsState extends State<CallStats> {
   Timer? statsTimer;
   bool showFullStats = false;
   int? score;
+  PersistentBottomSheetController? bottomSheetController;
 
   @override
   void initState() {
-    statsTimer = Timer.periodic(const Duration(seconds: 1), updateStats);
+    statsTimer =
+        Timer.periodic(const Duration(seconds: 1), (_) => {updateStats()});
     super.initState();
+    updateStats();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -33,39 +43,45 @@ class _CallStatsState extends State<CallStats> {
                 setState(() {
                   showFullStats = !showFullStats;
                 });
-                showModalBottomSheet(
+                bottomSheetController = showBottomSheet(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    barrierColor: Colors.transparent,
                     context: context,
                     builder: (_) {
                       return CallStatsBottomSheet(
                           participant: widget.participant);
-                    }).whenComplete(() => {
-                      setState(() {
-                        showFullStats = !showFullStats;
-                      })
                     });
+                bottomSheetController?.closed.then((value) {
+                  setState(() {
+                    showFullStats = !showFullStats;
+                  });
+                });
               },
               child: Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: score! > 7
                       ? green
                       : score! > 4
                           ? yellow
                           : red,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(Icons.network_cell),
+                child: const Icon(
+                  Icons.network_cell,
+                  size: 15,
+                ),
               ),
             )
           : null,
     );
   }
 
-  void updateStats(Timer timer) {
+  void updateStats() {
+    if (widget.participant.streams.isEmpty) {
+      bottomSheetController?.close();
+    }
     var _audioStats = widget.participant.getAudioStats();
     var _videoStats = widget.participant.getVideoStats();
     var vStats;
@@ -82,11 +98,11 @@ class _CallStatsState extends State<CallStats> {
     });
     var stats = {};
     if (_audioStats != null) {
-      stats = _audioStats[0];
-    } else if (vStats != null) {
+      if (_audioStats.isNotEmpty) stats = _audioStats[0];
+    }
+    if (vStats != null) {
       stats = vStats;
     }
-
     double packetLossPercent =
         (stats['packetsLost'] ?? 0.0) / (stats['totalPackets'] ?? 1);
     if (packetLossPercent.isNaN) {
@@ -94,7 +110,7 @@ class _CallStatsState extends State<CallStats> {
     }
     double jitter = stats['jitter'] ?? 0;
     double rtt = stats['rtt'] ?? 0;
-    double? _score = (stats.length) > 0 ? 100 : null;
+    double? _score = stats.isNotEmpty ? 100 : null;
     if (_score != null) {
       _score -= packetLossPercent * 50 > 50 ? 50 : packetLossPercent * 50;
       _score -= ((jitter / 30) * 25 > 25 ? 25 : (jitter / 30) * 25);
@@ -109,6 +125,9 @@ class _CallStatsState extends State<CallStats> {
   void dispose() {
     if (statsTimer != null) {
       statsTimer?.cancel();
+    }
+    if (widget.participant.streams.isEmpty) {
+      bottomSheetController?.close();
     }
     super.dispose();
   }

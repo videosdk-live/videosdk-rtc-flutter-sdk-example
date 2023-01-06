@@ -3,12 +3,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
+import 'package:videosdk_flutter_example/widgets/common/stats/call_stats.dart';
 
 class ParticipantView extends StatelessWidget {
   final Stream? stream;
   final bool isMicOn;
   final Color? avatarBackground;
-  final String participantName;
+  final Participant participant;
   final bool isLocalScreenShare;
   final bool isScreenShare;
   final double avatarTextSize;
@@ -18,7 +19,7 @@ class ParticipantView extends StatelessWidget {
       required this.stream,
       required this.isMicOn,
       required this.avatarBackground,
-      required this.participantName,
+      required this.participant,
       this.isLocalScreenShare = false,
       this.avatarTextSize = 50,
       required this.isScreenShare,
@@ -46,7 +47,8 @@ class ParticipantView extends StatelessWidget {
                           color: avatarBackground,
                         ),
                         child: Text(
-                          participantName.characters.first.toUpperCase(),
+                          participant.displayName.characters.first
+                              .toUpperCase(),
                           style: TextStyle(fontSize: avatarTextSize),
                         ),
                       )
@@ -100,10 +102,11 @@ class ParticipantView extends StatelessWidget {
                 color: black700,
               ),
               child: Text(isScreenShare
-                  ? "${isLocalScreenShare ? "You" : participantName} is presenting"
-                  : participantName),
+                  ? "${isLocalScreenShare ? "You" : participant.displayName} is presenting"
+                  : participant.displayName),
             ),
           ),
+        Positioned(top: 4, left: 4, child: CallStats(participant: participant)),
       ],
     );
   }

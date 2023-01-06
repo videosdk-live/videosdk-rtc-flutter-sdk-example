@@ -29,6 +29,13 @@ class _CallStatsBottomSheetState extends State<CallStatsBottomSheet> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Wrap(
       children: <Widget>[
@@ -253,8 +260,9 @@ class _CallStatsBottomSheetState extends State<CallStatsBottomSheet> {
     });
     var stats = {};
     if (_audioStats != null) {
-      stats = _audioStats[0];
-    } else if (vStats != null) {
+      if (_audioStats.isNotEmpty) stats = _audioStats[0];
+    }
+    if (vStats != null) {
       stats = vStats;
     }
 
@@ -271,7 +279,7 @@ class _CallStatsBottomSheetState extends State<CallStatsBottomSheet> {
       _score -= ((jitter / 30) * 25 > 25 ? 25 : (jitter / 30) * 25);
       _score -= ((rtt / 300) * 25 > 25 ? 25 : (rtt / 300) * 25);
     }
-    print("UPDATING STATS");
+
     setState(() {
       score = _score != null ? (_score / 10).toInt() : null;
       audioStats = _audioStats?[0];
