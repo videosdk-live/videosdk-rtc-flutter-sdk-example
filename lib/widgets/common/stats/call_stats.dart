@@ -70,7 +70,7 @@ class _CallStatsState extends State<CallStats> {
                 ),
                 child: const Icon(
                   Icons.network_cell,
-                  size: 15,
+                  size: 17,
                 ),
               ),
             )
