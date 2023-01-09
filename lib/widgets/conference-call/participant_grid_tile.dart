@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
+import 'package:videosdk_flutter_example/widgets/common/stats/call_stats.dart';
 
 class ParticipantGridTile extends StatefulWidget {
   final Participant participant;
@@ -110,6 +111,10 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
                     ? "You"
                     : widget.participant.displayName)),
           ),
+          Positioned(
+              top: 4,
+              left: 4,
+              child: CallStats(participant: widget.participant)),
         ],
       ),
     );

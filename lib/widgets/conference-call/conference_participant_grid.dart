@@ -145,13 +145,6 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
       });
     });
 
-    // Called when speaker is changed
-    _meeting.on(Events.speakerChanged, (_activeSpeakerId) {
-      setState(() {
-        activeSpeakerId = _activeSpeakerId;
-      });
-    });
-
     _meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
       if (stream.kind == "share") {
         setState(() {

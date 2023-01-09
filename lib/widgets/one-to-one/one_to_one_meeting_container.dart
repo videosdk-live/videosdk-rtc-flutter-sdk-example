@@ -75,9 +75,9 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
                     : localAudioStream != null,
                 onStopScreeenSharePressed: () =>
                     widget.meeting.disableScreenShare(),
-                participantName: remoteParticipant != null
-                    ? remoteParticipant!.displayName
-                    : localParticipant!.displayName,
+                participant: remoteParticipant != null
+                    ? remoteParticipant!
+                    : localParticipant!,
                 isLocalScreenShare: localShareStream != null,
                 isScreenShare:
                     remoteShareStream != null || localShareStream != null,
@@ -121,9 +121,9 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
                                 remoteShareStream != null),
                         onStopScreeenSharePressed: () =>
                             widget.meeting.disableScreenShare(),
-                        participantName: remoteShareStream != null
-                            ? remoteParticipant!.displayName
-                            : localParticipant!.displayName,
+                        participant: remoteShareStream != null
+                            ? remoteParticipant!
+                            : localParticipant!,
                         isLocalScreenShare: false,
                         isScreenShare: false,
                       )),
