@@ -39,7 +39,7 @@ jobs:
           echo "AUTH_TOKEN= ${{secrets.AUTH_TOKEN}}" >> .env
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.0.5"
+          flutter-version: "3.7.6"
           channel: "stable"
       #           cache: true
       # Build ipa.
