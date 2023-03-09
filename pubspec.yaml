@@ -3,24 +3,24 @@ description: A Flutter project for VideoSDK Demonstration.
 
 publish_to: "none"
 
-version: 1.0.0+13
+version: 1.0.0+14
 environment:
   sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^1.0.10
+  videosdk: ^1.0.11
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
   camera: ^0.10.0
-  flutter_svg: ^1.1.5
+  flutter_svg: ^2.0.2
   date_time_format: ^2.0.1
   touch_ripple_effect: ^2.2.3
-  lottie: ^1.4.2
+  lottie: ^2.2.0
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
 

@@ -57,6 +57,7 @@ class MeetingActionBar extends StatelessWidget {
                 child: const Icon(
                   Icons.call_end,
                   size: 30,
+                  color: Colors.white,
                 ),
               ),
               offset: const Offset(0, -185),
@@ -177,6 +178,7 @@ class MeetingActionBar extends StatelessWidget {
                 child: const Icon(
                   Icons.more_vert,
                   size: 30,
+                  color: Colors.white,
                 ),
               ),
               offset: const Offset(0, -250),
