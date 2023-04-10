@@ -469,15 +469,27 @@ If you want to learn more about the SDK, read the Complete Documentation of [Flu
 
 - `conference_screenshare_view.dart`: It contains the widget which will dislpay the screenshare in the meeting.
 
-## Examples
+<br/>
 
-- [Prebuilt SDK Examples](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
-- [JavaScript SDK Example](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
-- [React JS SDK Example](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
-- [React Native SDK Example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
-- [Flutter SDK Example](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example)
-- [Android SDK Example](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
-- [iOS SDK Example](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
+## Examples 
+### Examples for Conference
+
+- [Prebuilt Conference Examples](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
+- [JavaScript Conference Example](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
+- [React JS Conference Example](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
+- [React Native SDK Conference Example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
+- [Flutter Conference Example](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example)
+- [Android Conference Example (Java)](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
+- [Android Conference Example (Kotlin)](https://github.com/videosdk-live/videosdk-rtc-android-kotlin-sdk-example)
+- [iOS Conference Example](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
+
+### Examples for Live Streaming
+
+- [React JS Live Streaming Example](https://github.com/videosdk-live/videosdk-hls-react-sdk-example)
+- [React Native SDK Live Streaming Example](https://github.com/videosdk-live/videosdk-hls-react-native-sdk-example)
+- [Flutter Live Streaming Example](https://github.com/videosdk-live/videosdk-hls-flutter-sdk-example)
+- [Android Live Streaming Example (Java)](https://github.com/videosdk-live/videosdk-hls-android-java-example)
+- [Android Live Streaming Example (Kotlin)](https://github.com/videosdk-live/videosdk-hls-android-kotlin-example)
 
 ## Documentation
 
