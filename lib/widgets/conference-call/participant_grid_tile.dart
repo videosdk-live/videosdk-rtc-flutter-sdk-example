@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/common/stats/call_stats.dart';
@@ -33,6 +34,7 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
+          print(widget.quality);
           widget.participant.setQuality(widget.quality);
         } else if (stream.kind == 'audio') {
           audioStream = stream;
@@ -51,6 +53,11 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints(
+          maxWidth: ResponsiveValue<double>(context, conditionalValues: [
+        const Condition.equals(name: MOBILE, value: double.infinity),
+        const Condition.largerThan(name: MOBILE, value: 200),
+      ]).value!),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: black800,
