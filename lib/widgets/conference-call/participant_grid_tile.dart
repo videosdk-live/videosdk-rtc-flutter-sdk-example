@@ -53,11 +53,11 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(
-          maxWidth: ResponsiveValue<double>(context, conditionalValues: [
-        const Condition.equals(name: MOBILE, value: double.infinity),
-        const Condition.largerThan(name: MOBILE, value: 200),
-      ]).value!),
+      // constraints: BoxConstraints(
+      //     maxWidth: ResponsiveValue<double>(context, conditionalValues: [
+      //   const Condition.equals(name: MOBILE, value: double.infinity),
+      //   const Condition.largerThan(name: MOBILE, value: 200),
+      // ]).value!),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: black800,

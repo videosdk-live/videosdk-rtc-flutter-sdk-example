@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/manage_grid.dart';
+import 'package:videosdk_flutter_example/widgets/conference-call/participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/participant_grid_tile.dart';
 
 class ConferenceParticipantGrid extends StatefulWidget {
@@ -20,7 +21,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
   String? activeSpeakerId;
   String? presenterId;
   int numberofColumns = 1;
-  int numberOfMaxOnScreenParticipants = 6;
+  int numberOfMaxOnScreenParticipants = 16;
   String quality = "high";
 
   Map<String, Participant> participants = {};
@@ -53,63 +54,84 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return onShowParticipants.length == 1 &&
-            onShowParticipants.values.first.length <= 2
-        ? Flex(
-            direction: ResponsiveValue<Axis>(context, conditionalValues: [
-              const Condition.equals(name: MOBILE, value: Axis.horizontal),
-              const Condition.largerThan(name: MOBILE, value: Axis.vertical),
-            ]).value!,
-            children: [
-              for (int i = 0; i < onShowParticipants.length; i++)
-                Flexible(
-                    child: Flex(
-                  direction: ResponsiveValue<Axis>(context, conditionalValues: [
-                    const Condition.equals(name: MOBILE, value: Axis.vertical),
-                    const Condition.largerThan(
-                        name: MOBILE, value: Axis.horizontal),
-                  ]).value!,
-                  children: [
-                    for (int j = 0; j < onShowParticipants[i]!.length; j++)
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: ParticipantGridTile(
-                              key: Key(onShowParticipants[i]![j].id),
-                              participant: onShowParticipants[i]![j],
-                              activeSpeakerId: activeSpeakerId,
-                              quality: quality),
-                        ),
-                      )
-                  ],
-                )),
-            ],
-          )
-        : Container(
-            margin: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                for (int i = 0; i < onShowParticipants.length; i++)
-                  Flexible(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (int j = 0; j < onShowParticipants[i]!.length; j++)
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: ParticipantGridTile(
-                                key: Key(onShowParticipants[i]![j].id),
-                                participant: onShowParticipants[i]![j],
-                                activeSpeakerId: activeSpeakerId,
-                                quality: quality),
-                          ),
-                        )
-                    ],
-                  )),
-              ],
-            ),
-          );
+    // return GridView.count(
+    //   crossAxisCount: 4,
+    //   children: [
+    //     ...participants.values
+    //         .map((participant) => ParticipantGridTile(
+    //               key: Key(participant.id),
+    //               participant: participant,
+    //               activeSpeakerId: activeSpeakerId,
+    //               quality: quality,
+    //             ))
+    //         .toList()
+    //   ],
+    // );
+
+    return particiapant_grid(
+      onShowParticipants: onShowParticipants,
+      activeSpeakerId: activeSpeakerId,
+      quality: quality,
+    );
+
+    //  return onShowParticipants.length == 1 &&
+    //     onShowParticipants.values.first.length <= 2
+    // ? Flex(
+    //     direction: ResponsiveValue<Axis>(context, conditionalValues: [
+    //       const Condition.equals(name: MOBILE, value: Axis.horizontal),
+    //       const Condition.largerThan(name: MOBILE, value: Axis.vertical),
+    //     ]).value!,
+    //     children: [
+    //       for (int i = 0; i < onShowParticipants.length; i++)
+    //         Flexible(
+    //             child: Flex(
+    //           direction: ResponsiveValue<Axis>(context, conditionalValues: [
+    //             const Condition.equals(name: MOBILE, value: Axis.vertical),
+    //             const Condition.largerThan(
+    //                 name: MOBILE, value: Axis.horizontal),
+    //           ]).value!,
+    //           children: [
+    //             for (int j = 0; j < onShowParticipants[i]!.length; j++)
+    //               Flexible(
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.all(4.0),
+    //                   child: ParticipantGridTile(
+    //                       key: Key(onShowParticipants[i]![j].id),
+    //                       participant: onShowParticipants[i]![j],
+    //                       activeSpeakerId: activeSpeakerId,
+    //                       quality: quality),
+    //                 ),
+    //               )
+    //           ],
+    //         )),
+    //     ],
+    //   )
+    // :
+    // : Container(
+    //     margin: const EdgeInsets.all(15),
+    //     child: Column(
+    //       children: [
+    //       for (int i = 0; i < onShowParticipants.length; i++)
+    //         Flexible(
+    //             child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             for (int j = 0; j < onShowParticipants[i]!.length; j++)
+    //               Flexible(
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.all(4.0),
+    //                   child: ParticipantGridTile(
+    //                       key: Key(onShowParticipants[i]![j].id),
+    //                       participant: onShowParticipants[i]![j],
+    //                       activeSpeakerId: activeSpeakerId,
+    //                       quality: quality),
+    //                 ),
+    //               )
+    //           ],
+    //         )),
+    //     ],
+    //   ),
+    // );
   }
 
   void setMeetingListeners(Room _meeting) {
@@ -241,18 +263,18 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
               : "high";
     });
 
-    // if (participants.length > 6) {
-    //   onShowParticipants.values.forEach((participantList) {
-    //     participantList.forEach((element) {
-    //       if (element.id != activeSpeakerId && activeSpeakerId != null) {
-    //         setState(() {
-    //           participantList.remove(element);
-    //           participantList.add(participants.values
-    //               .firstWhere((element) => element.id == activeSpeakerId));
-    //         });
-    //       }
-    //     });
-    //   });
-    // }
+    if (participants.length > 6) {
+      onShowParticipants.values.forEach((participantList) {
+        participantList.forEach((element) {
+          if (element.id != activeSpeakerId && activeSpeakerId != null) {
+            setState(() {
+              participantList.remove(element);
+              participantList.add(participants.values
+                  .firstWhere((element) => element.id == activeSpeakerId));
+            });
+          }
+        });
+      });
+    }
   }
 }

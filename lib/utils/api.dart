@@ -46,7 +46,7 @@ Future<String> createMeeting(String _token) async {
   if (meetingIdResponse.statusCode != 200) {
     throw Exception(json.decode(meetingIdResponse.body)["error"]);
   }
-  var _meetingID = json.decode(meetingIdResponse.body)['roomId'];
+  var _meetingID = 'r3o1-wjw1-i3ne';
   return _meetingID;
 }
 

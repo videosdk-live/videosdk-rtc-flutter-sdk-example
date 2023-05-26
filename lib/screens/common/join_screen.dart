@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk_flutter_example/screens/conference-call/conference_meeting_screen.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining_details/joining_details.dart';
@@ -37,7 +38,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   @override
   void initState() {
-    initCameraPreview();
+    // initCameraPreview();
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -58,6 +59,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
         onWillPop: _onWillPopScope,
         child: Scaffold(
@@ -90,27 +92,39 @@ class _JoinScreenState extends State<JoinScreen> {
                                                   ?.value.isInitialized ??
                                               false)
                                           ? Container(
-                                              child: const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12)),
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
                                             )
                                           : Container(
-                                              child: const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12)),
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
                                             )
                                       : AspectRatio(
-                                          aspectRatio: 1 / 1.55,
+                                          aspectRatio: ResponsiveValue<double>(
+                                              context,
+                                              conditionalValues: [
+                                                const Condition.equals(
+                                                    name: MOBILE,
+                                                    value: 1 / 1.55),
+                                                const Condition.equals(
+                                                    name: TABLET,
+                                                    value: 16 / 10),
+                                                const Condition.largerThan(
+                                                    name: TABLET,
+                                                    value: 16 / 9),
+                                              ]).value!,
                                           child: isCameraOn
                                               ? ClipRRect(
                                                   borderRadius:
@@ -119,32 +133,35 @@ class _JoinScreenState extends State<JoinScreen> {
                                                     cameraController!,
                                                   ))
                                               : Container(
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "Camera is turned off",
-                                                    ),
-                                                  ),
                                                   decoration: BoxDecoration(
                                                       color: black800,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               12)),
+                                                  child: const Center(
+                                                    child: Text(
+                                                      "Camera is turned off",
+                                                    ),
+                                                  ),
                                                 ),
                                         ),
                                   Positioned(
                                     bottom: 16,
-
                                     // Meeting ActionBar
                                     child: Center(
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           // Mic Action Button
                                           ElevatedButton(
                                             onPressed: () => setState(
                                               () => isMicOn = !isMicOn,
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              shape: const CircleBorder(),
+                                              padding: const EdgeInsets.all(12),
+                                              backgroundColor:
+                                                  isMicOn ? Colors.white : red,
+                                              foregroundColor: Colors.black,
                                             ),
                                             child: Icon(
                                                 isMicOn
@@ -153,13 +170,6 @@ class _JoinScreenState extends State<JoinScreen> {
                                                 color: isMicOn
                                                     ? grey
                                                     : Colors.white),
-                                            style: ElevatedButton.styleFrom(
-                                              shape: const CircleBorder(),
-                                              padding: const EdgeInsets.all(12),
-                                              primary:
-                                                  isMicOn ? Colors.white : red,
-                                              onPrimary: Colors.black,
-                                            ),
                                           ),
                                           ElevatedButton(
                                             onPressed: () {
@@ -176,7 +186,7 @@ class _JoinScreenState extends State<JoinScreen> {
                                             style: ElevatedButton.styleFrom(
                                               shape: const CircleBorder(),
                                               padding: const EdgeInsets.all(12),
-                                              primary: isCameraOn
+                                              backgroundColor: isCameraOn
                                                   ? Colors.white
                                                   : red,
                                             ),
@@ -200,12 +210,21 @@ class _JoinScreenState extends State<JoinScreen> {
                           Padding(
                             padding: const EdgeInsets.all(36.0),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 if (isJoinMeetingSelected == null &&
                                     isCreateMeetingSelected == null)
                                   MaterialButton(
+                                      minWidth: ResponsiveValue<double>(context,
+                                          conditionalValues: [
+                                            Condition.equals(
+                                                name: MOBILE, value: maxWidth),
+                                            Condition.equals(
+                                                name: TABLET,
+                                                value: maxWidth / 1.5),
+                                            const Condition.equals(
+                                                name: DESKTOP, value: 600),
+                                          ]).value!,
+                                      height: 50,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(12)),
@@ -225,6 +244,17 @@ class _JoinScreenState extends State<JoinScreen> {
                                 if (isJoinMeetingSelected == null &&
                                     isCreateMeetingSelected == null)
                                   MaterialButton(
+                                      minWidth: ResponsiveValue<double>(context,
+                                          conditionalValues: [
+                                            Condition.equals(
+                                                name: MOBILE, value: maxWidth),
+                                            Condition.equals(
+                                                name: TABLET,
+                                                value: maxWidth / 1.5),
+                                            const Condition.equals(
+                                                name: DESKTOP, value: 600),
+                                          ]).value!,
+                                      height: 50,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(12)),
@@ -312,32 +342,34 @@ class _JoinScreenState extends State<JoinScreen> {
   Future<void> createAndJoinMeeting(callType, displayName) async {
     try {
       var _meetingID = await createMeeting(_token);
-      if (callType == "GROUP") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfereneceMeetingScreen(
-              token: _token,
-              meetingId: _meetingID,
-              displayName: displayName,
-              micEnabled: isMicOn,
-              camEnabled: isCameraOn,
+      if (mounted) {
+        if (callType == "GROUP") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConfereneceMeetingScreen(
+                token: _token,
+                meetingId: _meetingID,
+                displayName: displayName,
+                micEnabled: isMicOn,
+                camEnabled: isCameraOn,
+              ),
             ),
-          ),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OneToOneMeetingScreen(
-              token: _token,
-              meetingId: _meetingID,
-              displayName: displayName,
-              micEnabled: isMicOn,
-              camEnabled: isCameraOn,
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OneToOneMeetingScreen(
+                token: _token,
+                meetingId: _meetingID,
+                displayName: displayName,
+                micEnabled: isMicOn,
+                camEnabled: isCameraOn,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } catch (error) {
       showSnackBarMessage(message: error.toString(), context: context);
@@ -352,35 +384,39 @@ class _JoinScreenState extends State<JoinScreen> {
     }
     var validMeeting = await validateMeeting(_token, meetingId);
     if (validMeeting) {
-      if (callType == "GROUP") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfereneceMeetingScreen(
-              token: _token,
-              meetingId: meetingId,
-              displayName: displayName,
-              micEnabled: isMicOn,
-              camEnabled: isCameraOn,
+      if (mounted) {
+        if (callType == "GROUP") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConfereneceMeetingScreen(
+                token: _token,
+                meetingId: meetingId,
+                displayName: displayName,
+                micEnabled: isMicOn,
+                camEnabled: isCameraOn,
+              ),
             ),
-          ),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OneToOneMeetingScreen(
-              token: _token,
-              meetingId: meetingId,
-              displayName: displayName,
-              micEnabled: isMicOn,
-              camEnabled: isCameraOn,
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OneToOneMeetingScreen(
+                token: _token,
+                meetingId: meetingId,
+                displayName: displayName,
+                micEnabled: isMicOn,
+                camEnabled: isCameraOn,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } else {
-      showSnackBarMessage(message: "Invalid Meeting ID", context: context);
+      if (mounted) {
+        showSnackBarMessage(message: "Invalid Meeting ID", context: context);
+      }
     }
   }
 

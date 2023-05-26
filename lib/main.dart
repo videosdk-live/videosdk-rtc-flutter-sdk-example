@@ -1,13 +1,24 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/breakpoint.dart';
 import 'package:responsive_framework/responsive_breakpoints.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'constants/colors.dart';
 import 'navigator_key.dart';
 import 'screens/common/splash_screen.dart';
 
-void main() {
+void main() async {
   // Run Flutter App
+  WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb && (Platform.isMacOS || Platform.isWindows)) {
+    await windowManager.ensureInitialized();
+
+    windowManager.setResizable(false);
+  }
+
   runApp(const MyApp());
 }
 

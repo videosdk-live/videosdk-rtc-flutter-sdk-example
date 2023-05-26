@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
@@ -24,8 +25,8 @@ class _JoiningDetailsState extends State<JoiningDetails> {
   List<String> meetingModes = ["ONE_TO_ONE", "GROUP"];
   @override
   Widget build(BuildContext context) {
+    final maxWidth = MediaQuery.of(context).size.width;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           decoration: BoxDecoration(
@@ -37,8 +38,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
               icon: const Icon(Icons.arrow_drop_down),
               elevation: 16,
               style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+                  fontWeight: FontWeight.w500, color: Colors.white),
               onChanged: (String? value) {
                 setState(() {
                   meetingMode = value!;
@@ -47,11 +47,18 @@ class _JoiningDetailsState extends State<JoiningDetails> {
               borderRadius: BorderRadius.circular(12),
               dropdownColor: black750,
               alignment: AlignmentDirectional.centerStart,
-              isExpanded: true,
               items: meetingModes.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth:
+                          ResponsiveValue<double>(context, conditionalValues: [
+                        Condition.equals(name: MOBILE, value: maxWidth / 1.5),
+                        Condition.equals(name: TABLET, value: maxWidth / 1.5),
+                        const Condition.equals(name: DESKTOP, value: 610),
+                      ]).value!,
+                    ),
                     child: Text(
                       value == "GROUP" ? "Group Call" : "One to One Call",
                       textAlign: TextAlign.center,
@@ -73,9 +80,16 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                 fontWeight: FontWeight.w500,
               ),
               onChanged: ((value) => _meetingId = value),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                  constraints: BoxConstraints.tightFor(
+                    width: ResponsiveValue<double>(context, conditionalValues: [
+                      Condition.equals(name: MOBILE, value: maxWidth),
+                      Condition.equals(name: TABLET, value: maxWidth / 1.4),
+                      const Condition.equals(name: DESKTOP, value: 650),
+                    ]).value!,
+                  ),
                   hintText: "Enter meeting code",
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                     color: textGray,
                   ),
                   border: InputBorder.none),
@@ -91,9 +105,16 @@ class _JoiningDetailsState extends State<JoiningDetails> {
               fontWeight: FontWeight.w500,
             ),
             onChanged: ((value) => _displayName = value),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
+                constraints: BoxConstraints.tightFor(
+                  width: ResponsiveValue<double>(context, conditionalValues: [
+                    Condition.equals(name: MOBILE, value: maxWidth),
+                    Condition.equals(name: TABLET, value: maxWidth / 1.4),
+                    const Condition.equals(name: DESKTOP, value: 650),
+                  ]).value!,
+                ),
                 hintText: "Enter your name",
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                   color: textGray,
                 ),
                 border: InputBorder.none),
@@ -101,6 +122,12 @@ class _JoiningDetailsState extends State<JoiningDetails> {
         ),
         const VerticalSpacer(16),
         MaterialButton(
+            minWidth: ResponsiveValue<double>(context, conditionalValues: [
+              Condition.equals(name: MOBILE, value: maxWidth),
+              Condition.equals(name: TABLET, value: maxWidth / 1.4),
+              const Condition.equals(name: DESKTOP, value: 650),
+            ]).value!,
+            height: 50,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             padding: const EdgeInsets.symmetric(vertical: 16),

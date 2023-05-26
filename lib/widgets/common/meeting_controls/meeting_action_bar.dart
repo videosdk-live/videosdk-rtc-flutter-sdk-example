@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
+import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/utils/spacer.dart';
 
 import '../../../constants/colors.dart';
@@ -20,9 +24,11 @@ class MeetingActionBar extends StatelessWidget {
 
   final void Function(String) onMoreOptionSelected;
 
-  final void Function(TapDownDetails) onSwitchMicButtonPressed;
+  final Room meeting;
+
   const MeetingActionBar({
     Key? key,
+    required this.meeting,
     required this.isMicEnabled,
     required this.isCamEnabled,
     required this.isScreenShareEnabled,
@@ -30,7 +36,6 @@ class MeetingActionBar extends StatelessWidget {
     required this.onCallEndButtonPressed,
     required this.onCallLeaveButtonPressed,
     required this.onMicButtonPressed,
-    required this.onSwitchMicButtonPressed,
     required this.onCameraButtonPressed,
     required this.onMoreOptionSelected,
     required this.onChatButtonPressed,
@@ -48,12 +53,12 @@ class MeetingActionBar extends StatelessWidget {
               padding: const EdgeInsets.all(0),
               color: black700,
               icon: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: red),
-                  color: red,
-                ),
-                padding: const EdgeInsets.all(8),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: red),
+                    color: red,
+                    shape: BoxShape.rectangle),
                 child: const Icon(
                   Icons.call_end,
                   size: 30,
@@ -75,14 +80,14 @@ class MeetingActionBar extends StatelessWidget {
                       "leave",
                       "Leave",
                       "Only you will leave the call",
-                      SvgPicture.asset("assets/ic_leave.svg"),
+                      leadingIcon: SvgPicture.asset("assets/ic_leave.svg"),
                     ),
                     const PopupMenuDivider(),
                     _buildMeetingPoupItem(
                       "end",
                       "End",
                       "End call for all participants",
-                      SvgPicture.asset("assets/ic_end.svg"),
+                      leadingIcon: SvgPicture.asset("assets/ic_end.svg"),
                     ),
                   ]),
 
@@ -105,16 +110,78 @@ class MeetingActionBar extends StatelessWidget {
                     size: 30,
                     color: isMicEnabled ? Colors.white : primaryColor,
                   ),
-                  GestureDetector(
-                      onTapDown: (details) =>
-                          {onSwitchMicButtonPressed(details)},
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: Icon(
-                          Icons.arrow_drop_down,
-                          color: isMicEnabled ? Colors.white : primaryColor,
+                  PopupMenuButton(
+                    position: PopupMenuPosition.over,
+                    padding: const EdgeInsets.all(0),
+                    color: black700,
+                    offset: const Offset(0, -300),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      color: isMicEnabled ? Colors.white : primaryColor,
+                    ),
+                    onSelected: (value) {
+                      if (value == 'label') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please select device')));
+                      } else {
+                        MediaDeviceInfo deviceInfo = value as MediaDeviceInfo;
+                        if (kIsWeb || Platform.isMacOS || Platform.isWindows) {
+                          if (deviceInfo.kind == "audiooutput") {
+                            meeting.switchAudioDevice(deviceInfo);
+                          } else if (deviceInfo.kind == "audioinput") {
+                            meeting.changeMic(deviceInfo);
+                          }
+                        } else {
+                          meeting.switchAudioDevice(deviceInfo);
+                        }
+                      }
+                    },
+                    itemBuilder: (context) {
+                      return [
+                        _buildMeetingPoupItem(
+                            'label',
+                            kIsWeb || Platform.isMacOS || Platform.isWindows
+                                ? 'Microphones'
+                                : 'Audio Devices',
+                            null,
+                            leadingIcon: const Icon(
+                              Icons.mic,
+                              color: Color.fromARGB(255, 77, 75, 75),
+                            ),
+                            textColor: const Color.fromARGB(255, 77, 75, 75)),
+                        PopupMenuItem(
+                          child: Column(
+                              children: getMicList()
+                                  .map(
+                                    (e) =>
+                                        _buildMeetingPoupItem(e, e.label, null),
+                                  )
+                                  .toList()),
                         ),
-                      )),
+                        if (getOutputAudioList() != null)
+                          _buildMeetingPoupItem('label', 'Speakers', null,
+                              leadingIcon: const Icon(
+                                Icons.volume_up,
+                                color: Color.fromARGB(255, 77, 75, 75),
+                              ),
+                              textColor: const Color.fromARGB(255, 77, 75, 75)),
+                        if (getOutputAudioList() != null)
+                          PopupMenuItem(
+                            child: Column(
+                                children: getOutputAudioList()!
+                                    .map(
+                                      (e) => _buildMeetingPoupItem(
+                                          e, e.label, null),
+                                    )
+                                    .toList()),
+                          )
+                      ];
+                    },
+                  )
                 ],
               ),
             ),
@@ -170,11 +237,12 @@ class MeetingActionBar extends StatelessWidget {
               color: black700,
               icon: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: secondaryColor),
-                  // color: red,
-                ),
-                padding: const EdgeInsets.all(8),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: secondaryColor),
+                    shape: BoxShape.rectangle
+                    // color: red,
+                    ),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: const Icon(
                   Icons.more_vert,
                   size: 30,
@@ -195,7 +263,7 @@ class MeetingActionBar extends StatelessWidget {
                               ? "Recording is starting"
                               : "Start Recording",
                       null,
-                      SvgPicture.asset("assets/ic_recording.svg"),
+                      leadingIcon: SvgPicture.asset("assets/ic_recording.svg"),
                     ),
                     const PopupMenuDivider(),
                     _buildMeetingPoupItem(
@@ -204,14 +272,16 @@ class MeetingActionBar extends StatelessWidget {
                           ? "Stop Screen Share"
                           : "Start Screen Share",
                       null,
-                      SvgPicture.asset("assets/ic_screen_share.svg"),
+                      leadingIcon:
+                          SvgPicture.asset("assets/ic_screen_share.svg"),
                     ),
                     const PopupMenuDivider(),
                     _buildMeetingPoupItem(
                       "participants",
                       "Participants",
                       null,
-                      SvgPicture.asset("assets/ic_participants.svg"),
+                      leadingIcon:
+                          SvgPicture.asset("assets/ic_participants.svg"),
                     ),
                   ]),
         ],
@@ -219,23 +289,40 @@ class MeetingActionBar extends StatelessWidget {
     );
   }
 
+  List<MediaDeviceInfo> getMicList() {
+    if (kIsWeb || Platform.isMacOS || Platform.isWindows) {
+      return meeting.getMics();
+    } else {
+      return meeting.getAudioOutputDevices();
+    }
+  }
+
+  List<MediaDeviceInfo>? getOutputAudioList() {
+    if (kIsWeb || Platform.isMacOS || Platform.isWindows) {
+      return meeting.getAudioOutputDevices();
+    } else {
+      return null;
+    }
+  }
+
   PopupMenuItem<dynamic> _buildMeetingPoupItem(
-      String value, String title, String? description, Widget leadingIcon) {
+      dynamic value, String title, String? description,
+      {Widget? leadingIcon, Color? textColor}) {
     return PopupMenuItem(
       value: value,
       padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
       child: Row(children: [
-        leadingIcon,
+        leadingIcon ?? const Center(),
         const HorizontalSpacer(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white),
+                  color: textColor ?? Colors.white),
             ),
             if (description != null) const VerticalSpacer(4),
             if (description != null)

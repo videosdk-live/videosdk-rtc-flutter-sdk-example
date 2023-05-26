@@ -67,11 +67,14 @@ class ManageGrid {
       maxCount = 6;
     } else if (device == device_type.tablet) {
       grid = tabPortrait;
-      maxCount = 12;
+      maxCount = 7;
     } else if (device == device_type.desktop) {
       grid = smallDesktop;
-      maxCount = 16;
+      maxCount = 7;
     }
+
+    grid = smallDesktop;
+    maxCount = 16;
 
     var myGrid =
         grid[participantsCount > maxCount ? maxCount : participantsCount];

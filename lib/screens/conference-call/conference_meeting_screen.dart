@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk/videosdk.dart';
@@ -9,8 +12,10 @@ import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
+import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -66,7 +71,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
       token: widget.token,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
-      camEnabled: widget.camEnabled,
+      camEnabled: false,
       maxResolution: 'hd',
       multiStream: true,
       defaultCameraIndex: 1,
@@ -105,21 +110,14 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                         isFullScreen: fullScreen,
                       ),
                       Expanded(
-                        child: GestureDetector(
-                            onDoubleTap: () => {
-                                  setState(() {
-                                    fullScreen = !fullScreen;
-                                  })
-                                },
-                            child: Column(
-                              children: [
-                                ConferenseScreenShareView(meeting: meeting),
-                                Flexible(
-                                    child: ConferenceParticipantGrid(
-                                        meeting: meeting))
-                              ],
-                            )),
-                      ),
+                          child: Column(
+                        children: [
+                          ConferenseScreenShareView(meeting: meeting),
+                          Expanded(
+                              child:
+                                  ConferenceParticipantGrid(meeting: meeting))
+                        ],
+                      )),
                       AnimatedCrossFade(
                         duration: const Duration(milliseconds: 300),
                         crossFadeState: !fullScreen
@@ -127,6 +125,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                             : CrossFadeState.showSecond,
                         secondChild: const SizedBox.shrink(),
                         firstChild: MeetingActionBar(
+                          meeting: meeting,
                           isMicEnabled: audioStream != null,
                           isCamEnabled: videoStream != null,
                           isScreenShareEnabled: shareStream != null,
@@ -156,34 +155,6 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                             }
                           },
 
-                          onSwitchMicButtonPressed: (details) async {
-                            List<MediaDeviceInfo> outptuDevice =
-                                meeting.getAudioOutputDevices();
-                            double bottomMargin = (70.0 * outptuDevice.length);
-                            final screenSize = MediaQuery.of(context).size;
-                            await showMenu(
-                              context: context,
-                              color: black700,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              position: RelativeRect.fromLTRB(
-                                screenSize.width - details.globalPosition.dx,
-                                details.globalPosition.dy - bottomMargin,
-                                details.globalPosition.dx,
-                                (bottomMargin),
-                              ),
-                              items: outptuDevice.map((e) {
-                                return PopupMenuItem(
-                                    value: e, child: Text(e.label));
-                              }).toList(),
-                              elevation: 8.0,
-                            ).then((value) {
-                              if (value != null) {
-                                meeting.switchAudioDevice(value);
-                              }
-                            });
-                          },
-
                           onChatButtonPressed: () {
                             setState(() {
                               showChatSnackbar = false;
@@ -211,7 +182,20 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                             if (option == "screenshare") {
                               if (remoteParticipantShareStream == null) {
                                 if (shareStream == null) {
-                                  meeting.enableScreenShare();
+                                  if (!kIsWeb &&
+                                      (Platform.isWindows ||
+                                          Platform.isMacOS)) {
+                                    selectScreenSourceDialog(context)
+                                        .then((value) => {
+                                              if (value != null)
+                                                {
+                                                  meeting
+                                                      .enableScreenShare(value)
+                                                }
+                                            });
+                                  } else {
+                                    meeting.enableScreenShare();
+                                  }
                                 } else {
                                   meeting.disableScreenShare();
                                 }
@@ -252,6 +236,17 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
             )
           : const WaitingToJoin(),
     );
+  }
+
+  Future<DesktopCapturerSource?> selectScreenSourceDialog(
+      BuildContext context) async {
+    final source = await showDialog<DesktopCapturerSource>(
+      context: context,
+      builder: (context) => ScreenSelectDialog(
+        meeting: meeting,
+      ),
+    );
+    return source;
   }
 
   void registerMeetingEvents(Room _meeting) {
