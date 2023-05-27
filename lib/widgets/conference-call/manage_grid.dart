@@ -8,26 +8,22 @@ class ManageGrid {
     required device_type device,
     bool isPresenting = false,
   }) {
-    // if (isPresenting) {
-    //   int r = participantsCount;
-    //   const c = 1;
+    if (isPresenting) {
+      if(participantsCount == 1)
+      {
+        return {'r': 1, 'c': 1, 'r0': 1};
+      }
 
-    //   const rows = {};
-
-    //   for (int index = 0; index < participantsCount; index++) {
-    //     rows['r${index}'] = 1;
-    //   }
-
-    //   return {r, c, ...rows};
-    // }
+      return {'r': 1, 'c': 2, 'r0': 2};
+    }
 
     final mobilePortrait = {
       1: {'r': 1, 'c': 1, 'r0': 1},
       2: {'r': 1, 'c': 2, 'r0': 2},
       3: {'r': 2, 'c': 2, 'r0': 2, 'r1': 1},
       4: {'r': 2, 'c': 2, 'r0': 2, 'r1': 2},
-      5: {'r': 3, 'c': 2, 'r0': 2, 'r1': 2, 'r2': 1},
-      6: {'r': 3, 'c': 3, 'r0': 2, 'r1': 2, 'r2': 2},
+      5: {'r': 3, 'c': 3, 'r0': 2, 'r1': 2, 'r2': 1},
+      6: {'r': 3, 'c': 2, 'r0': 2, 'r1': 2, 'r2': 2},
     };
 
     var tabPortrait = {
@@ -60,21 +56,15 @@ class ManageGrid {
     };
 
     Map<int, Map<String, int>> grid = {};
-    int maxCount = 0;
+    int maxCount = 6;
 
     if (device == device_type.mobile) {
       grid = mobilePortrait;
-      maxCount = 6;
     } else if (device == device_type.tablet) {
       grid = tabPortrait;
-      maxCount = 7;
     } else if (device == device_type.desktop) {
       grid = smallDesktop;
-      maxCount = 7;
     }
-
-    grid = smallDesktop;
-    maxCount = 16;
 
     var myGrid =
         grid[participantsCount > maxCount ? maxCount : participantsCount];
@@ -88,38 +78,29 @@ class ManageGrid {
     if (participants != null) {
       for (var element in participants.entries) {
         currentParticipants.add(element.value);
-        print("currentParticipants ${element.value.displayName}");
       }
     }
     Map<int, List<Participant>> columns = {};
-    List<Participant>? buckets = [];
+    List<Participant>? participantList = [];
 
     for (int index = 0; index < gridInfo!.length - 2; index++) {
       int? columnForCurrentRow = gridInfo['r$index'];
-      print('columnForCurrentRow ${columnForCurrentRow}');
 
       if (index == 0) {
         columns[index] = currentParticipants.sublist(0, columnForCurrentRow);
         currentParticipants.sublist(0, columnForCurrentRow).forEach((element) {
-          buckets!.add(element);
+          participantList.add(element);
         });
       } else {
         columns[index] = currentParticipants.sublist(
-            buckets.length, buckets.length + columnForCurrentRow!);
+            participantList.length, participantList.length + columnForCurrentRow!);
         currentParticipants
-            .sublist(buckets!.length, buckets.length + columnForCurrentRow!)
+            .sublist(participantList.length, participantList.length + columnForCurrentRow)
             .forEach((element) {
-          buckets.add(element);
+          participantList.add(element);
         });
       }
     }
-
-    columns.forEach((key, value) {
-      print("particiapnt key $key");
-      value.forEach((element) {
-        print("particiapnt ${element.displayName}");
-      });
-    });
     return columns;
   }
 }

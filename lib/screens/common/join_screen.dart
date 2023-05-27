@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names, dead_code
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -74,7 +76,7 @@ class _JoinScreenState extends State<JoinScreen> {
                         minHeight: viewportConstraints.maxHeight),
                     child: IntrinsicHeight(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: !kIsWeb && (Platform.isAndroid || Platform.isIOS) ? MainAxisAlignment.center : MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Camera Preview
@@ -158,7 +160,20 @@ class _JoinScreenState extends State<JoinScreen> {
                                             ),
                                             style: ElevatedButton.styleFrom(
                                               shape: const CircleBorder(),
-                                              padding: const EdgeInsets.all(12),
+                                              padding: EdgeInsets.all(
+                                                ResponsiveValue<double>(context,
+                                                    conditionalValues: [
+                                                      const Condition.equals(
+                                                          name: MOBILE,
+                                                          value: 12),
+                                                      const Condition.equals(
+                                                          name: TABLET,
+                                                          value: 15),
+                                                      const Condition.equals(
+                                                          name: DESKTOP,
+                                                          value: 18),
+                                                    ]).value!,
+                                              ),
                                               backgroundColor:
                                                   isMicOn ? Colors.white : red,
                                               foregroundColor: Colors.black,
@@ -185,7 +200,20 @@ class _JoinScreenState extends State<JoinScreen> {
                                             },
                                             style: ElevatedButton.styleFrom(
                                               shape: const CircleBorder(),
-                                              padding: const EdgeInsets.all(12),
+                                              padding: EdgeInsets.all(
+                                                ResponsiveValue<double>(context,
+                                                    conditionalValues: [
+                                                      const Condition.equals(
+                                                          name: MOBILE,
+                                                          value: 12),
+                                                      const Condition.equals(
+                                                          name: TABLET,
+                                                          value: 15),
+                                                      const Condition.equals(
+                                                          name: DESKTOP,
+                                                          value: 18),
+                                                    ]).value!,
+                                              ),
                                               backgroundColor: isCameraOn
                                                   ? Colors.white
                                                   : red,
@@ -208,7 +236,7 @@ class _JoinScreenState extends State<JoinScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(36.0),
+                            padding: const EdgeInsets.only(bottom: 30),
                             child: Column(
                               children: [
                                 if (isJoinMeetingSelected == null &&
@@ -217,10 +245,10 @@ class _JoinScreenState extends State<JoinScreen> {
                                       minWidth: ResponsiveValue<double>(context,
                                           conditionalValues: [
                                             Condition.equals(
-                                                name: MOBILE, value: maxWidth),
+                                                name: MOBILE, value: maxWidth / 1.3),
                                             Condition.equals(
                                                 name: TABLET,
-                                                value: maxWidth / 1.5),
+                                                value: maxWidth / 1.3),
                                             const Condition.equals(
                                                 name: DESKTOP, value: 600),
                                           ]).value!,
@@ -247,10 +275,10 @@ class _JoinScreenState extends State<JoinScreen> {
                                       minWidth: ResponsiveValue<double>(context,
                                           conditionalValues: [
                                             Condition.equals(
-                                                name: MOBILE, value: maxWidth),
+                                                name: MOBILE, value: maxWidth / 1.3),
                                             Condition.equals(
                                                 name: TABLET,
-                                                value: maxWidth / 1.5),
+                                                value: maxWidth / 1.3),
                                             const Condition.equals(
                                                 name: DESKTOP, value: 600),
                                           ]).value!,

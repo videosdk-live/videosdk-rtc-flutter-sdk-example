@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
-import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/screens/common/join_screen.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
@@ -109,15 +109,29 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                         recordingState: recordingState,
                         isFullScreen: fullScreen,
                       ),
+                      const Divider(),
                       Expanded(
-                          child: Column(
-                        children: [
-                          ConferenseScreenShareView(meeting: meeting),
-                          Expanded(
+                          child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        child: Flex(
+                          direction: ResponsiveValue<Axis>(context,
+                              conditionalValues: [
+                                const Condition.equals(
+                                    name: MOBILE, value: Axis.vertical),
+                                const Condition.largerThan(
+                                    name: MOBILE, value: Axis.horizontal),
+                              ]).value!,
+                          children: [
+                            ConferenseScreenShareView(meeting: meeting),
+                            Expanded(
                               child:
-                                  ConferenceParticipantGrid(meeting: meeting))
-                        ],
+                                  ConferenceParticipantGrid(meeting: meeting),
+                            ),
+                          ],
+                        ),
                       )),
+                      const Divider(),
                       AnimatedCrossFade(
                         duration: const Duration(milliseconds: 300),
                         crossFadeState: !fullScreen
@@ -169,11 +183,10 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                               builder: (context) => ChatView(
                                   key: const Key("ChatScreen"),
                                   meeting: meeting),
-                            ).whenComplete(() => {
-                                  setState(() {
+                            ).whenComplete(() => setState(() {
                                     showChatSnackbar = true;
                                   })
-                                });
+                                );
                           },
 
                           // Called when more options button is pressed

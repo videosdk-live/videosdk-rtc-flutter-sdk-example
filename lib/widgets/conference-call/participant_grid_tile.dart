@@ -9,12 +9,17 @@ class ParticipantGridTile extends StatefulWidget {
   final bool isLocalParticipant;
   final String? activeSpeakerId;
   final String? quality;
+  final int participantCount;
+  final bool isPresenting;
+
   const ParticipantGridTile(
       {Key? key,
       required this.participant,
       required this.quality,
       this.isLocalParticipant = false,
-      required this.activeSpeakerId})
+      required this.activeSpeakerId,
+      required this.participantCount,
+      required this.isPresenting,})
       : super(key: key);
 
   @override
@@ -34,7 +39,6 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       setState(() {
         if (stream.kind == 'video') {
           videoStream = stream;
-          print(widget.quality);
           widget.participant.setQuality(widget.quality);
         } else if (stream.kind == 'audio') {
           audioStream = stream;
@@ -53,11 +57,11 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // constraints: BoxConstraints(
-      //     maxWidth: ResponsiveValue<double>(context, conditionalValues: [
-      //   const Condition.equals(name: MOBILE, value: double.infinity),
-      //   const Condition.largerThan(name: MOBILE, value: 200),
-      // ]).value!),
+      constraints: BoxConstraints(
+          maxWidth: ResponsiveValue<double>(context, conditionalValues: [
+        const Condition.equals(name: MOBILE, value: double.infinity),
+         Condition.largerThan(name: MOBILE, value: widget.isPresenting ? double.infinity : widget.participantCount > 2 ? widget.participantCount >= 5 ? 350 : 500 : double.infinity),
+      ]).value!),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: black800,

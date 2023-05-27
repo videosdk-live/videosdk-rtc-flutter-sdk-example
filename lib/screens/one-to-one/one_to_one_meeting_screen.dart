@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk/videosdk.dart';
-import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/participant_limit_reached.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
@@ -112,6 +111,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                         recordingState: recordingState,
                         isFullScreen: fullScreen,
                       ),
+                      const Divider(),
                       Expanded(
                         child: GestureDetector(
                             onDoubleTap: () => {
@@ -121,6 +121,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                 },
                             child: OneToOneMeetingContainer(meeting: meeting)),
                       ),
+                      const Divider(),
                       AnimatedCrossFade(
                         duration: const Duration(milliseconds: 300),
                         crossFadeState: !fullScreen
