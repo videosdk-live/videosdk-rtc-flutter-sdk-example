@@ -296,17 +296,6 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     );
   }
 
-  Future<DesktopCapturerSource?> selectScreenSourceDialog(
-      BuildContext context) async {
-    final source = await showDialog<DesktopCapturerSource>(
-      context: context,
-      builder: (context) => ScreenSelectDialog(
-        meeting: meeting,
-      ),
-    );
-    return source;
-  }
-
   void registerMeetingEvents(Room _meeting) {
     // Called when joined in meeting
     _meeting.on(

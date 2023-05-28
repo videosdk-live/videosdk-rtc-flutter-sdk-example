@@ -62,12 +62,15 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width;
     final maxHeight = MediaQuery.of(context).size.height;
+    bool isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
       child: IntrinsicHeight(
         child: Stack(children: [
           Container(
-              width: kIsWeb ? maxWidth / 1.5 : maxWidth,
+              width: kIsWeb ? isWebMobile ? maxWidth : maxWidth / 1.5 : maxWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: black800,

@@ -29,8 +29,8 @@ class _JoinScreenState extends State<JoinScreen> {
   String _token = "";
 
   // Control Status
-  bool isMicOn = false;
-  bool isCameraOn = false;
+  bool isMicOn = true;
+  bool isCameraOn = true;
 
   bool? isJoinMeetingSelected;
   bool? isCreateMeetingSelected;
@@ -40,7 +40,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   @override
   void initState() {
-    // initCameraPreview();
+    initCameraPreview();
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

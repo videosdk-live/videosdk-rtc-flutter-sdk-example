@@ -73,7 +73,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
       token: widget.token,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
-      camEnabled: false,
+      camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: true,
       defaultCameraIndex: 1,
@@ -297,17 +297,6 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
             )
           : const WaitingToJoin(),
     );
-  }
-
-  Future<DesktopCapturerSource?> selectScreenSourceDialog(
-      BuildContext context) async {
-    final source = await showDialog<DesktopCapturerSource>(
-      context: context,
-      builder: (context) => ScreenSelectDialog(
-        meeting: meeting,
-      ),
-    );
-    return source;
   }
 
   void registerMeetingEvents(Room _meeting) {

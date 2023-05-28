@@ -41,13 +41,9 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
   Duration? elapsedTime;
   Timer? sessionTimer;
 
-  List<MediaDeviceInfo> cameras = [];
-
   @override
   void initState() {
     startTimer();
-    // Holds available cameras info
-    cameras = widget.meeting.getCameras();
     super.initState();
   }
 
