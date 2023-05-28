@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
@@ -12,15 +13,15 @@ class ParticipantGridTile extends StatefulWidget {
   final int participantCount;
   final bool isPresenting;
 
-  const ParticipantGridTile(
-      {Key? key,
-      required this.participant,
-      required this.quality,
-      this.isLocalParticipant = false,
-      required this.activeSpeakerId,
-      required this.participantCount,
-      required this.isPresenting,})
-      : super(key: key);
+  const ParticipantGridTile({
+    Key? key,
+    required this.participant,
+    required this.quality,
+    this.isLocalParticipant = false,
+    required this.activeSpeakerId,
+    required this.participantCount,
+    required this.isPresenting,
+  }) : super(key: key);
 
   @override
   State<ParticipantGridTile> createState() => _ParticipantGridTileState();
@@ -60,7 +61,17 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
       constraints: BoxConstraints(
           maxWidth: ResponsiveValue<double>(context, conditionalValues: [
         const Condition.equals(name: MOBILE, value: double.infinity),
-         Condition.largerThan(name: MOBILE, value: widget.isPresenting ? double.infinity : widget.participantCount > 2 ? widget.participantCount >= 5 ? 350 : 500 : double.infinity),
+        Condition.largerThan(
+            name: MOBILE,
+            value: widget.isPresenting
+                ? double.infinity
+                : kIsWeb && widget.participantCount == 1
+                    ? MediaQuery.of(context).size.width / 1.5
+                    : widget.participantCount > 2
+                        ? widget.participantCount >= 5
+                            ? 350
+                            : 500
+                        : double.infinity),
       ]).value!),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),

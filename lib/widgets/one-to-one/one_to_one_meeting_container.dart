@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -66,6 +67,7 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
       child: IntrinsicHeight(
         child: Stack(children: [
           Container(
+              width: kIsWeb ? maxWidth / 1.5 : maxWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: black800,

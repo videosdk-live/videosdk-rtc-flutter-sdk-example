@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'join_screen.dart';
 
@@ -36,10 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Image.asset('assets/logo.png'),
           ),
           Positioned(
-            bottom: ResponsiveValue<double>(context, conditionalValues: [
-              const Condition.equals(name: MOBILE, value: 40),
-              const Condition.largerThan(name: MOBILE, value: 0),
-            ]).value!,
+            bottom: kIsWeb ? 0 : 40,
             left: 0,
             right: 0,
             child: Image.asset(

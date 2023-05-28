@@ -15,8 +15,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb && (Platform.isMacOS || Platform.isWindows)) {
     await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(900, 700),
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
 
     windowManager.setResizable(false);
+    windowManager.setMaximizable(false);
   }
 
   runApp(const MyApp());

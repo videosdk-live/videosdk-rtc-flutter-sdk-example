@@ -37,7 +37,10 @@ class ScreenSelectDialog extends Dialog {
           child: Container(
         width: 640,
         height: 560,
-        color: black700,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: black700,
+        ),
         child: Column(
           children: <Widget>[
             Padding(
