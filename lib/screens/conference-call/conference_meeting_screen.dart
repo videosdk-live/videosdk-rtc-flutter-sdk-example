@@ -115,7 +115,8 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                               recordingState: recordingState,
                               isMicEnabled: audioStream != null,
                               isCamEnabled: videoStream != null,
-                              isScreenShareEnabled: shareStream != null ||
+                              isLocalScreenShareEnabled: shareStream != null,
+                              isRemoteScreenShareEnabled:
                                   remoteParticipantShareStream != null,
                             )
                           : MeetingAppBar(

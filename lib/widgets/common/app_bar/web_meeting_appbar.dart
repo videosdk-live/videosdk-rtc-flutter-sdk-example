@@ -20,7 +20,10 @@ class WebMeetingAppBar extends StatefulWidget {
   final String token;
   final Room meeting;
   // control states
-  final bool isMicEnabled, isCamEnabled, isScreenShareEnabled;
+  final bool isMicEnabled,
+      isCamEnabled,
+      isLocalScreenShareEnabled,
+      isRemoteScreenShareEnabled;
   final String recordingState;
 
   const WebMeetingAppBar({
@@ -30,7 +33,8 @@ class WebMeetingAppBar extends StatefulWidget {
     required this.recordingState,
     required this.isMicEnabled,
     required this.isCamEnabled,
-    required this.isScreenShareEnabled,
+    required this.isLocalScreenShareEnabled,
+    required this.isRemoteScreenShareEnabled,
   }) : super(key: key);
 
   @override
@@ -313,17 +317,23 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
               borderRadius: BorderRadius.circular(12),
               rippleColor: primaryColor,
               onTap: () {
-                if (!widget.isScreenShareEnabled) {
-                  if (!kIsWeb) {
-                    selectScreenSourceDialog(context).then((value) => {
-                          if (value != null)
-                            {widget.meeting.enableScreenShare(value)}
-                        });
+                if (!widget.isRemoteScreenShareEnabled) {
+                  if (!widget.isLocalScreenShareEnabled) {
+                    if (!kIsWeb) {
+                      selectScreenSourceDialog(context).then((value) => {
+                            if (value != null)
+                              {widget.meeting.enableScreenShare(value)}
+                          });
+                    } else {
+                      widget.meeting.enableScreenShare();
+                    }
                   } else {
-                    widget.meeting.enableScreenShare();
+                    widget.meeting.disableScreenShare();
                   }
                 } else {
-                  widget.meeting.disableScreenShare();
+                  showSnackBarMessage(
+                      message: "Someone is already presenting",
+                      context: context);
                 }
               },
               child: Container(
@@ -334,7 +344,9 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                 ),
                 padding: const EdgeInsets.all(10),
                 child: SvgPicture.asset(
-                  "assets/ic_screen_share.svg",
+                  widget.isLocalScreenShareEnabled
+                      ? "assets/ic_stop_screen_share.svg"
+                      : "assets/ic_screen_share.svg",
                   color: Colors.white,
                 ),
               ),

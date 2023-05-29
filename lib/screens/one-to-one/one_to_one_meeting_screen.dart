@@ -117,7 +117,8 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                               recordingState: recordingState,
                               isMicEnabled: audioStream != null,
                               isCamEnabled: videoStream != null,
-                              isScreenShareEnabled: shareStream != null ||
+                              isLocalScreenShareEnabled: shareStream != null,
+                              isRemoteScreenShareEnabled:
                                   remoteParticipantShareStream != null,
                             )
                           : MeetingAppBar(
