@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'join_screen.dart';
@@ -35,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Image.asset('assets/logo.png'),
           ),
           Positioned(
-            bottom: 40,
+            bottom: kIsWeb ? 0 : 40,
             left: 0,
             right: 0,
             child: Image.asset(

@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:videosdk_flutter_example/utils/toast.dart';
+import 'package:videosdk_flutter_example/widgets/conference-call/manage_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/participant_grid_tile.dart';
 
 class ConferenceParticipantGrid extends StatefulWidget {
@@ -17,12 +20,13 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
   late Participant localParticipant;
   String? activeSpeakerId;
   String? presenterId;
-  int numberofColumns = 1;
-  int numberOfMaxOnScreenParticipants = 6;
   String quality = "high";
 
   Map<String, Participant> participants = {};
-  Map<String, Participant> onScreenParticipants = {};
+  Map<int, List<Participant>> onScreenParticipants = {};
+  Map<String, int>? gridInfo;
+  bool isPresenting = false;
+  Map<int, List<Participant>>? activeSpeakerList;
 
   @override
   void initState() {
@@ -30,9 +34,13 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     participants.putIfAbsent(localParticipant.id, () => localParticipant);
     participants.addAll(widget.meeting.participants);
     presenterId = widget.meeting.activePresenterId;
-    updateOnScreenParticipants();
-    // Setting meeting event listeners
-    setMeetingListeners(widget.meeting);
+    isPresenting = presenterId != null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateOnScreenParticipants();
+      // Setting meeting event listeners
+      setMeetingListeners(widget.meeting);
+    });
 
     super.initState();
   }
@@ -46,51 +54,43 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Flex(
+      direction: ResponsiveValue<Axis>(context, conditionalValues: [
+        Condition.equals(
+            name: MOBILE,
+            value: participants.length <= 2 ? Axis.horizontal : Axis.vertical),
+        Condition.largerThan(
+            name: MOBILE,
+            value: isPresenting ? Axis.horizontal : Axis.vertical),
+      ]).value!,
       children: [
-        for (int i = 0;
-            i < (onScreenParticipants.length / numberofColumns).ceil();
-            i++)
+        for (int i = 0; i < onScreenParticipants.length; i++)
           Flexible(
-              child: Row(
+              child: Flex(
+            direction: ResponsiveValue<Axis>(context, conditionalValues: [
+              Condition.equals(
+                  name: MOBILE,
+                  value: participants.length <= 2
+                      ? Axis.vertical
+                      : Axis.horizontal),
+              Condition.largerThan(
+                  name: MOBILE,
+                  value: isPresenting ? Axis.vertical : Axis.horizontal),
+            ]).value!,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              for (int j = 0;
-                  j <
-                      onScreenParticipants.values
-                          .toList()
-                          .sublist(
-                              i * numberofColumns,
-                              (i + 1) * numberofColumns >
-                                      onScreenParticipants.length
-                                  ? onScreenParticipants.length
-                                  : (i + 1) * numberofColumns)
-                          .length;
-                  j++)
+              for (int j = 0; j < onScreenParticipants[i]!.length; j++)
                 Flexible(
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: ParticipantGridTile(
-                        key: Key(onScreenParticipants.values
-                            .toList()
-                            .sublist(
-                                i * numberofColumns,
-                                (i + 1) * numberofColumns >
-                                        onScreenParticipants.length
-                                    ? onScreenParticipants.length
-                                    : (i + 1) * numberofColumns)
-                            .elementAt(j)
-                            .id),
-                        participant: onScreenParticipants.values
-                            .toList()
-                            .sublist(
-                                i * numberofColumns,
-                                (i + 1) * numberofColumns >
-                                        onScreenParticipants.length
-                                    ? onScreenParticipants.length
-                                    : (i + 1) * numberofColumns)
-                            .elementAt(j),
-                        activeSpeakerId: activeSpeakerId,
-                        quality: quality),
+                      key: Key(onScreenParticipants[i]![j].id),
+                      participant: onScreenParticipants[i]![j],
+                      activeSpeakerId: activeSpeakerId,
+                      quality: quality,
+                      participantCount: participants.length,
+                      isPresenting: isPresenting,
+                    ),
                   ),
                 )
             ],
@@ -137,10 +137,10 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
       },
     );
 
-    _meeting.on(Events.presenterChanged, (_presenterId) {
+    _meeting.on(Events.presenterChanged, (presenterId) {
       setState(() {
-        presenterId = _presenterId;
-        numberOfMaxOnScreenParticipants = _presenterId != null ? 2 : 6;
+        presenterId = presenterId;
+        isPresenting = presenterId != null;
         updateOnScreenParticipants();
       });
     });
@@ -148,7 +148,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
       if (stream.kind == "share") {
         setState(() {
-          numberOfMaxOnScreenParticipants = 2;
+          isPresenting = true;
           updateOnScreenParticipants();
         });
       }
@@ -156,7 +156,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.localParticipant.on(Events.streamDisabled, (Stream stream) {
       if (stream.kind == "share") {
         setState(() {
-          numberOfMaxOnScreenParticipants = 6;
+          isPresenting = false;
           updateOnScreenParticipants();
         });
       }
@@ -164,46 +164,77 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
   }
 
   updateOnScreenParticipants() {
-    Map<String, Participant> newScreenParticipants = <String, Participant>{};
-    participants.values
-        .toList()
-        .sublist(
-            0,
-            participants.length > numberOfMaxOnScreenParticipants
-                ? numberOfMaxOnScreenParticipants
-                : participants.length)
-        .forEach((participant) {
-      newScreenParticipants.putIfAbsent(participant.id, () => participant);
-    });
-    if (!newScreenParticipants.containsKey(activeSpeakerId) &&
-        activeSpeakerId != null) {
-      newScreenParticipants.remove(newScreenParticipants.keys.last);
-      newScreenParticipants.putIfAbsent(
-          activeSpeakerId!,
-          () => participants.values
-              .firstWhere((element) => element.id == activeSpeakerId));
-    }
-    if (!listEquals(newScreenParticipants.keys.toList(),
-        onScreenParticipants.keys.toList())) {
-      setState(() {
-        onScreenParticipants = newScreenParticipants;
-        quality = newScreenParticipants.length > 4
-            ? "low"
-            : newScreenParticipants.length > 2
-                ? "medium"
-                : "high";
+    gridInfo = ManageGrid.getGridRowsAndColumns(
+        participantsCount: participants.length,
+        device: ResponsiveValue<device_type>(context, conditionalValues: [
+          const Condition.equals(name: MOBILE, value: device_type.mobile),
+          const Condition.equals(name: TABLET, value: device_type.tablet),
+          const Condition.largerThan(name: TABLET, value: device_type.desktop),
+        ]).value!,
+        isPresenting: isPresenting);
+
+    Map<int, List<Participant>> newParticipants =
+        ManageGrid.getGridForMainParticipants(
+            participants: participants, gridInfo: gridInfo);
+
+    List<Participant> participantList = [];
+    if (activeSpeakerList == null) {
+      newParticipants.values.forEach((element) {
+        element.forEach((participant) {
+          participantList.add(participant);
+        });
+        
+      });
+    } else {
+      activeSpeakerList!.values.forEach((element) {
+        element.forEach((participant) {
+          participantList.add(participant);
+        });
       });
     }
-    if (numberofColumns !=
-        (newScreenParticipants.length > 2 ||
-                numberOfMaxOnScreenParticipants == 2
-            ? 2
-            : 1)) {
+
+    int maxNoOfParticipant = isPresenting ? 2 : 6;
+
+    if (participants.length > maxNoOfParticipant) {
+      if (activeSpeakerId != null &&
+          widget.meeting.localParticipant.id != activeSpeakerId &&
+          !participantList
+              .contains(widget.meeting.participants[activeSpeakerId])) {
+        newParticipants.values.last
+            .removeAt(newParticipants.values.last.length - 1);
+        newParticipants.values.last.add(participants.values
+            .firstWhere((element) => element.id == activeSpeakerId));
+        activeSpeakerList = newParticipants;
+      }
+    }
+
+    if (activeSpeakerList == null) {
+      activeSpeakerList = newParticipants;
+    }
+
+    int activeSpeakerListLength = 0;
+    int newParticipantListLength = 0;
+
+    activeSpeakerList!.keys.forEach((key) {
+      List<Participant> participants = activeSpeakerList![key]!;
+      int length = participants.length;
+      activeSpeakerListLength += length;
+    });
+
+    newParticipants.keys.forEach((key) {
+      List<Participant> participants = newParticipants[key]!;
+      int length = participants.length;
+      newParticipantListLength += length;
+    });
+
+    if (activeSpeakerListLength != newParticipantListLength) {
+      activeSpeakerList = newParticipants;
+    }
+
+    if (!listEquals(activeSpeakerList!.values.toList(),
+        onScreenParticipants.values.toList())) {
       setState(() {
-        numberofColumns = newScreenParticipants.length > 2 ||
-                numberOfMaxOnScreenParticipants == 2
-            ? 2
-            : 1;
+        onScreenParticipants = activeSpeakerList!;
       });
     }
   }

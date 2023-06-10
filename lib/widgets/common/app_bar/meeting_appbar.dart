@@ -50,7 +50,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
             : CrossFadeState.showSecond,
         secondChild: const SizedBox.shrink(),
         firstChild: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+          padding: const EdgeInsets.fromLTRB(12.0,10.0,8.0,0.0),
           child: Row(
             children: [
               if (widget.recordingState == "RECORDING_STARTING" ||

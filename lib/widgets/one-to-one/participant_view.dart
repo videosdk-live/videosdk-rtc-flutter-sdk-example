@@ -72,9 +72,9 @@ class ParticipantView extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 30),
                                 color: purple,
+                                onPressed: onStopScreeenSharePressed,
                                 child: const Text("Stop Presenting",
-                                    style: TextStyle(fontSize: 16)),
-                                onPressed: onStopScreeenSharePressed)
+                                    style: TextStyle(fontSize: 16)))
                           ])),
         if (!isMicOn)
           Positioned(

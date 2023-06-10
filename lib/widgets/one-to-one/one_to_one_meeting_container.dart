@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/one-to-one/participant_view.dart';
@@ -58,11 +60,17 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = MediaQuery.of(context).size.width;
+    final maxHeight = MediaQuery.of(context).size.height;
+    bool isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
       child: IntrinsicHeight(
         child: Stack(children: [
           Container(
+              width: kIsWeb ? isWebMobile ? maxWidth : maxWidth / 1.5 : maxWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: black800,
@@ -105,8 +113,18 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
                     }
                   },
                   child: Container(
-                      height: 160,
-                      width: 100,
+                      height:
+                          ResponsiveValue<double>(context, conditionalValues: [
+                        Condition.equals(name: MOBILE, value: maxHeight / 4),
+                        Condition.equals(name: TABLET, value: maxHeight / 3),
+                        Condition.largerThan(name: TABLET, value: 230),
+                      ]).value!,
+                      width:
+                          ResponsiveValue<double>(context, conditionalValues: [
+                        Condition.equals(name: MOBILE, value: maxWidth / 3),
+                        Condition.equals(name: TABLET, value: maxWidth / 3),
+                        Condition.largerThan(name: TABLET, value: 320),
+                      ]).value!,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         color: black600,

@@ -1,16 +1,23 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/screens/common/join_screen.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
+import 'package:videosdk_flutter_example/widgets/common/app_bar/web_meeting_appbar.dart';
 import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
+import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -88,7 +95,9 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
   Widget build(BuildContext context) {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
-
+    bool isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
     return WillPopScope(
       onWillPop: _onWillPopScope,
       child: _joined
@@ -98,155 +107,192 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                   body: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      MeetingAppBar(
-                        meeting: meeting,
-                        token: widget.token,
-                        recordingState: recordingState,
-                        isFullScreen: fullScreen,
-                      ),
+                      !isWebMobile &&
+                              (kIsWeb || Platform.isMacOS || Platform.isWindows)
+                          ? WebMeetingAppBar(
+                              meeting: meeting,
+                              token: widget.token,
+                              recordingState: recordingState,
+                              isMicEnabled: audioStream != null,
+                              isCamEnabled: videoStream != null,
+                              isLocalScreenShareEnabled: shareStream != null,
+                              isRemoteScreenShareEnabled:
+                                  remoteParticipantShareStream != null,
+                            )
+                          : MeetingAppBar(
+                              meeting: meeting,
+                              token: widget.token,
+                              recordingState: recordingState,
+                              isFullScreen: fullScreen,
+                            ),
+                      const Divider(),
                       Expanded(
-                        child: GestureDetector(
-                            onDoubleTap: () => {
-                                  setState(() {
-                                    fullScreen = !fullScreen;
-                                  })
-                                },
-                            child: Column(
-                              children: [
-                                ConferenseScreenShareView(meeting: meeting),
-                                Flexible(
-                                    child: ConferenceParticipantGrid(
-                                        meeting: meeting))
-                              ],
-                            )),
-                      ),
-                      AnimatedCrossFade(
-                        duration: const Duration(milliseconds: 300),
-                        crossFadeState: !fullScreen
-                            ? CrossFadeState.showFirst
-                            : CrossFadeState.showSecond,
-                        secondChild: const SizedBox.shrink(),
-                        firstChild: MeetingActionBar(
-                          isMicEnabled: audioStream != null,
-                          isCamEnabled: videoStream != null,
-                          isScreenShareEnabled: shareStream != null,
-                          recordingState: recordingState,
-                          // Called when Call End button is pressed
-                          onCallEndButtonPressed: () {
-                            meeting.end();
-                          },
-
-                          onCallLeaveButtonPressed: () {
-                            meeting.leave();
-                          },
-                          // Called when mic button is pressed
-                          onMicButtonPressed: () {
-                            if (audioStream != null) {
-                              meeting.muteMic();
-                            } else {
-                              meeting.unmuteMic();
-                            }
-                          },
-                          // Called when camera button is pressed
-                          onCameraButtonPressed: () {
-                            if (videoStream != null) {
-                              meeting.disableCam();
-                            } else {
-                              meeting.enableCam();
-                            }
-                          },
-
-                          onSwitchMicButtonPressed: (details) async {
-                            List<MediaDeviceInfo> outptuDevice =
-                                meeting.getAudioOutputDevices();
-                            double bottomMargin = (70.0 * outptuDevice.length);
-                            final screenSize = MediaQuery.of(context).size;
-                            await showMenu(
-                              context: context,
-                              color: black700,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              position: RelativeRect.fromLTRB(
-                                screenSize.width - details.globalPosition.dx,
-                                details.globalPosition.dy - bottomMargin,
-                                details.globalPosition.dx,
-                                (bottomMargin),
-                              ),
-                              items: outptuDevice.map((e) {
-                                return PopupMenuItem(
-                                    value: e, child: Text(e.label));
-                              }).toList(),
-                              elevation: 8.0,
-                            ).then((value) {
-                              if (value != null) {
-                                meeting.switchAudioDevice(value);
-                              }
-                            });
-                          },
-
-                          onChatButtonPressed: () {
-                            setState(() {
-                              showChatSnackbar = false;
-                            });
-                            showModalBottomSheet(
-                              context: context,
-                              constraints: BoxConstraints(
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height -
-                                          statusbarHeight),
-                              isScrollControlled: true,
-                              builder: (context) => ChatView(
-                                  key: const Key("ChatScreen"),
-                                  meeting: meeting),
-                            ).whenComplete(() => {
-                                  setState(() {
-                                    showChatSnackbar = true;
-                                  })
-                                });
-                          },
-
-                          // Called when more options button is pressed
-                          onMoreOptionSelected: (option) {
-                            // Showing more options dialog box
-                            if (option == "screenshare") {
-                              if (remoteParticipantShareStream == null) {
-                                if (shareStream == null) {
-                                  meeting.enableScreenShare();
-                                } else {
-                                  meeting.disableScreenShare();
-                                }
-                              } else {
-                                showSnackBarMessage(
-                                    message: "Someone is already presenting",
-                                    context: context);
-                              }
-                            } else if (option == "recording") {
-                              if (recordingState == "RECORDING_STOPPING") {
-                                showSnackBarMessage(
-                                    message: "Recording is in stopping state",
-                                    context: context);
-                              } else if (recordingState ==
-                                  "RECORDING_STARTED") {
-                                meeting.stopRecording();
-                              } else if (recordingState ==
-                                  "RECORDING_STARTING") {
-                                showSnackBarMessage(
-                                    message: "Recording is in starting state",
-                                    context: context);
-                              } else {
-                                meeting.startRecording();
-                              }
-                            } else if (option == "participants") {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: false,
-                                builder: (context) =>
-                                    ParticipantList(meeting: meeting),
-                              );
-                            }
-                          },
+                          child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 8.0),
+                        child: Flex(
+                          direction: ResponsiveValue<Axis>(context,
+                              conditionalValues: [
+                                const Condition.equals(
+                                    name: MOBILE, value: Axis.vertical),
+                                const Condition.largerThan(
+                                    name: MOBILE, value: Axis.horizontal),
+                              ]).value!,
+                          children: [
+                            ConferenseScreenShareView(meeting: meeting),
+                            Expanded(
+                              child:
+                                  ConferenceParticipantGrid(meeting: meeting),
+                            ),
+                          ],
                         ),
-                      ),
+                      )),
+                      !isWebMobile &&
+                              (kIsWeb || Platform.isMacOS || Platform.isWindows)
+                          ? Container()
+                          : Column(
+                              children: [
+                                const Divider(),
+                                AnimatedCrossFade(
+                                  duration: const Duration(milliseconds: 300),
+                                  crossFadeState: !fullScreen
+                                      ? CrossFadeState.showFirst
+                                      : CrossFadeState.showSecond,
+                                  secondChild: const SizedBox.shrink(),
+                                  firstChild: MeetingActionBar(
+                                    isMicEnabled: audioStream != null,
+                                    isCamEnabled: videoStream != null,
+                                    isScreenShareEnabled: shareStream != null,
+                                    recordingState: recordingState,
+                                    // Called when Call End button is pressed
+                                    onCallEndButtonPressed: () {
+                                      meeting.end();
+                                    },
+
+                                    onCallLeaveButtonPressed: () {
+                                      meeting.leave();
+                                    },
+                                    // Called when mic button is pressed
+                                    onMicButtonPressed: () {
+                                      if (audioStream != null) {
+                                        meeting.muteMic();
+                                      } else {
+                                        meeting.unmuteMic();
+                                      }
+                                    },
+                                    // Called when camera button is pressed
+                                    onCameraButtonPressed: () {
+                                      if (videoStream != null) {
+                                        meeting.disableCam();
+                                      } else {
+                                        meeting.enableCam();
+                                      }
+                                    },
+
+                                    onSwitchMicButtonPressed: (details) async {
+                                      List<MediaDeviceInfo> outptuDevice =
+                                          meeting.getAudioOutputDevices();
+                                      double bottomMargin =
+                                          (70.0 * outptuDevice.length);
+                                      final screenSize =
+                                          MediaQuery.of(context).size;
+                                      await showMenu(
+                                        context: context,
+                                        color: black700,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        position: RelativeRect.fromLTRB(
+                                          screenSize.width -
+                                              details.globalPosition.dx,
+                                          details.globalPosition.dy -
+                                              bottomMargin,
+                                          details.globalPosition.dx,
+                                          (bottomMargin),
+                                        ),
+                                        items: outptuDevice.map((e) {
+                                          return PopupMenuItem(
+                                              value: e, child: Text(e.label));
+                                        }).toList(),
+                                        elevation: 8.0,
+                                      ).then((value) {
+                                        if (value != null) {
+                                          meeting.switchAudioDevice(value);
+                                        }
+                                      });
+                                    },
+
+                                    onChatButtonPressed: () {
+                                      setState(() {
+                                        showChatSnackbar = false;
+                                      });
+                                      showModalBottomSheet(
+                                        context: context,
+                                        constraints: BoxConstraints(
+                                            maxHeight: MediaQuery.of(context)
+                                                    .size
+                                                    .height -
+                                                statusbarHeight),
+                                        isScrollControlled: true,
+                                        builder: (context) => ChatView(
+                                            key: const Key("ChatScreen"),
+                                            meeting: meeting),
+                                      ).whenComplete(() => {
+                                            setState(() {
+                                              showChatSnackbar = true;
+                                            })
+                                          });
+                                    },
+
+                                    // Called when more options button is pressed
+                                    onMoreOptionSelected: (option) {
+                                      // Showing more options dialog box
+                                      if (option == "screenshare") {
+                                        if (remoteParticipantShareStream ==
+                                            null) {
+                                          if (shareStream == null) {
+                                            meeting.enableScreenShare();
+                                          } else {
+                                            meeting.disableScreenShare();
+                                          }
+                                        } else {
+                                          showSnackBarMessage(
+                                              message:
+                                                  "Someone is already presenting",
+                                              context: context);
+                                        }
+                                      } else if (option == "recording") {
+                                        if (recordingState ==
+                                            "RECORDING_STOPPING") {
+                                          showSnackBarMessage(
+                                              message:
+                                                  "Recording is in stopping state",
+                                              context: context);
+                                        } else if (recordingState ==
+                                            "RECORDING_STARTED") {
+                                          meeting.stopRecording();
+                                        } else if (recordingState ==
+                                            "RECORDING_STARTING") {
+                                          showSnackBarMessage(
+                                              message:
+                                                  "Recording is in starting state",
+                                              context: context);
+                                        } else {
+                                          meeting.startRecording();
+                                        }
+                                      } else if (option == "participants") {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: false,
+                                          builder: (context) =>
+                                              ParticipantList(meeting: meeting),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                     ],
                   )),
             )

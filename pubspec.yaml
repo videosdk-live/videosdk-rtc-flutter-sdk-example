@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^1.1.0
+  videosdk: ^1.1.3
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
   camera: ^0.10.0
@@ -18,6 +18,8 @@ dependencies:
   date_time_format: ^2.0.1
   touch_ripple_effect: ^2.2.3
   lottie: ^2.2.0
+  responsive_framework: ^1.0.0
+  window_manager: ^0.3.4
 
 dev_dependencies:
   flutter_lints: ^2.0.1

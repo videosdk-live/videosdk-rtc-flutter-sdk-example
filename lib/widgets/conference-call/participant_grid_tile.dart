@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/widgets/common/stats/call_stats.dart';
@@ -8,13 +10,18 @@ class ParticipantGridTile extends StatefulWidget {
   final bool isLocalParticipant;
   final String? activeSpeakerId;
   final String? quality;
-  const ParticipantGridTile(
-      {Key? key,
-      required this.participant,
-      required this.quality,
-      this.isLocalParticipant = false,
-      required this.activeSpeakerId})
-      : super(key: key);
+  final int participantCount;
+  final bool isPresenting;
+
+  const ParticipantGridTile({
+    Key? key,
+    required this.participant,
+    required this.quality,
+    this.isLocalParticipant = false,
+    required this.activeSpeakerId,
+    required this.participantCount,
+    required this.isPresenting,
+  }) : super(key: key);
 
   @override
   State<ParticipantGridTile> createState() => _ParticipantGridTileState();
@@ -51,6 +58,21 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints(
+          maxWidth: ResponsiveValue<double>(context, conditionalValues: [
+        const Condition.equals(name: MOBILE, value: double.infinity),
+        Condition.largerThan(
+            name: MOBILE,
+            value: widget.isPresenting
+                ? double.infinity
+                : kIsWeb && widget.participantCount == 1
+                    ? MediaQuery.of(context).size.width / 1.5
+                    : widget.participantCount > 2
+                        ? widget.participantCount >= 5
+                            ? 350
+                            : 500
+                        : double.infinity),
+      ]).value!),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: black800,
