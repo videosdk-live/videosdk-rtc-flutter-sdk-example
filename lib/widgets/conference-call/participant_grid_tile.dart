@@ -60,7 +60,7 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
     return Container(
       constraints: BoxConstraints(
           maxWidth: ResponsiveValue<double>(context, conditionalValues: [
-        const Condition.equals(name: MOBILE, value: double.infinity),
+        Condition.equals(name: MOBILE, value: double.infinity),
         Condition.largerThan(
             name: MOBILE,
             value: widget.isPresenting

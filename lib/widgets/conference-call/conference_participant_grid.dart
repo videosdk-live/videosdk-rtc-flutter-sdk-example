@@ -167,9 +167,9 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     gridInfo = ManageGrid.getGridRowsAndColumns(
         participantsCount: participants.length,
         device: ResponsiveValue<device_type>(context, conditionalValues: [
-          const Condition.equals(name: MOBILE, value: device_type.mobile),
-          const Condition.equals(name: TABLET, value: device_type.tablet),
-          const Condition.largerThan(name: TABLET, value: device_type.desktop),
+          Condition.equals(name: MOBILE, value: device_type.mobile),
+          Condition.equals(name: TABLET, value: device_type.tablet),
+          Condition.largerThan(name: TABLET, value: device_type.desktop),
         ]).value!,
         isPresenting: isPresenting);
 
@@ -183,7 +183,6 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
         element.forEach((participant) {
           participantList.add(participant);
         });
-        
       });
     } else {
       activeSpeakerList!.values.forEach((element) {

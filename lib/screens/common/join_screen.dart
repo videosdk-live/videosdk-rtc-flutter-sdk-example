@@ -76,7 +76,10 @@ class _JoinScreenState extends State<JoinScreen> {
                         minHeight: viewportConstraints.maxHeight),
                     child: IntrinsicHeight(
                       child: Column(
-                        mainAxisAlignment: !kIsWeb && (Platform.isAndroid || Platform.isIOS) ? MainAxisAlignment.center : MainAxisAlignment.start,
+                        mainAxisAlignment:
+                            !kIsWeb && (Platform.isAndroid || Platform.isIOS)
+                                ? MainAxisAlignment.center
+                                : MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Camera Preview
@@ -117,13 +120,13 @@ class _JoinScreenState extends State<JoinScreen> {
                                           aspectRatio: ResponsiveValue<double>(
                                               context,
                                               conditionalValues: [
-                                                const Condition.equals(
+                                                Condition.equals(
                                                     name: MOBILE,
                                                     value: 1 / 1.55),
-                                                const Condition.equals(
+                                                Condition.equals(
                                                     name: TABLET,
                                                     value: 16 / 10),
-                                                const Condition.largerThan(
+                                                Condition.largerThan(
                                                     name: TABLET,
                                                     value: 16 / 9),
                                               ]).value!,
@@ -163,13 +166,13 @@ class _JoinScreenState extends State<JoinScreen> {
                                               padding: EdgeInsets.all(
                                                 ResponsiveValue<double>(context,
                                                     conditionalValues: [
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: MOBILE,
                                                           value: 12),
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: TABLET,
                                                           value: 15),
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: DESKTOP,
                                                           value: 18),
                                                     ]).value!,
@@ -203,13 +206,13 @@ class _JoinScreenState extends State<JoinScreen> {
                                               padding: EdgeInsets.all(
                                                 ResponsiveValue<double>(context,
                                                     conditionalValues: [
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: MOBILE,
                                                           value: 12),
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: TABLET,
                                                           value: 15),
-                                                      const Condition.equals(
+                                                      Condition.equals(
                                                           name: DESKTOP,
                                                           value: 18),
                                                     ]).value!,
@@ -245,11 +248,12 @@ class _JoinScreenState extends State<JoinScreen> {
                                       minWidth: ResponsiveValue<double>(context,
                                           conditionalValues: [
                                             Condition.equals(
-                                                name: MOBILE, value: maxWidth / 1.3),
+                                                name: MOBILE,
+                                                value: maxWidth / 1.3),
                                             Condition.equals(
                                                 name: TABLET,
                                                 value: maxWidth / 1.3),
-                                            const Condition.equals(
+                                            Condition.equals(
                                                 name: DESKTOP, value: 600),
                                           ]).value!,
                                       height: 50,
@@ -275,11 +279,12 @@ class _JoinScreenState extends State<JoinScreen> {
                                       minWidth: ResponsiveValue<double>(context,
                                           conditionalValues: [
                                             Condition.equals(
-                                                name: MOBILE, value: maxWidth / 1.3),
+                                                name: MOBILE,
+                                                value: maxWidth / 1.3),
                                             Condition.equals(
                                                 name: TABLET,
                                                 value: maxWidth / 1.3),
-                                            const Condition.equals(
+                                            Condition.equals(
                                                 name: DESKTOP, value: 600),
                                           ]).value!,
                                       height: 50,

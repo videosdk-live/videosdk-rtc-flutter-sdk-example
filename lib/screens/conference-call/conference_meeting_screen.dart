@@ -133,9 +133,9 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                         child: Flex(
                           direction: ResponsiveValue<Axis>(context,
                               conditionalValues: [
-                                const Condition.equals(
+                                Condition.equals(
                                     name: MOBILE, value: Axis.vertical),
-                                const Condition.largerThan(
+                                Condition.largerThan(
                                     name: MOBILE, value: Axis.horizontal),
                               ]).value!,
                           children: [
