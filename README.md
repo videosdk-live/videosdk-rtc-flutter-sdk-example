@@ -192,7 +192,7 @@ Token is used to create and validate a meeting using API and also initialise a m
         micEnabled: true,
         camEnabled: true,
         maxResolution: 'hd',
-        defaultCameraIndex: 1,
+        defaultCameraIndex: kIsWeb ? 0 : 1,
         notification: const NotificationInfo(
           title: "Video SDK",
           message: "Video SDK is sharing screen in the meeting",

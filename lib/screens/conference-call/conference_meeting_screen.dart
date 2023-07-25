@@ -76,7 +76,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: true,
-      defaultCameraIndex: 1,
+      defaultCameraIndex: kIsWeb ? 0 : 1,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",

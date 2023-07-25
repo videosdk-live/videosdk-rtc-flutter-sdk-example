@@ -58,7 +58,11 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
       direction: ResponsiveValue<Axis>(context, conditionalValues: [
         Condition.equals(
             name: MOBILE,
-            value: participants.length <= 2 ? Axis.horizontal : Axis.vertical),
+            value: participants.length <= 2
+                ? isPresenting
+                    ? Axis.vertical
+                    : Axis.horizontal
+                : Axis.vertical),
         Condition.largerThan(
             name: MOBILE,
             value: isPresenting ? Axis.horizontal : Axis.vertical),
@@ -71,7 +75,9 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
               Condition.equals(
                   name: MOBILE,
                   value: participants.length <= 2
-                      ? Axis.vertical
+                      ? isPresenting
+                          ? Axis.horizontal
+                          : Axis.vertical
                       : Axis.horizontal),
               Condition.largerThan(
                   name: MOBILE,
