@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^1.1.4
+  videosdk: 1.1.5
   http: ^1.1.0
   flutter_dotenv: ^5.0.2
   camera: ^0.10.0
