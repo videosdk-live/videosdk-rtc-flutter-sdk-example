@@ -106,7 +106,7 @@ class ParticipantView extends StatelessWidget {
                   : participant.displayName),
             ),
           ),
-        Positioned(top: 4, left: 4, child: CallStats(participant: participant)),
+        // Positioned(top: 4, left: 4, child: CallStats(participant: participant)),
       ],
     );
   }

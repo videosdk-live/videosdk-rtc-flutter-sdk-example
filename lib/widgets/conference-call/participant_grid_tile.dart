@@ -133,10 +133,10 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
                     ? "You"
                     : widget.participant.displayName)),
           ),
-          Positioned(
-              top: 4,
-              left: 4,
-              child: CallStats(participant: widget.participant)),
+          // Positioned(
+          //     top: 4,
+          //     left: 4,
+          //     child: CallStats(participant: widget.participant)),
         ],
       ),
     );

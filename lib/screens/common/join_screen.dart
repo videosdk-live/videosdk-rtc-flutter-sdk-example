@@ -1,13 +1,10 @@
 // ignore_for_file: non_constant_identifier_names, dead_code
-
-import 'dart:developer';
 import 'dart:io';
-
-import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/screens/conference-call/conference_meeting_screen.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining_details/joining_details.dart';
@@ -32,11 +29,11 @@ class _JoinScreenState extends State<JoinScreen> {
   bool isMicOn = true;
   bool isCameraOn = true;
 
+  CustomTrack? cameraTrack;
+  RTCVideoRenderer? cameraRenderer;
+
   bool? isJoinMeetingSelected;
   bool? isCreateMeetingSelected;
-
-  // Camera Controller
-  CameraController? cameraController;
 
   @override
   void initState() {
@@ -86,70 +83,52 @@ class _JoinScreenState extends State<JoinScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 100, horizontal: 36),
-                            child: SizedBox(
-                              height: 300,
-                              width: 200,
-                              child: Stack(
-                                alignment: Alignment.topCenter,
-                                children: [
-                                  (cameraController == null) && isCameraOn
-                                      ? !(cameraController
-                                                  ?.value.isInitialized ??
-                                              false)
-                                          ? Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12)),
-                                              child: const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            )
-                                          : Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12)),
-                                              child: const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            )
-                                      : AspectRatio(
-                                          aspectRatio: ResponsiveValue<double>(
-                                              context,
-                                              conditionalValues: [
-                                                Condition.equals(
-                                                    name: MOBILE,
-                                                    value: 1 / 1.55),
-                                                Condition.equals(
-                                                    name: TABLET,
-                                                    value: 16 / 10),
-                                                Condition.largerThan(
-                                                    name: TABLET,
-                                                    value: 16 / 9),
-                                              ]).value!,
-                                          child: isCameraOn
-                                              ? ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  child: CameraPreview(
-                                                    cameraController!,
-                                                  ))
-                                              : Container(
-                                                  decoration: BoxDecoration(
-                                                      color: black800,
+                            child:
+                                SizedBox(
+                                  height: 300,
+                                  width: 200,
+                                  child: Stack(
+                                    alignment: Alignment.topCenter,
+                                    children: [
+                                      
+                                         AspectRatio(
+                                              aspectRatio: ResponsiveValue<double>(
+                                                  context,
+                                                  conditionalValues: [
+                                                    Condition.equals(
+                                                        name: MOBILE,
+                                                        value: 1 / 1.55),
+                                                    Condition.equals(
+                                                        name: TABLET,
+                                                        value: 16 / 10),
+                                                    Condition.largerThan(
+                                                        name: TABLET,
+                                                        value: 16 / 9),
+                                                  ]).value!,
+                                              child: cameraRenderer != null
+                                                  ? ClipRRect(
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              12)),
-                                                  child: const Center(
-                                                    child: Text(
-                                                      "Camera is turned off",
+                                                          BorderRadius.circular(12),
+                                                      child: RTCVideoView(
+                                                        cameraRenderer
+                                                            as RTCVideoRenderer,
+                                                        objectFit: RTCVideoViewObjectFit
+                                                            .RTCVideoViewObjectFitCover,
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      decoration: BoxDecoration(
+                                                          color: black800,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  12)),
+                                                      child: const Center(
+                                                        child: Text(
+                                                          "Camera is turned off",
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                        ),
+                                            ),
                                   Positioned(
                                     bottom: 16,
                                     // Meeting ActionBar
@@ -192,11 +171,9 @@ class _JoinScreenState extends State<JoinScreen> {
                                           ElevatedButton(
                                             onPressed: () {
                                               if (isCameraOn) {
-                                                cameraController?.dispose();
-                                                cameraController = null;
+                                                disposeCameraPreview();
                                               } else {
                                                 initCameraPreview();
-                                                // cameraController?.resumePreview();
                                               }
                                               setState(() =>
                                                   isCameraOn = !isCameraOn);
@@ -338,30 +315,26 @@ class _JoinScreenState extends State<JoinScreen> {
     }
   }
 
-  void initCameraPreview() {
-    // Get available cameras
-    availableCameras().then((availableCameras) {
-      // stores selected camera id
-      int selectedCameraId = availableCameras.length > 1 ? 1 : 0;
+  void initCameraPreview() async {
+    CustomTrack track = await VideoSDK.createCameraVideoTrack();
+    RTCVideoRenderer render = RTCVideoRenderer();
+    await render.initialize();
+    render.setSrcObject(stream: track.mediaStream, trackId: track.mediaStream.getVideoTracks().first.id);
+    setState(() {
+      cameraTrack = track;
+      cameraRenderer = render;
+    });
+  }
 
-      cameraController = CameraController(
-        availableCameras[selectedCameraId],
-        ResolutionPreset.medium,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-      log("Starting Camera");
-      cameraController!.initialize().then((_) {
-        if (!mounted) return;
-        setState(() {});
-      });
-    }).catchError((err) {
-      log("Error: $err");
+  void disposeCameraPreview() {
+    cameraTrack?.dispose();
+    setState(() {
+      cameraRenderer = null;
+      cameraTrack = null;
     });
   }
 
   void _onClickMeetingJoin(meetingId, callType, displayName) async {
-    cameraController?.dispose();
-    cameraController = null;
     if (displayName.toString().isEmpty) {
       displayName = "Guest";
     }
@@ -376,6 +349,7 @@ class _JoinScreenState extends State<JoinScreen> {
     try {
       var _meetingID = await createMeeting(_token);
       if (mounted) {
+        disposeCameraPreview();
         if (callType == "GROUP") {
           Navigator.push(
             context,
@@ -418,6 +392,7 @@ class _JoinScreenState extends State<JoinScreen> {
     var validMeeting = await validateMeeting(_token, meetingId);
     if (validMeeting) {
       if (mounted) {
+        disposeCameraPreview();
         if (callType == "GROUP") {
           Navigator.push(
             context,
@@ -461,6 +436,7 @@ class _JoinScreenState extends State<JoinScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    cameraTrack?.dispose();
     super.dispose();
   }
 }
