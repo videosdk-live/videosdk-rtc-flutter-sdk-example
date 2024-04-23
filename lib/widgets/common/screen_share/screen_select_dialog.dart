@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:videosdk/videosdk.dart';
@@ -7,27 +9,75 @@ import 'thumbnail_widget.dart';
 // ignore: must_be_immutable
 class ScreenSelectDialog extends Dialog {
   ScreenSelectDialog({Key? key, required this.meeting}) : super(key: key) {
-    meeting.getScreenShareSources().then((value) => _setSources(value));
+    _getSources();
+    _subscriptions.add(desktopCapturer.onAdded.stream.listen((source) {
+      _sources[source.id] = source;
+      _stateSetter?.call(() {});
+    }));
+
+    _subscriptions.add(desktopCapturer.onRemoved.stream.listen((source) {
+      _sources.remove(source.id);
+      _stateSetter?.call(() {});
+    }));
+
+    _subscriptions
+        .add(desktopCapturer.onThumbnailChanged.stream.listen((source) {
+      _stateSetter?.call(() {});
+    }));
   }
 
+  
+
   void _setSources(List<DesktopCapturerSource> source) {
-    _sources = source;
+    source.forEach((element) {
+      _sources[element.id] = element;
+    });
+
     _stateSetter?.call(() {});
   }
 
-  List<DesktopCapturerSource> _sources = [];
+  final Map<String, DesktopCapturerSource> _sources = {};
   SourceType _sourceType = SourceType.Screen;
   DesktopCapturerSource? _selected_source;
+  final List<StreamSubscription<DesktopCapturerSource>> _subscriptions = [];
   StateSetter? _stateSetter;
+  Timer? _timer;
   final Room meeting;
 
   void _ok(context) async {
+    _timer?.cancel();
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
     Navigator.pop<DesktopCapturerSource>(context, _selected_source);
   }
 
   void _cancel(context) async {
+    _timer?.cancel();
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
     Navigator.pop<DesktopCapturerSource>(context, null);
   }
+
+  Future<void> _getSources() async {
+    try {
+      var sources = await desktopCapturer.getSources(types: [_sourceType]);
+      _timer?.cancel();
+      _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+        desktopCapturer.updateSources(types: [_sourceType]);
+      });
+      _sources.clear();
+      sources.forEach((element) {
+        _sources[element.id] = element;
+      });
+      _stateSetter?.call(() {});
+      return;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +133,12 @@ class ScreenSelectDialog extends Dialog {
                                 const BoxConstraints.expand(height: 24),
                             child: TabBar(
                                 indicatorColor: purple,
-                                onTap: (value) => _sourceType = value == 0
-                                    ? SourceType.Screen
-                                    : SourceType.Window,
+                                onTap: (value) => Future.delayed(Duration.zero, () {
+                                      _sourceType = value == 0
+                                          ? SourceType.Screen
+                                          : SourceType.Window;
+                                      _getSources();
+                                    }),
                                 tabs: const [
                                   Tab(
                                       child: Text(
@@ -111,12 +164,10 @@ class ScreenSelectDialog extends Dialog {
                                   child: GridView.count(
                                     crossAxisSpacing: 8,
                                     crossAxisCount: 2,
-                                    children: _sources
-                                        .asMap()
-                                        .entries
+                                    children: _sources.entries
                                         .where((element) =>
-                                            element.value.type ==
-                                            SourceType.Screen)
+                                                element.value.type ==
+                                                SourceType.Screen)
                                         .map((e) => ThumbnailWidget(
                                               onTap: (source) {
                                                 if (context.mounted) {
@@ -136,12 +187,10 @@ class ScreenSelectDialog extends Dialog {
                                   child: GridView.count(
                                     crossAxisSpacing: 8,
                                     crossAxisCount: 3,
-                                    children: _sources
-                                        .asMap()
-                                        .entries
-                                        .where((element) =>
-                                            element.value.type ==
-                                            SourceType.Window)
+                                    children: _sources.entries
+                                            .where((element) =>
+                                                element.value.type ==
+                                                SourceType.Window)
                                         .map((e) => ThumbnailWidget(
                                               onTap: (source) {
                                                 if (context.mounted) {
