@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -19,6 +22,30 @@ class ThumbnailWidget extends StatefulWidget {
 }
 
 class _ThumbnailWidgetState extends State<ThumbnailWidget> {
+  final List<StreamSubscription> _subscriptions = [];
+  Uint8List? _thumbnail;
+  @override
+  void initState() {
+    super.initState();
+    _thumbnail = widget.source.thumbnail;
+    _subscriptions.add(widget.source.onThumbnailChanged.stream.listen((event) {
+      setState(() {
+        _thumbnail = event;
+      });
+    }));
+    _subscriptions.add(widget.source.onNameChanged.stream.listen((event) {
+      setState(() {});
+    }));
+  }
+
+  @override
+  void deactivate() {
+    for (var element in _subscriptions) {
+      element.cancel();
+    }
+    super.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -32,13 +59,14 @@ class _ThumbnailWidgetState extends State<ThumbnailWidget> {
             onTap: () {
               widget.onTap(widget.source);
             },
-            child: widget.source.thumbnail != null
-                ? Image.memory(
-                    widget.source.thumbnail!,
+            child: _thumbnail == null || _thumbnail!.isEmpty
+              ? Container() :
+                Image.memory(
+                    _thumbnail!,
                     gaplessPlayback: true,
                     alignment: Alignment.center,
                   )
-                : Container(),
+                ,
           ),
         )),
         Text(

@@ -78,7 +78,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: false,
-      defaultCameraIndex: kIsWeb ? 0 : 1,
+      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
