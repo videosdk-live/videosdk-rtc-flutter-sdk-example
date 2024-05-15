@@ -25,6 +25,7 @@ class WebMeetingAppBar extends StatefulWidget {
       isLocalScreenShareEnabled,
       isRemoteScreenShareEnabled;
   final String recordingState;
+  final String transcriptionState;
 
   const WebMeetingAppBar({
     Key? key,
@@ -35,6 +36,7 @@ class WebMeetingAppBar extends StatefulWidget {
     required this.isCamEnabled,
     required this.isLocalScreenShareEnabled,
     required this.isRemoteScreenShareEnabled,
+    required this.transcriptionState,
   }) : super(key: key);
 
   @override
@@ -127,7 +129,29 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                       message: "Recording is in starting state",
                       context: context);
                 } else {
-                  widget.meeting.startRecording();
+                  // Define the config and transcription maps
+                  Map<String, dynamic> config = {
+                    "layout": {
+                      "type": "GRID",
+                      "priority": "SPEAKER",
+                      "gridSize": 4,
+                    },
+                    "theme": "DARK",
+                    "mode": "video-and-audio",
+                    "quality": "high",
+                    "orientation": "landscape",
+                  };
+
+                  Map<String, dynamic> transcription = {
+                    "enabled": true,
+                    "summary": {
+                      "enabled": true,
+                      "prompt": "Write summary in sections like Title, Agenda, Speakers, Action Items, Outlines, Notes and Summary",
+                    },
+                  };
+
+                  // Start recording with the defined config and transcription
+                  widget.meeting.startRecording(config: config, transcription: transcription);
                 }
               },
               child: Container(
@@ -146,6 +170,54 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
               ),
             ),
           ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TouchRippleEffect(
+              borderRadius: BorderRadius.circular(12),
+              rippleColor: primaryColor,
+              onTap: () {
+                if (widget.transcriptionState == "TRANSCRIPTION_STOPPING") {
+                  showSnackBarMessage(
+                      message: "Transcription is in stopping state",
+                      context: context);
+                } else if (widget.transcriptionState == "TRANSCRIPTION_STARTED") {
+                  widget.meeting.stopTranscription();
+                } else if (widget.transcriptionState == "TRANSCRIPTION_STARTING") {
+                  showSnackBarMessage(
+                      message: "Transcription is in starting state",
+                      context: context);
+                } else {
+                  Map<String, dynamic> transcriptionConfig = {
+                    "webhookUrl": "https://webhook.your-api-server.com",
+                    "summary": {
+                      "enabled": true,
+                      "prompt": "Write summary in sections like Title, Agenda, Speakers, Action Items, Outlines, Notes and Summary",
+                    }
+                  };
+
+                  // Start transcription with the defined config
+                  widget.meeting.startTranscription(config: transcriptionConfig);
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: secondaryColor),
+                  color: primaryColor,
+                ),
+                padding: const EdgeInsets.all(11),
+                child: SvgPicture.asset(
+                  "assets/transcription.svg",
+                  width: 23,
+                  height: 23,
+                  // color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+
+
           // Mic Control
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),

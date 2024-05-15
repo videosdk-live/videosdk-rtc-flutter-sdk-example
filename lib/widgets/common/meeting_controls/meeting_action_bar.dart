@@ -10,6 +10,7 @@ class MeetingActionBar extends StatelessWidget {
   // control states
   final bool isMicEnabled, isCamEnabled, isScreenShareEnabled;
   final String recordingState;
+  final String transcriptionState;
 
   // callback functions
   final void Function() onCallEndButtonPressed,
@@ -27,6 +28,7 @@ class MeetingActionBar extends StatelessWidget {
     required this.isCamEnabled,
     required this.isScreenShareEnabled,
     required this.recordingState,
+    required this.transcriptionState,
     required this.onCallEndButtonPressed,
     required this.onCallLeaveButtonPressed,
     required this.onMicButtonPressed,
@@ -197,6 +199,17 @@ class MeetingActionBar extends StatelessWidget {
                       null,
                       SvgPicture.asset("assets/ic_recording.svg"),
                     ),
+                const PopupMenuDivider(),
+                _buildMeetingPoupItem(
+                  "transcription",
+                  transcriptionState == "TRANSCRIPTION_STARTED"
+                      ? "Stop Transcription"
+                      : transcriptionState == "TRANSCRIPTION_STARTING"
+                      ? "Transcription is starting"
+                      : "Start Transcription",
+                  null,
+                  SvgPicture.asset("assets/transcription.svg"),
+                ),
                     const PopupMenuDivider(),
                     _buildMeetingPoupItem(
                       "screenshare",

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "RECORDING_STOPPED";
+  String transcriptionState = "TRANSCRIPTION_STOPPED";
   // Meeting
   late Room meeting;
   bool _joined = false;
@@ -113,6 +115,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                               meeting: meeting,
                               token: widget.token,
                               recordingState: recordingState,
+                              transcriptionState: transcriptionState,
                               isMicEnabled: audioStream != null,
                               isCamEnabled: videoStream != null,
                               isLocalScreenShareEnabled: shareStream != null,
@@ -123,6 +126,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                               meeting: meeting,
                               token: widget.token,
                               recordingState: recordingState,
+                              transcriptionState: transcriptionState,
                               isFullScreen: fullScreen,
                             ),
                       const Divider(),
@@ -164,6 +168,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                     isCamEnabled: videoStream != null,
                                     isScreenShareEnabled: shareStream != null,
                                     recordingState: recordingState,
+                                    transcriptionState: transcriptionState,
                                     // Called when Call End button is pressed
                                     onCallEndButtonPressed: () {
                                       meeting.end();
@@ -262,25 +267,70 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                               context: context);
                                         }
                                       } else if (option == "recording") {
-                                        if (recordingState ==
-                                            "RECORDING_STOPPING") {
+                                        if (recordingState == "RECORDING_STOPPING") {
                                           showSnackBarMessage(
-                                              message:
-                                                  "Recording is in stopping state",
+                                              message: "Recording is in stopping state",
                                               context: context);
-                                        } else if (recordingState ==
-                                            "RECORDING_STARTED") {
+                                        } else if (recordingState == "RECORDING_STARTED") {
                                           meeting.stopRecording();
-                                        } else if (recordingState ==
-                                            "RECORDING_STARTING") {
+                                        } else if (recordingState == "RECORDING_STARTING") {
                                           showSnackBarMessage(
-                                              message:
-                                                  "Recording is in starting state",
+                                              message: "Recording is in starting state",
                                               context: context);
                                         } else {
-                                          meeting.startRecording();
+                                          // Define the config and transcription maps
+                                          Map<String, dynamic> config = {
+                                            "layout": {
+                                              "type": "GRID",
+                                              "priority": "SPEAKER",
+                                              "gridSize": 4,
+                                            },
+                                            "theme": "DARK",
+                                            "mode": "video-and-audio",
+                                            "quality": "high",
+                                            "orientation": "landscape",
+                                          };
+
+                                          Map<String, dynamic> transcription = {
+                                            "enabled": true,
+                                            "summary": {
+                                              "enabled": true,
+                                              "prompt": "Write summary in sections like Title, Agenda, Speakers, Action Items, Outlines, Notes and Summary",
+                                            },
+                                          };
+
+                                          // Start recording with the defined config and transcription
+                                          meeting.startRecording(config: config, transcription: transcription);
                                         }
-                                      } else if (option == "participants") {
+                                      }
+
+                                      else if (option == "transcription") {
+                                        if (transcriptionState == "TRANSCRIPTION_STOPPING") {
+                                          showSnackBarMessage(
+                                              message: "Transcription is in stopping state",
+                                              context: context);
+                                        } else if (transcriptionState == "TRANSCRIPTION_STARTED") {
+                                          meeting.stopTranscription();
+                                        } else if (transcriptionState == "TRANSCRIPTION_STARTING") {
+                                          showSnackBarMessage(
+                                              message: "TRANSCRIPTION is in starting state",
+                                              context: context);
+                                        } else {
+                                          Map<String, dynamic> config = {
+                                            "webhookUrl": "https://webhook.your-api-server.com",
+                                            "summary": {
+                                              "enabled": true,
+                                              "prompt":
+                                              "Write summary in sections like Title, Agenda, Speakers, Action Items, Outlines, Notes and Summary",
+                                            }
+                                          };
+
+                                          // Start recording with the defined config and transcription
+                                          meeting.startTranscription(config: config);
+                                        }
+                                      }
+
+                                      else if (option == "participants") {
                                         showModalBottomSheet(
                                           context: context,
                                           isScrollControlled: false,
@@ -337,6 +387,30 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
         recordingState = status;
       });
     });
+
+    _meeting.on(Events.transcriptionStateChanged, (Map<String, dynamic> data) {
+      String status = data['status'];
+
+      showSnackBarMessage(
+        message:
+        "Transcription ${status == "TRANSCRIPTION_STARTING" ? "is starting" : status == "TRANSCRIPTION_STARTED" ? "started" : status == "TRANSCRIPTION_STOPPING" ? "is stopping" : "stopped"}",
+        context: context,
+      );
+
+      setState(() {
+        transcriptionState = status;
+      });
+    });
+
+    _meeting.on(Events.transcriptionText, (Map<String, dynamic> data) {
+      String participantName = data['participantName'];
+      String text = data['text'];
+      int timestamp = data['timestamp'];
+
+      log("$participantName: $text $timestamp");
+    });
+
+
 
     // Called when stream is enabled
     _meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
