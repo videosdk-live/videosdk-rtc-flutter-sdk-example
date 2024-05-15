@@ -14,13 +14,14 @@ class MeetingAppBar extends StatefulWidget {
   final String token;
   final Room meeting;
   final String recordingState;
+  final String transcriptionState;
   final bool isFullScreen;
   const MeetingAppBar(
       {Key? key,
       required this.meeting,
       required this.token,
       required this.isFullScreen,
-      required this.recordingState})
+      required this.recordingState, required this.transcriptionState })
       : super(key: key);
 
   @override
