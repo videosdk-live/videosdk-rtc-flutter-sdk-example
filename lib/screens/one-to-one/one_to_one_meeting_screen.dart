@@ -24,15 +24,21 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 class OneToOneMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const OneToOneMeetingScreen({
-    Key? key,
-    required this.meetingId,
-    required this.token,
-    required this.displayName,
-    this.micEnabled = true,
-    this.camEnabled = true,
-    this.chatEnabled = true,
-  }) : super(key: key);
+  final AudioDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
+  final CustomTrack? cameraTrack;
+
+  const OneToOneMeetingScreen(
+      {Key? key,
+      required this.meetingId,
+      required this.token,
+      required this.displayName,
+      this.micEnabled = true,
+      this.camEnabled = true,
+      this.chatEnabled = true,
+      this.selectedAudioOutputDevice,
+      this.selectedAudioInputDevice,
+      this.cameraTrack})
+      : super(key: key);
 
   @override
   _OneToOneMeetingScreenState createState() => _OneToOneMeetingScreenState();
@@ -69,6 +75,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
@@ -78,7 +85,12 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: false,
-      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
+      customCameraVideoTrack: widget.cameraTrack,
+      // defaultCameraIndex: kIsWeb
+      //     ? 0
+      //     : (Platform.isAndroid || Platform.isIOS)
+      //         ? 1
+      //         : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
@@ -312,7 +324,12 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             meeting = _meeting;
             _joined = true;
           });
-
+          _meeting.switchAudioDevice(
+              widget.selectedAudioOutputDevice as MediaDeviceInfo);
+          if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
+            _meeting
+                .changeMic(widget.selectedAudioInputDevice as MediaDeviceInfo);
+          }
           subscribeToChatMessages(_meeting);
         }
       },

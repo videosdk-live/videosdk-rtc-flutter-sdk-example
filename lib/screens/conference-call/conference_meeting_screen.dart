@@ -22,15 +22,22 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const ConfereneceMeetingScreen({
-    Key? key,
-    required this.meetingId,
-    required this.token,
-    required this.displayName,
-    this.micEnabled = true,
-    this.camEnabled = true,
-    this.chatEnabled = true,
-  }) : super(key: key);
+  final AudioDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
+
+  final CustomTrack? cameraTrack;
+
+  const ConfereneceMeetingScreen(
+      {Key? key,
+      required this.meetingId,
+      required this.token,
+      required this.displayName,
+      this.micEnabled = true,
+      this.camEnabled = true,
+      this.chatEnabled = true,
+      this.selectedAudioOutputDevice,
+      this.selectedAudioInputDevice,
+      this.cameraTrack})
+      : super(key: key);
 
   @override
   State<ConfereneceMeetingScreen> createState() =>
@@ -69,14 +76,15 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     ]);
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
-      roomId: widget.meetingId,
+      roomId: "lj9p-5dlu-dmvq",
       token: widget.token,
+      customCameraVideoTrack: widget.cameraTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: true,
-      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
+      //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
@@ -309,6 +317,12 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
           meeting = _meeting;
           _joined = true;
         });
+        _meeting.switchAudioDevice(
+            widget.selectedAudioOutputDevice as MediaDeviceInfo);
+        if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
+          _meeting
+              .changeMic(widget.selectedAudioInputDevice as MediaDeviceInfo);
+        }
 
         subscribeToChatMessages(_meeting);
       },
