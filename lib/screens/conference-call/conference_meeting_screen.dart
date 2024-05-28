@@ -78,7 +78,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     Room room = VideoSDK.createRoom(
       roomId: "lj9p-5dlu-dmvq",
       token: widget.token,
-      customCameraVideoTrack: widget.cameraTrack,
+      //customCameraVideoTrack: widget.cameraTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
@@ -106,6 +106,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     bool isWebMobile = kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.iOS ||
             defaultTargetPlatform == TargetPlatform.android);
+
     return WillPopScope(
       onWillPop: _onWillPopScope,
       child: _joined
@@ -317,11 +318,9 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
           meeting = _meeting;
           _joined = true;
         });
-        _meeting.switchAudioDevice(
-            widget.selectedAudioOutputDevice as MediaDeviceInfo);
+        _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
         if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
-          _meeting
-              .changeMic(widget.selectedAudioInputDevice as MediaDeviceInfo);
+          _meeting.changeMic(widget.selectedAudioInputDevice!);
         }
 
         subscribeToChatMessages(_meeting);

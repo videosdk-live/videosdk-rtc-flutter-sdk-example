@@ -26,8 +26,8 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   String _token = "";
 
   // Control Status
-  bool isMicOn = true;
-  bool isCameraOn = true;
+  bool isMicOn = false;
+  bool isCameraOn = false;
 
   CustomTrack? cameraTrack;
   RTCVideoRenderer? cameraRenderer;
@@ -82,12 +82,13 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     setState(() {
       selectedVideoDevice = device;
     });
+    disposeCameraPreview();
     initCameraPreview();
   }
 
   void checkBluetoothPermissions() async {
-    bool? bluetoothPerm = await VideoSDK.checkBluetoothPermission();
-    if (bluetoothPerm != null && bluetoothPerm != true) {
+    bool bluetoothPerm = await VideoSDK.checkBluetoothPermission();
+    if (bluetoothPerm != true) {
       await VideoSDK.requestBluetoothPermission();
     }
   }
@@ -111,6 +112,8 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
           });
         }
       } else {
+        audioInputDevices = [];
+        audioOutputDevices = [];
         for (AudioDeviceInfo device in audioDevices!) {
           if (device.kind == 'audioinput') {
             audioInputDevices.add(device);
@@ -130,15 +133,15 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   void checkandReqPermissions([Permissions? perm]) async {
     perm ??= Permissions.audio_video;
     try {
-      Map<String, bool>? permissions = await VideoSDK.checkPermissions();
+      Map<String, bool> permissions = await VideoSDK.checkPermissions();
 
       if (perm == Permissions.audio || perm == Permissions.audio_video) {
-        if (permissions?['audio'] != true) {
-          Map<String, bool>? reqPermissions =
+        if (permissions['audio'] != true) {
+          Map<String, bool> reqPermissions =
               await VideoSDK.requestPermissions(Permissions.audio);
           setState(() {
-            isMicrophonePermissionAllowed = reqPermissions?['audio'];
-            isMicOn = reqPermissions!['audio']!;
+            isMicrophonePermissionAllowed = reqPermissions['audio'];
+            isMicOn = reqPermissions['audio']!;
           });
         } else {
           setState(() {
@@ -149,11 +152,11 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
       }
 
       if (perm == Permissions.video || perm == Permissions.audio_video) {
-        if (permissions?['video'] != true) {
-          Map<String, bool>? reqPermissions =
+        if (permissions['video'] != true) {
+          Map<String, bool> reqPermissions =
               await VideoSDK.requestPermissions(Permissions.video);
 
-          setState(() => isCameraPermissionAllowed = reqPermissions?['video']);
+          setState(() => isCameraPermissionAllowed = reqPermissions['video']);
         } else {
           setState(() => isCameraPermissionAllowed = true);
         }
@@ -171,11 +174,11 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   }
 
   void checkPermissions() async {
-    Map<String, bool>? permissions = await VideoSDK.checkPermissions();
+    Map<String, bool> permissions = await VideoSDK.checkPermissions();
     setState(() {
-      isMicrophonePermissionAllowed = permissions?['audio'];
-      isCameraPermissionAllowed = permissions?['video'];
-      isMicOn = permissions!['audio']!;
+      isMicrophonePermissionAllowed = permissions['audio'];
+      isCameraPermissionAllowed = permissions['video'];
+      isMicOn = permissions['audio']!;
       isCameraOn = permissions['video']!;
     });
   }

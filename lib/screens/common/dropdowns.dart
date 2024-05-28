@@ -44,31 +44,33 @@ class _DropdownsWidgetState extends State<DropdownsWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           DropdownButtonFormField(
+            isExpanded: true,
             dropdownColor: black600,
             borderRadius: BorderRadius.circular(12.0),
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              filled: true,
-              fillColor: black600,
-              labelText: 'Camera',
-              labelStyle: TextStyle(color: Colors.white,fontSize: 18),
-              //enabledBorder: InputBorder.none,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                borderSide: const BorderSide(color: Colors.white,),
-
-              ),
-              focusColor: Colors.white
-            ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                filled: true,
+                fillColor: black600,
+                labelText: 'Camera',
+                labelStyle: TextStyle(color: Colors.white, fontSize: 18),
+                //enabledBorder: InputBorder.none,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                focusColor: Colors.white),
             value: widget.selectedVideoDevice,
-            hint: Text("Permission Denied",style: TextStyle(fontSize: 15, color: black500),),
-            
-            
+            hint: Text(
+              "Permission Denied",
+              style: TextStyle(fontSize: 15, color: black500),
+            ),
             icon: const Icon(Icons.keyboard_arrow_down),
             elevation: 16,
-            style: const TextStyle(color: Colors.white,fontSize: 15),
+            style: const TextStyle(color: Colors.white, fontSize: 15),
             onChanged: (VideoDeviceInfo? value) {
               setState(() {
                 widget.selectedVideoDevice = value;
@@ -78,7 +80,10 @@ class _DropdownsWidgetState extends State<DropdownsWidget> {
             items: widget.videoDevices?.map((VideoDeviceInfo device) {
               return DropdownMenuItem<VideoDeviceInfo>(
                 value: device,
-                child: Text(device.label!),
+                child: Text(
+                  device.label,
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
             }).toList(),
           ),
@@ -86,30 +91,33 @@ class _DropdownsWidgetState extends State<DropdownsWidget> {
             height: 30,
           ),
           DropdownButtonFormField(
+            isExpanded: true,
             dropdownColor: black600,
             borderRadius: BorderRadius.circular(12.0),
-
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              filled: true,
-              fillColor: black600,
-              labelText: 'Speaker',
-              labelStyle: TextStyle(color: Colors.white,fontSize: 18),
-              //enabledBorder: InputBorder.none,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                borderSide: const BorderSide(color: Colors.white,),
-
-              ),
-              focusColor: Colors.white
-            ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                filled: true,
+                fillColor: black600,
+                labelText: 'Speaker',
+                labelStyle: TextStyle(color: Colors.white, fontSize: 18),
+                //enabledBorder: InputBorder.none,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                focusColor: Colors.white),
             value: widget.selectedAudioOutputDevice,
-            hint: Text("Permission Denied",style: TextStyle(fontSize: 15, color: black500),),
+            hint: Text(
+              "Permission Denied",
+              style: TextStyle(fontSize: 15, color: black500),
+            ),
             icon: const Icon(Icons.keyboard_arrow_down),
             elevation: 16,
-            style: const TextStyle(color: Colors.white,fontSize: 15),
+            style: const TextStyle(color: Colors.white, fontSize: 15),
             onChanged: (AudioDeviceInfo? value) {
               setState(() {
                 widget.selectedAudioOutputDevice = value;
@@ -118,9 +126,11 @@ class _DropdownsWidgetState extends State<DropdownsWidget> {
             },
             items: widget.audioDevices?.map((AudioDeviceInfo device) {
               return DropdownMenuItem<AudioDeviceInfo>(
-
                 value: device,
-                child: Text(device.label!),
+                child: Text(
+                  device.label,
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
             }).toList(),
           ),

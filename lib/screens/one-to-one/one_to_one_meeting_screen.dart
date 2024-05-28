@@ -325,10 +325,10 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             _joined = true;
           });
           _meeting.switchAudioDevice(
-              widget.selectedAudioOutputDevice as MediaDeviceInfo);
+              widget.selectedAudioOutputDevice!);
           if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
             _meeting
-                .changeMic(widget.selectedAudioInputDevice as MediaDeviceInfo);
+                .changeMic(widget.selectedAudioInputDevice!);
           }
           subscribeToChatMessages(_meeting);
         }

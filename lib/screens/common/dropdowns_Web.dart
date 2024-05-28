@@ -89,7 +89,7 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             items: widget.videoDevices?.map((VideoDeviceInfo device) {
               return DropdownMenuItem<VideoDeviceInfo>(
                 value: device,
-                child: Text(device.label!),
+                child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );
             }).toList(),
           ),
@@ -137,7 +137,7 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             items: widget.audioOutputDevices?.map((AudioDeviceInfo device) {
               return DropdownMenuItem<AudioDeviceInfo>(
                 value: device,
-                child: Text(device.label!),
+                child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );
             }).toList(),
           ),
@@ -185,7 +185,7 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             items: widget.audioInputDevices?.map((AudioDeviceInfo device) {
               return DropdownMenuItem<AudioDeviceInfo>(
                 value: device,
-                child: Text(device.label!),
+                child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );
             }).toList(),
           ),

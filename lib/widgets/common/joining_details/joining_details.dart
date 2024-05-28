@@ -19,7 +19,7 @@ class JoiningDetails extends StatefulWidget {
 }
 
 class _JoiningDetailsState extends State<JoiningDetails> {
-  String _meetingId = "";
+  String _meetingId = "";  
   String _displayName = "";
   String meetingMode = "GROUP";
   List<String> meetingModes = ["ONE_TO_ONE", "GROUP"];
@@ -56,7 +56,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                           ResponsiveValue<double>(context, conditionalValues: [
                         Condition.equals(name: MOBILE, value: maxWidth / 1.5),
                         Condition.equals(name: TABLET, value: maxWidth / 1.5),
-                        Condition.equals(name: DESKTOP, value: 595),
+                        Condition.equals(name: DESKTOP, value: maxWidth / 3.33),
                       ]).value!,
                     ),
                     child: Text(
@@ -85,7 +85,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                     width: ResponsiveValue<double>(context, conditionalValues: [
                       Condition.equals(name: MOBILE, value: maxWidth / 1.3),
                       Condition.equals(name: TABLET, value: maxWidth / 1.3),
-                      Condition.equals(name: DESKTOP, value: 640),
+                      Condition.equals(name: DESKTOP, value: maxWidth / 3),
                     ]).value!,
                   ),
                   hintText: "Enter meeting code",
@@ -110,7 +110,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
                   width: ResponsiveValue<double>(context, conditionalValues: [
                     Condition.equals(name: MOBILE, value: maxWidth / 1.3),
                     Condition.equals(name: TABLET, value: maxWidth / 1.3),
-                    Condition.equals(name: DESKTOP, value: 640),
+                    Condition.equals(name: DESKTOP, value: maxWidth / 3),
                   ]).value!,
                 ),
                 hintText: "Enter your name",
@@ -125,7 +125,7 @@ class _JoiningDetailsState extends State<JoiningDetails> {
             minWidth: ResponsiveValue<double>(context, conditionalValues: [
               Condition.equals(name: MOBILE, value: maxWidth / 1.3),
               Condition.equals(name: TABLET, value: maxWidth / 1.3),
-              Condition.equals(name: DESKTOP, value: 650),
+              Condition.equals(name: DESKTOP, value: maxWidth / 3),
             ]).value!,
             height: 50,
             shape:
