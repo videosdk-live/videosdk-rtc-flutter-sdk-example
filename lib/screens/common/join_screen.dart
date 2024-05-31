@@ -13,6 +13,8 @@ import '../../widgets/common/joining/join_view.dart';
 import '../one-to-one/one_to_one_meeting_screen.dart';
 import 'dropdowns.dart';
 import 'dropdowns_Web.dart';
+import 'selectAudioOutput.dart';
+import 'selectVideoDevice.dart';
 
 // Join Screen
 class JoinScreen extends StatefulWidget {
@@ -247,6 +249,78 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                               videoDevices: videoDevices,
                                               onAudioDeviceSelected:
                                                   updateselectedAudioOutputDevice,
+                                              onVideoDeviceSelected:
+                                                  updateSelectedVideoDevice,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.volume_up,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      height: 250,
+                                      color: black750,
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            SelectAudioOutput(
+                                              isMicrophonePermissionAllowed:
+                                                  isMicrophonePermissionAllowed,
+                                              selectedAudioOutputDevice:
+                                                  selectedAudioOutputDevice,
+                                              audioDevices: audioDevices,
+                                              onAudioDeviceSelected:
+                                                  updateselectedAudioOutputDevice,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.camera_alt_rounded,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      height: 250,
+                                      color: black750,
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            SelectVideoDevice(
+                                              isCameraPermissionAllowed:
+                                                  isCameraPermissionAllowed,
+                                              selectedVideoDevice:
+                                                  selectedVideoDevice,
+                                              videoDevices: videoDevices,
                                               onVideoDeviceSelected:
                                                   updateSelectedVideoDevice,
                                             )
