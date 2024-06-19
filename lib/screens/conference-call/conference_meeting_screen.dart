@@ -76,9 +76,9 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     ]);
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
-      roomId: "lj9p-5dlu-dmvq",
+      roomId: widget.meetingId,
       token: widget.token,
-      //customCameraVideoTrack: widget.cameraTrack,
+      customCameraVideoTrack: widget.cameraTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,

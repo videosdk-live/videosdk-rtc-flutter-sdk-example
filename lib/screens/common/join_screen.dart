@@ -28,8 +28,10 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   String _token = "";
 
   // Control Status
-  bool isMicOn = false;
-  bool isCameraOn = false;
+  bool isMicOn =
+      !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
+  bool isCameraOn =
+      !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
 
   CustomTrack? cameraTrack;
   RTCVideoRenderer? cameraRenderer;
@@ -37,8 +39,10 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   bool? isJoinMeetingSelected;
   bool? isCreateMeetingSelected;
 
-  bool? isCameraPermissionAllowed = false;
-  bool? isMicrophonePermissionAllowed = false;
+  bool? isCameraPermissionAllowed =
+      !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
+  bool? isMicrophonePermissionAllowed =
+      !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
 
   VideoDeviceInfo? selectedVideoDevice;
   AudioDeviceInfo? selectedAudioOutputDevice;
@@ -107,12 +111,11 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     if (isMicrophonePermissionAllowed != null &&
         isMicrophonePermissionAllowed == true) {
       audioDevices = await VideoSDK.getAudioDevices();
-      if (!kIsWeb) {
-        if (Platform.isAndroid || Platform.isIOS) {
-          setState(() {
-            selectedAudioOutputDevice = audioDevices?.first;
-          });
-        }
+      if (!kIsWeb && !Platform.isMacOS && !Platform.isWindows) {
+        //Condition for android and ios devices
+        setState(() {
+          selectedAudioOutputDevice = audioDevices?.first;
+        });
       } else {
         audioInputDevices = [];
         audioOutputDevices = [];
@@ -135,40 +138,41 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   void checkandReqPermissions([Permissions? perm]) async {
     perm ??= Permissions.audio_video;
     try {
-      Map<String, bool> permissions = await VideoSDK.checkPermissions();
+      if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
+        Map<String, bool> permissions = await VideoSDK.checkPermissions();
 
-      if (perm == Permissions.audio || perm == Permissions.audio_video) {
-        if (permissions['audio'] != true) {
-          Map<String, bool> reqPermissions =
-              await VideoSDK.requestPermissions(Permissions.audio);
-          setState(() {
-            isMicrophonePermissionAllowed = reqPermissions['audio'];
-            isMicOn = reqPermissions['audio']!;
-          });
-        } else {
-          setState(() {
-            isMicrophonePermissionAllowed = true;
-            isMicOn = true;
-          });
+        if (perm == Permissions.audio || perm == Permissions.audio_video) {
+          if (permissions['audio'] != true) {
+            Map<String, bool> reqPermissions =
+                await VideoSDK.requestPermissions(Permissions.audio);
+            setState(() {
+              isMicrophonePermissionAllowed = reqPermissions['audio'];
+              isMicOn = reqPermissions['audio']!;
+            });
+          } else {
+            setState(() {
+              isMicrophonePermissionAllowed = true;
+              isMicOn = true;
+            });
+          }
+        }
+
+        if (perm == Permissions.video || perm == Permissions.audio_video) {
+          if (permissions['video'] != true) {
+            Map<String, bool> reqPermissions =
+                await VideoSDK.requestPermissions(Permissions.video);
+
+            setState(() => isCameraPermissionAllowed = reqPermissions['video']);
+          } else {
+            setState(() => isCameraPermissionAllowed = true);
+          }
+        }
+        if (!kIsWeb) {
+          if (Platform.isAndroid) {
+            checkBluetoothPermissions();
+          }
         }
       }
-
-      if (perm == Permissions.video || perm == Permissions.audio_video) {
-        if (permissions['video'] != true) {
-          Map<String, bool> reqPermissions =
-              await VideoSDK.requestPermissions(Permissions.video);
-
-          setState(() => isCameraPermissionAllowed = reqPermissions['video']);
-        } else {
-          setState(() => isCameraPermissionAllowed = true);
-        }
-      }
-      if (!kIsWeb) {
-        if (Platform.isAndroid) {
-          checkBluetoothPermissions();
-        }
-      }
-
       getDevices();
     } catch (e) {
       print("error $e");
@@ -176,13 +180,15 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   }
 
   void checkPermissions() async {
-    Map<String, bool> permissions = await VideoSDK.checkPermissions();
-    setState(() {
-      isMicrophonePermissionAllowed = permissions['audio'];
-      isCameraPermissionAllowed = permissions['video'];
-      isMicOn = permissions['audio']!;
-      isCameraOn = permissions['video']!;
-    });
+    if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
+      Map<String, bool> permissions = await VideoSDK.checkPermissions();
+      setState(() {
+        isMicrophonePermissionAllowed = permissions['audio'];
+        isCameraPermissionAllowed = permissions['video'];
+        isMicOn = permissions['audio']!;
+        isCameraOn = permissions['video']!;
+      });
+    }
   }
 
   @override
@@ -351,7 +357,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                     constraints: BoxConstraints(
                         minHeight: viewportConstraints.maxHeight),
                     child: IntrinsicHeight(
-                      child: kIsWeb
+                      child: kIsWeb || Platform.isWindows || Platform.isMacOS
                           ? Container(
                               margin:
                                   const EdgeInsets.fromLTRB(40, 150, 40, 150),
@@ -397,7 +403,9 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                                       Permissions.video);
                                             },
                                           ),
-                                          kIsWeb
+                                          kIsWeb ||
+                                                  Platform.isMacOS ||
+                                                  Platform.isWindows
                                               ? Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
