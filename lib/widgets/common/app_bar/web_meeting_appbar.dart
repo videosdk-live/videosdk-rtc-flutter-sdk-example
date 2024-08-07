@@ -13,7 +13,7 @@ import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/recording_indicator.dart';
 import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 
 class WebMeetingAppBar extends StatefulWidget {
@@ -44,11 +44,38 @@ class WebMeetingAppBar extends StatefulWidget {
 class WebMeetingAppBarState extends State<WebMeetingAppBar> {
   Duration? elapsedTime;
   Timer? sessionTimer;
+  List<AudioDeviceInfo>? speakers = [];
+  List<AudioDeviceInfo>? mics = [];
+  List<VideoDeviceInfo>? cameras = [];
 
   @override
   void initState() {
     startTimer();
+    fetchSpeakers();
+
+    VideoSDK.on(Events.deviceChanged, () {
+      fetchSpeakers();
+    });
     super.initState();
+  }
+
+  void fetchSpeakers() async {
+    cameras = [];
+    mics = [];
+    speakers = [];
+    cameras = await VideoSDK.getVideoDevices();
+    List<AudioDeviceInfo>? audioDevices = await VideoSDK.getAudioDevices();
+    if (audioDevices != null) {
+      for (AudioDeviceInfo device in audioDevices) {
+        if (device.kind == 'audiooutput') {
+          speakers?.add(device);
+        } else {
+          mics?.add(device);
+        }
+      }
+    }
+
+    setState(() {});
   }
 
   @override
@@ -192,7 +219,7 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                               const SnackBar(
                                   content: Text('Please select device')));
                         } else {
-                          MediaDeviceInfo deviceInfo = value as MediaDeviceInfo;
+                          AudioDeviceInfo deviceInfo = value as AudioDeviceInfo;
 
                           if (deviceInfo.kind == "audiooutput") {
                             widget.meeting.switchAudioDevice(deviceInfo);
@@ -210,14 +237,13 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                               ),
                               textColor: const Color.fromARGB(255, 77, 75, 75)),
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getMics()
+                            child: mics != null ? Column(
+                                children: mics!
                                     .map(
                                       (e) => _buildMeetingPoupItem(
                                           e, e.label, null),
                                     )
-                                    .toList()),
+                                    .toList()) : Text("no mics found"),
                           ),
                           _buildMeetingPoupItem('label', 'Speakers', null,
                               leadingIcon: const Icon(
@@ -226,14 +252,13 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                               ),
                               textColor: const Color.fromARGB(255, 77, 75, 75)),
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getAudioOutputDevices()
+                            child: speakers != null ? Column(
+                                children: speakers!
                                     .map(
                                       (e) => _buildMeetingPoupItem(
                                           e, e.label, null),
                                     )
-                                    .toList()),
+                                    .toList()) : Text("No devices found"),
                           )
                         ];
                       },
@@ -285,22 +310,21 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                         color: Colors.white,
                       ),
                       onSelected: (value) {
-                        MediaDeviceInfo camera = value as MediaDeviceInfo;
+                        VideoDeviceInfo camera = value as VideoDeviceInfo;
                         if (camera.deviceId != widget.meeting.selectedCamId) {
-                          widget.meeting.changeCam(camera.deviceId);
+                          widget.meeting.changeCam(camera);
                         }
                       },
                       itemBuilder: (context) {
                         return [
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getCameras()
+                            child: cameras != null ? Column(
+                                children: cameras!
                                     .map(
                                       (e) => _buildMeetingPoupItem(
                                           e, e.label, null),
                                     )
-                                    .toList()),
+                                    .toList()) : Text("no camera device found"),
                           ),
                         ];
                       },

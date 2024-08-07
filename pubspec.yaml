@@ -10,8 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: 1.1.12
-  http: ^1.1.0
+  videosdk: 
+    path: ../VideoSDK/zn_flutter_sdk
+  http: ^1.0.0
   flutter_dotenv: ^5.0.2
   flutter_svg: ^2.0.2
   date_time_format: ^2.0.1

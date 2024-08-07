@@ -17,7 +17,7 @@ import 'package:videosdk_flutter_example/widgets/common/participant/participant_
 import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
 class ConfereneceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -50,6 +50,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
   Stream? videoStream;
   Stream? audioStream;
   Stream? remoteParticipantShareStream;
+  CustomTrack? audioTrack;
 
   bool fullScreen = false;
 
@@ -67,16 +68,36 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    createTracks();
+
+    print("audioTrack ${audioTrack}");
+
     // Create instance of Room (Meeting)
+
+    // Register meeting events
+    
+  }
+
+  void createTracks() async {
+    audioTrack = await VideoSDK.createMicrophoneAudioTrack(
+        encoderConfig: CustomAudioTrackConfig.high_quality,
+        );
+
     Room room = VideoSDK.createRoom(
-      roomId: widget.meetingId,
+      roomId: "oupf-fhti-93e9",
       token: widget.token,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
+      customMicrophoneAudioTrack: audioTrack,
       maxResolution: 'hd',
       multiStream: true,
-      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
+      defaultCameraIndex: kIsWeb
+          ? 0
+          : (Platform.isAndroid || Platform.isIOS)
+              ? 1
+              : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
@@ -84,11 +105,12 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
       ),
     );
 
-    // Register meeting events
     registerMeetingEvents(room);
 
     // Join meeting
     room.join();
+    
+    print("audioTrack $audioTrack");
   }
 
   @override
@@ -178,6 +200,7 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                         meeting.muteMic();
                                       } else {
                                         meeting.unmuteMic();
+                                        print("Selected audio output ${meeting.selectedMic?.deviceId} ${meeting.selectedSpeaker?.deviceId}");
                                       }
                                     },
                                     // Called when camera button is pressed
@@ -190,8 +213,14 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                     },
 
                                     onSwitchMicButtonPressed: (details) async {
-                                      List<MediaDeviceInfo> outptuDevice =
-                                          meeting.getAudioOutputDevices();
+                                      List<AudioDeviceInfo>? devices =
+                                          await VideoSDK.getAudioDevices();
+                                      List<AudioDeviceInfo> outptuDevice = [];
+                                      // meeting.getAudioOutputDevices();
+                                      for (var device in devices!) {
+                                        outptuDevice.add(device);
+                                      }
+
                                       double bottomMargin =
                                           (70.0 * outptuDevice.length);
                                       final screenSize =

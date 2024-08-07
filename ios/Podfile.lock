@@ -1,0 +1,74 @@
+PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_foreground_task (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - touch_ripple_effect (0.0.1):
+    - Flutter
+  - videosdk (0.0.1):
+    - Flutter
+    - videosdk_webrtc
+  - videosdk_webrtc (0.0.3):
+    - Flutter
+    - WebRTC-SDK (= 114.5735.09)
+  - WebRTC-SDK (114.5735.09)
+
+DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - touch_ripple_effect (from `.symlinks/plugins/touch_ripple_effect/ios`)
+  - videosdk (from `.symlinks/plugins/videosdk/ios`)
+  - videosdk_webrtc (from `.symlinks/plugins/videosdk_webrtc/ios`)
+
+SPEC REPOS:
+  trunk:
+    - WebRTC-SDK
+
+EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  Flutter:
+    :path: Flutter
+  flutter_foreground_task:
+    :path: ".symlinks/plugins/flutter_foreground_task/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  touch_ripple_effect:
+    :path: ".symlinks/plugins/touch_ripple_effect/ios"
+  videosdk:
+    :path: ".symlinks/plugins/videosdk/ios"
+  videosdk_webrtc:
+    :path: ".symlinks/plugins/videosdk_webrtc/ios"
+
+SPEC CHECKSUMS:
+  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  touch_ripple_effect: 5b850cbec069237959ef95e7e81e7ee7f934ac76
+  videosdk: 1c91ee1eb4cbf2ffccd5740ee75cfe7b656b6143
+  videosdk_webrtc: a7d4692bce16689257bfe1b2d5985b1caf00ae2f
+  WebRTC-SDK: efc3e67e0355b1ee14bfe3c91188cada6000cb94
+
+PODFILE CHECKSUM: 8fb0797cac46c7d371145facf2b5fd58cc1b4ad3
+
+COCOAPODS: 1.15.2

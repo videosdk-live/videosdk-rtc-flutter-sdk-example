@@ -3,9 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_webrtc
+  permission_handler_windows
   screen_retriever
   videosdk
+  videosdk_webrtc
   window_manager
 )
 

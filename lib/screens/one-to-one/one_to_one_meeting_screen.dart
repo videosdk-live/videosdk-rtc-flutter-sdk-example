@@ -18,7 +18,7 @@ import '../../utils/toast.dart';
 import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
 import '../../widgets/common/screen_share/screen_select_dialog.dart';
 import '../common/join_screen.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
 // Meeting Screen
 class OneToOneMeetingScreen extends StatefulWidget {
@@ -180,8 +180,13 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                     },
 
                                     onSwitchMicButtonPressed: (details) async {
-                                      List<MediaDeviceInfo> outptuDevice =
-                                          meeting.getAudioOutputDevices();
+                                      List<AudioDeviceInfo>? devices =
+                                          await VideoSDK.getAudioDevices();
+                                      List<AudioDeviceInfo> outptuDevice = [];
+                                      // meeting.getAudioOutputDevices();
+                                      for (var device in devices!) {
+                                        outptuDevice.add(device);
+                                      }
                                       double bottomMargin =
                                           (70.0 * outptuDevice.length);
                                       final screenSize =

@@ -316,10 +316,10 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   void initCameraPreview() async {
-    CustomTrack track = await VideoSDK.createCameraVideoTrack();
+    CustomTrack? track = await VideoSDK.createCameraVideoTrack();
     RTCVideoRenderer render = RTCVideoRenderer();
     await render.initialize();
-    render.setSrcObject(stream: track.mediaStream, trackId: track.mediaStream.getVideoTracks().first.id);
+    render.setSrcObject(stream: track?.mediaStream, trackId: track?.mediaStream.getVideoTracks().first.id);
     setState(() {
       cameraTrack = track;
       cameraRenderer = render;
