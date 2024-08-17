@@ -13,7 +13,7 @@ import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/recording_indicator.dart';
 import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 
 class WebMeetingAppBar extends StatefulWidget {
@@ -44,10 +44,15 @@ class WebMeetingAppBar extends StatefulWidget {
 class WebMeetingAppBarState extends State<WebMeetingAppBar> {
   Duration? elapsedTime;
   Timer? sessionTimer;
+  List<AudioDeviceInfo>? mics;
+  List<AudioDeviceInfo>? speakers;
+  List<VideoDeviceInfo>? cameras;
 
   @override
   void initState() {
     startTimer();
+    fetchVideoDevices();
+    fetchAudioDevices();
     super.initState();
   }
 
@@ -175,9 +180,13 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                       color: Colors.white,
                     ),
                     PopupMenuButton(
+                      onOpened: () async {
+                        fetchAudioDevices();
+                      },
                       position: PopupMenuPosition.over,
                       padding: const EdgeInsets.all(0),
                       color: black700,
+                      constraints: const BoxConstraints.tightFor(width: 330),
                       offset: const Offset(0, 45),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -192,7 +201,7 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                               const SnackBar(
                                   content: Text('Please select device')));
                         } else {
-                          MediaDeviceInfo deviceInfo = value as MediaDeviceInfo;
+                          AudioDeviceInfo deviceInfo = value as AudioDeviceInfo;
 
                           if (deviceInfo.kind == "audiooutput") {
                             widget.meeting.switchAudioDevice(deviceInfo);
@@ -204,36 +213,83 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                       itemBuilder: (context) {
                         return [
                           _buildMeetingPoupItem('label', 'Microphones', null,
-                              leadingIcon: const Icon(
-                                Icons.mic,
-                                color: Color.fromARGB(255, 77, 75, 75),
-                              ),
-                              textColor: const Color.fromARGB(255, 77, 75, 75)),
+                              leadingIcon: const Icon(Icons.mic,
+                                  color: Color.fromARGB(255, 128, 125, 125),
+                                  size: 20),
+                              textColor: const Color.fromARGB(255, 128, 125, 125)),
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getMics()
-                                    .map(
-                                      (e) => _buildMeetingPoupItem(
-                                          e, e.label, null),
-                                    )
-                                    .toList()),
+                            padding: EdgeInsets.zero,
+                            child: mics != null && mics!.isNotEmpty
+                                ? Column(
+                                    children: mics!
+                                        .map(
+                                          (e) => _buildMeetingPoupItem(
+                                            e,
+                                            e.label,
+                                            null,
+                                            isSelected: e.deviceId ==
+                                                    widget.meeting.selectedMic
+                                                        ?.deviceId
+                                                ? true
+                                                : false,
+                                            leadingIcon: e.deviceId ==
+                                                    widget.meeting.selectedMic
+                                                        ?.deviceId
+                                                ? const Icon(
+                                                    Icons.check_circle,
+                                                    color: Color.fromRGBO(
+                                                        58, 165, 93, 1),
+                                                    size: 20,
+                                                  )
+                                                : SizedBox(
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                          ),
+                                        )
+                                        .toList())
+                                : const Text("No Microphone Devices found."),
                           ),
                           _buildMeetingPoupItem('label', 'Speakers', null,
                               leadingIcon: const Icon(
                                 Icons.volume_up,
-                                color: Color.fromARGB(255, 77, 75, 75),
+                                color: Color.fromARGB(255, 128, 125, 125),
+                                size: 20
                               ),
-                              textColor: const Color.fromARGB(255, 77, 75, 75)),
+                              textColor: const Color.fromARGB(255, 128, 125, 125)),
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getAudioOutputDevices()
-                                    .map(
-                                      (e) => _buildMeetingPoupItem(
-                                          e, e.label, null),
-                                    )
-                                    .toList()),
+                            padding: EdgeInsets.zero,
+                            child: speakers != null && speakers!.isNotEmpty
+                                ? Column(
+                                    children: speakers!
+                                        .map(
+                                          (e) => _buildMeetingPoupItem(
+                                              e, e.label, null,
+                                              isSelected: e.deviceId ==
+                                                      widget
+                                                          .meeting
+                                                          .selectedSpeaker
+                                                          ?.deviceId
+                                                  ? true
+                                                  : false,
+                                              leadingIcon: e.deviceId ==
+                                                      widget
+                                                          .meeting
+                                                          .selectedSpeaker
+                                                          ?.deviceId
+                                                  ? const Icon(
+                                                      Icons.check_circle,
+                                                      color: Color.fromRGBO(
+                                                          58, 165, 93, 1),
+                                                      size: 20,
+                                                    )
+                                                  : SizedBox(
+                                                      width: 20,
+                                                      height: 20,
+                                                    )),
+                                        )
+                                        .toList())
+                                : const Text("No Speaker Devices found."),
                           )
                         ];
                       },
@@ -273,9 +329,13 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                       color: Colors.white,
                     ),
                     PopupMenuButton(
+                      onOpened: () async {
+                        fetchVideoDevices();
+                      },
                       position: PopupMenuPosition.over,
                       padding: const EdgeInsets.all(0),
                       color: black700,
+                      constraints: const BoxConstraints.tightFor(width: 330),
                       offset: const Offset(0, 45),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -285,22 +345,38 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                         color: Colors.white,
                       ),
                       onSelected: (value) {
-                        MediaDeviceInfo camera = value as MediaDeviceInfo;
-                        if (camera.deviceId != widget.meeting.selectedCamId) {
-                          widget.meeting.changeCam(camera.deviceId);
+                        VideoDeviceInfo camera = value as VideoDeviceInfo;
+                        if (camera.deviceId !=
+                            widget.meeting.selectedCam?.deviceId) {
+                          widget.meeting.changeCam(camera);
                         }
                       },
                       itemBuilder: (context) {
                         return [
                           PopupMenuItem(
-                            child: Column(
-                                children: widget.meeting
-                                    .getCameras()
-                                    .map(
-                                      (e) => _buildMeetingPoupItem(
-                                          e, e.label, null),
-                                    )
-                                    .toList()),
+                            padding: EdgeInsets.zero,
+                            child: cameras != null && cameras!.isNotEmpty
+                                ? Column(
+                                    children: cameras!
+                                        .map(
+                                          (e) => _buildMeetingPoupItem(
+                                              e, e.label, null,
+                                              isSelected: e.deviceId ==
+                                                      widget.meeting.selectedCam
+                                                          ?.deviceId
+                                                  ? true
+                                                  : false, leadingIcon: e.deviceId ==
+                                                    widget.meeting.selectedCam
+                                                        ?.deviceId
+                                                ? const Icon(
+                                              Icons.check_circle,
+                                              color: Color.fromRGBO(
+                                                  58, 165, 93,1),
+                                                  size: 20,
+                                            ) : SizedBox(width: 20, height: 20,)),
+                                        )
+                                        .toList())
+                                : const Text("No Camera Devices found."),
                           ),
                         ];
                       },
@@ -452,7 +528,7 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                     color: Colors.white,
                   ),
                 ),
-                offset: const Offset(0, 8),
+                offset: const Offset(0, 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -503,6 +579,27 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
     // log("session start time" + session.data[0].start.toString());
   }
 
+  void fetchVideoDevices() async {
+    cameras = await VideoSDK.getVideoDevices();
+    setState(() {});
+  }
+
+  void fetchAudioDevices() async {
+    List<AudioDeviceInfo>? audioDevices = await VideoSDK.getAudioDevices();
+    mics = [];
+    speakers = [];
+    if (audioDevices != null) {
+      for (AudioDeviceInfo device in audioDevices) {
+        if (device.kind == 'audiooutput') {
+          speakers?.add(device);
+        } else {
+          mics?.add(device);
+        }
+      }
+      setState(() {});
+    }
+  }
+
   Future<DesktopCapturerSource?> selectScreenSourceDialog(
       BuildContext context) async {
     final source = await showDialog<DesktopCapturerSource>(
@@ -516,37 +613,52 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
 
   PopupMenuItem<dynamic> _buildMeetingPoupItem(
       dynamic value, String title, String? description,
-      {Widget? leadingIcon, Color? textColor}) {
+      {Widget? leadingIcon, Color? textColor, bool isSelected = false}) {
     return PopupMenuItem(
       value: value,
-      padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-      child: Row(children: [
-        leadingIcon ?? const Center(),
-        const HorizontalSpacer(12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: textColor ?? Colors.white),
-              ),
-              if (description != null) const VerticalSpacer(4),
-              if (description != null)
-                Text(
-                  description,
-                  style: const TextStyle(
-                      fontSize: 12,
+      padding: EdgeInsets.zero,
+      child: Container(
+        color: isSelected
+            ? Color.fromRGBO(109, 110, 113, 1)
+            : Colors.transparent, // Set the selected color
+        padding: const EdgeInsets.symmetric(
+            vertical: 8), // Only vertical padding to avoid side spaces
+        margin: EdgeInsets.zero, // Remove margin to avoid spaces on sides
+        child: Row(
+          children: [
+            if (leadingIcon != null)
+              const SizedBox(width: 16), // Manual spacing on the left
+            leadingIcon ?? const Center(),
+            const HorizontalSpacer(12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: black400),
-                )
-            ],
-          ),
-        )
-      ]),
+                      color: textColor ?? Colors.white,
+                    ),
+                  ),
+                  if (description != null) const VerticalSpacer(4),
+                  if (description != null)
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: black400,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16), // Manual spacing on the right
+          ],
+        ),
+      ),
     );
   }
 

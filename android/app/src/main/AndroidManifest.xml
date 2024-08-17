@@ -10,6 +10,8 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <!-- For Android devices versioned 14 and above. -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <!-- Needed to communicate with already-paired Bluetooth devices. (Legacy up to Android 11) -->
   <uses-permission

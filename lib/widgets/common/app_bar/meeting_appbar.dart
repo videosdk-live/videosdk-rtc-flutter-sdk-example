@@ -31,14 +31,17 @@ class MeetingAppBarState extends State<MeetingAppBar> {
   Duration? elapsedTime;
   Timer? sessionTimer;
 
-  List<MediaDeviceInfo> cameras = [];
+  List<VideoDeviceInfo>? cameras = [];
 
   @override
   void initState() {
     startTimer();
-    // Holds available cameras info
-    cameras = widget.meeting.getCameras();
+    fetchCameras();
     super.initState();
+  }
+
+  void fetchCameras() async {
+    cameras = await VideoSDK.getVideoDevices();
   }
 
   @override
@@ -50,7 +53,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
             : CrossFadeState.showSecond,
         secondChild: const SizedBox.shrink(),
         firstChild: Padding(
-          padding: const EdgeInsets.fromLTRB(12.0,10.0,8.0,0.0),
+          padding: const EdgeInsets.fromLTRB(12.0, 10.0, 8.0, 0.0),
           child: Row(
             children: [
               if (widget.recordingState == "RECORDING_STARTING" ||
@@ -113,9 +116,11 @@ class MeetingAppBarState extends State<MeetingAppBar> {
                   width: 24,
                 ),
                 onPressed: () {
-                  MediaDeviceInfo newCam = cameras.firstWhere((camera) =>
-                      camera.deviceId != widget.meeting.selectedCamId);
-                  widget.meeting.changeCam(newCam.deviceId);
+                  VideoDeviceInfo? newCam = cameras?.firstWhere((camera) =>
+                      camera.deviceId != widget.meeting.selectedCam?.deviceId);
+                  if (newCam != null) {
+                    widget.meeting.changeCam(newCam);
+                  }
                 },
               ),
             ],

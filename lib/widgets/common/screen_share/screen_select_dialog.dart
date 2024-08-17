@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 import 'package:videosdk/videosdk.dart';
 import '../../../constants/colors.dart';
 import 'thumbnail_widget.dart';

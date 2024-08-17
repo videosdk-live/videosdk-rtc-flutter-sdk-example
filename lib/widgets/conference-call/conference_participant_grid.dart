@@ -136,10 +136,12 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     _meeting.on(
       Events.speakerChanged,
       (_activeSpeakerId) {
-        setState(() {
-          activeSpeakerId = _activeSpeakerId;
-          updateOnScreenParticipants();
-        });
+        try {
+          setState(() {
+            activeSpeakerId = _activeSpeakerId;
+            updateOnScreenParticipants();
+          });
+        } catch (e) {}
       },
     );
 

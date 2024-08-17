@@ -34,13 +34,16 @@ class _SelectAudioOutputState extends State<SelectAudioOutput> {
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           widget.audioDevices != null &&
                   widget.audioDevices!.isNotEmpty &&
                   widget.isMicrophonePermissionAllowed == true
               ? ListView.builder(
                   shrinkWrap: true,
-                  itemCount: widget.audioDevices!.length + 1, 
+                  physics:
+                      NeverScrollableScrollPhysics(), 
+                  itemCount: widget.audioDevices!.length + 1,
                   itemBuilder: (context, index) {
                     if (index == widget.audioDevices!.length) {
                       return ListTile(
@@ -58,7 +61,7 @@ class _SelectAudioOutputState extends State<SelectAudioOutput> {
                       return ListTile(
                         leading: widget.selectedAudioOutputDevice == device
                             ? Icon(Icons.check, color: Colors.white)
-                            : SizedBox(width: 24), 
+                            : SizedBox(width: 24),
                         title: Text(
                           device.label,
                           style: TextStyle(
@@ -70,6 +73,7 @@ class _SelectAudioOutputState extends State<SelectAudioOutput> {
                             widget.selectedAudioOutputDevice = device;
                           });
                           widget.onAudioDeviceSelected(device);
+                          Navigator.pop(context);
                         },
                       );
                     }

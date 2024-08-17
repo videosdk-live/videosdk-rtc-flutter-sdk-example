@@ -6,7 +6,7 @@ import 'package:videosdk/videosdk.dart';
 import '../../constants/colors.dart';
 
 class SelectVideoDevice extends StatefulWidget {
-    final bool? isCameraPermissionAllowed;
+  final bool? isCameraPermissionAllowed;
   VideoDeviceInfo? selectedVideoDevice;
   List<VideoDeviceInfo>? videoDevices;
   final Function(VideoDeviceInfo?) onVideoDeviceSelected;
@@ -35,13 +35,15 @@ class _SelectVideoDeviceState extends State<SelectVideoDevice> {
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           widget.videoDevices != null &&
                   widget.videoDevices!.isNotEmpty &&
                   widget.isCameraPermissionAllowed == true
               ? ListView.builder(
                   shrinkWrap: true,
-                  itemCount: widget.videoDevices!.length + 1, 
+                  physics: NeverScrollableScrollPhysics(), 
+                  itemCount: widget.videoDevices!.length + 1,
                   itemBuilder: (context, index) {
                     if (index == widget.videoDevices!.length) {
                       return ListTile(
@@ -59,7 +61,7 @@ class _SelectVideoDeviceState extends State<SelectVideoDevice> {
                       return ListTile(
                         leading: widget.selectedVideoDevice == device
                             ? Icon(Icons.check, color: Colors.white)
-                            : SizedBox(width: 24), 
+                            : SizedBox(width: 24),
                         title: Text(
                           device.label,
                           style: TextStyle(
@@ -71,6 +73,7 @@ class _SelectVideoDeviceState extends State<SelectVideoDevice> {
                             widget.selectedVideoDevice = device;
                           });
                           widget.onVideoDeviceSelected(device);
+                          Navigator.pop(context);
                         },
                       );
                     }
