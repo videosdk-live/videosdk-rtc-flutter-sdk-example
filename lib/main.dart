@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           color: primaryColor,
         ),
         primaryColor: primaryColor,
-        scaffoldBackgroundColor: secondaryColor
+        scaffoldBackgroundColor: secondaryColor,
       ),
       home: const SplashScreen(),
       navigatorKey: navigatorKey,
