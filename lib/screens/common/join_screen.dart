@@ -69,7 +69,6 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
       final token = await fetchToken(context);
       setState(() => _token = token);
     });
-    // onJoinScreen = true;
     checkandReqPermissions();
     subscribe();
   }
@@ -576,7 +575,6 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
         setState(() {
           cameraRenderer = null;
         });
-        // onJoinScreen = false;
         unsubscribe();
 
         if (callType == "GROUP") {
@@ -631,7 +629,6 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
         setState(() {
           cameraRenderer = null;
         });
-        // onJoinScreen = false;
         unsubscribe();
 
         if (callType == "GROUP") {
@@ -683,7 +680,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   }
 
   void unsubscribe() {
-    //VideoSDK.off(Events.deviceChanged, handler);
+    VideoSDK.off(Events.deviceChanged, handler);
   }
 
   @override
