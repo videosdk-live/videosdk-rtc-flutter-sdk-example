@@ -80,7 +80,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
 
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
-      roomId: "oupf-fhti-93e9",
+      roomId: widget.meetingId,
       token: widget.token,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
