@@ -13,7 +13,7 @@ import '../../utils/toast.dart';
 import '../../widgets/common/joining/join_view.dart';
 import '../one-to-one/one_to_one_meeting_screen.dart';
 import 'dropdowns_Web.dart';
-import 'selectAudioOutput.dart';
+import 'selectAudioDevice.dart';
 import 'selectVideoDevice.dart';
 
 // Join Screen
@@ -260,7 +260,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                       child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10),
-                                          child: SelectAudioOutput(
+                                          child: SelectAudioDevice(
                                             isMicrophonePermissionAllowed:
                                                 isMicrophonePermissionAllowed,
                                             selectedAudioOutputDevice:

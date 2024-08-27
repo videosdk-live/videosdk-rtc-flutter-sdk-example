@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import '../../constants/colors.dart';
 
-class SelectAudioOutput extends StatefulWidget {
+class SelectAudioDevice extends StatefulWidget {
   final bool? isMicrophonePermissionAllowed;
   AudioDeviceInfo? selectedAudioOutputDevice;
   List<AudioDeviceInfo>? audioDevices;
   final Function(AudioDeviceInfo?) onAudioDeviceSelected;
 
-  SelectAudioOutput({
+  SelectAudioDevice({
     Key? key,
     required this.isMicrophonePermissionAllowed,
     this.selectedAudioOutputDevice,
@@ -19,10 +19,10 @@ class SelectAudioOutput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SelectAudioOutput> createState() => _SelectAudioOutputState();
+  State<SelectAudioDevice> createState() => _SelectAudioOutputState();
 }
 
-class _SelectAudioOutputState extends State<SelectAudioOutput> {
+class _SelectAudioOutputState extends State<SelectAudioDevice> {
   @override
   void initState() {
     super.initState();
