@@ -18,21 +18,29 @@ import '../../utils/toast.dart';
 import '../../widgets/common/meeting_controls/meeting_action_bar.dart';
 import '../../widgets/common/screen_share/screen_select_dialog.dart';
 import '../common/join_screen.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
 // Meeting Screen
 class OneToOneMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const OneToOneMeetingScreen({
-    Key? key,
-    required this.meetingId,
-    required this.token,
-    required this.displayName,
-    this.micEnabled = true,
-    this.camEnabled = true,
-    this.chatEnabled = true,
-  }) : super(key: key);
+  final AudioDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
+  final CustomTrack? cameraTrack;
+  final CustomTrack? micTrack;
+
+  const OneToOneMeetingScreen(
+      {Key? key,
+      required this.meetingId,
+      required this.token,
+      required this.displayName,
+      this.micEnabled = true,
+      this.camEnabled = true,
+      this.chatEnabled = true,
+      this.selectedAudioOutputDevice,
+      this.selectedAudioInputDevice,
+      this.cameraTrack,
+      this.micTrack})
+      : super(key: key);
 
   @override
   _OneToOneMeetingScreenState createState() => _OneToOneMeetingScreenState();
@@ -69,6 +77,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
@@ -78,7 +87,8 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: false,
-      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
+      customCameraVideoTrack: widget.cameraTrack,
+      customMicrophoneAudioTrack: widget.micTrack,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
@@ -100,8 +110,13 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     bool isWebMobile = kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.iOS ||
             defaultTargetPlatform == TargetPlatform.android);
-    return WillPopScope(
-      onWillPop: _onWillPopScope,
+    return PopScope(
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        _onWillPopScope();
+      },
       child: _joined
           ? SafeArea(
               child: Scaffold(
@@ -180,10 +195,10 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                     },
 
                                     onSwitchMicButtonPressed: (details) async {
-                                      List<MediaDeviceInfo> outptuDevice =
-                                          meeting.getAudioOutputDevices();
+                                      List<AudioDeviceInfo>? outputDevice =
+                                          await VideoSDK.getAudioDevices();
                                       double bottomMargin =
-                                          (70.0 * outptuDevice.length);
+                                          (70.0 * outputDevice!.length);
                                       final screenSize =
                                           MediaQuery.of(context).size;
                                       await showMenu(
@@ -200,7 +215,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                           details.globalPosition.dx,
                                           (bottomMargin),
                                         ),
-                                        items: outptuDevice.map((e) {
+                                        items: outputDevice.map((e) {
                                           return PopupMenuItem(
                                               value: e, child: Text(e.label));
                                         }).toList(),
@@ -313,6 +328,9 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             _joined = true;
           });
 
+          if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
+            _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
+          }
           subscribeToChatMessages(_meeting);
         }
       },

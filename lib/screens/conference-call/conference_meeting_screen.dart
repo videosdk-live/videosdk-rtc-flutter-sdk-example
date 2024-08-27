@@ -17,27 +17,36 @@ import 'package:videosdk_flutter_example/widgets/common/participant/participant_
 import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
-class ConfereneceMeetingScreen extends StatefulWidget {
+class ConferenceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  const ConfereneceMeetingScreen({
-    Key? key,
-    required this.meetingId,
-    required this.token,
-    required this.displayName,
-    this.micEnabled = true,
-    this.camEnabled = true,
-    this.chatEnabled = true,
-  }) : super(key: key);
+  final AudioDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
+
+  final CustomTrack? cameraTrack;
+  final CustomTrack? micTrack;
+
+  const ConferenceMeetingScreen(
+      {Key? key,
+      required this.meetingId,
+      required this.token,
+      required this.displayName,
+      this.micEnabled = true,
+      this.camEnabled = true,
+      this.chatEnabled = true,
+      this.selectedAudioOutputDevice,
+      this.selectedAudioInputDevice,
+      this.cameraTrack,
+      this.micTrack})
+      : super(key: key);
 
   @override
-  State<ConfereneceMeetingScreen> createState() =>
-      _ConfereneceMeetingScreenState();
+  State<ConferenceMeetingScreen> createState() =>
+      _ConferenceMeetingScreenState();
 }
 
-class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
+class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "RECORDING_STOPPED";
@@ -71,12 +80,14 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
       token: widget.token,
+      customCameraVideoTrack: widget.cameraTrack,
+      customMicrophoneAudioTrack: widget.micTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
       multiStream: true,
-      defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
+      //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
         message: "Video SDK is sharing screen in the meeting",
@@ -98,8 +109,15 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
     bool isWebMobile = kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.iOS ||
             defaultTargetPlatform == TargetPlatform.android);
-    return WillPopScope(
-      onWillPop: _onWillPopScope,
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        _onWillPopScope();
+      },
       child: _joined
           ? SafeArea(
               child: Scaffold(
@@ -190,10 +208,11 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                     },
 
                                     onSwitchMicButtonPressed: (details) async {
-                                      List<MediaDeviceInfo> outptuDevice =
-                                          meeting.getAudioOutputDevices();
+                                      List<AudioDeviceInfo>? outputDevice =
+                                          await VideoSDK.getAudioDevices();
+
                                       double bottomMargin =
-                                          (70.0 * outptuDevice.length);
+                                          (70.0 * outputDevice!.length);
                                       final screenSize =
                                           MediaQuery.of(context).size;
                                       await showMenu(
@@ -210,9 +229,30 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
                                           details.globalPosition.dx,
                                           (bottomMargin),
                                         ),
-                                        items: outptuDevice.map((e) {
+                                        items: outputDevice.map((e) {
                                           return PopupMenuItem(
-                                              value: e, child: Text(e.label));
+                                            padding: EdgeInsets.zero,
+                                            value: e,
+                                            child: Container(
+                                              color: e.deviceId ==
+                                                      meeting.selectedSpeaker
+                                                          ?.deviceId
+                                                  ? Color.fromRGBO(
+                                                      109, 110, 113, 1)
+                                                  : Colors.transparent,
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      16,
+                                                      10,
+                                                      5,
+                                                      10), // Ensure no padding
+                                                  child: Text(e.label),
+                                                ),
+                                              ),
+                                            ),
+                                          );
                                         }).toList(),
                                         elevation: 8.0,
                                       ).then((value) {
@@ -309,6 +349,10 @@ class _ConfereneceMeetingScreenState extends State<ConfereneceMeetingScreen> {
           meeting = _meeting;
           _joined = true;
         });
+
+        if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
+          _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
+        }
 
         subscribeToChatMessages(_meeting);
       },

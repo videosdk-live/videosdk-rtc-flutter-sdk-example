@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: 1.1.12
+  videosdk: ^1.2.1
   http: ^1.1.0
   flutter_dotenv: ^5.0.2
   flutter_svg: ^2.0.2
@@ -19,6 +19,7 @@ dependencies:
   lottie: ^2.2.0
   responsive_framework: 1.1.1
   window_manager: ^0.3.4
+
 
 dev_dependencies:
   flutter_lints: ^2.0.1
