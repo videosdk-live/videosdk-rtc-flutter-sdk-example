@@ -1,4 +1,4 @@
-# Video SDK for Flutter
+# 🚀 Video SDK for Flutter
 
 [![Documentation](https://img.shields.io/badge/Read-Documentation-blue)](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/concept-and-architecture)
 [![Firebase](https://img.shields.io/badge/Download%20Android-Firebase-green)](https://appdistribution.firebase.dev/i/80c2c6cc9fcb89b0)
@@ -210,7 +210,7 @@ The token is used to create and validate a meeting using API and also initialize
 
 ### 9. Participant View
  
-### One-to-one
+### OneToOne Call
 
 - **[lib/screens/one-to-one/one_to_one_meeting_screen.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/screens/one-to-one/one_to_one_meeting_screen.dart)** : It contains the complete layout for one to one meeting.
 
@@ -218,7 +218,7 @@ The token is used to create and validate a meeting using API and also initialize
 
 - **[lib/widgets/one-to-one/participant_view.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/one-to-one/participant_view.dart)** : It is used to display the individual stream of the participant.
 
-### conference-call
+### Conference Call
 
 - **[lib/widgets/conference-call/conference_participant_grid.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/conference-call/conference_participant_grid.dart)** : The `ConferenceParticipantGrid` widget organizes and displays participants in a grid layout.
 
