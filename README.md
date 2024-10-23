@@ -13,7 +13,7 @@ At Video SDK, we’re building tools to help companies create world-class collab
 ## 📚 **Table of Contents**
 
 - [🖥️ **Demo App**](#%EF%B8%8F-demo-app)
-- [📱 **Video SDK Compatibility**](##-video-sdk-compatibility)
+- [📱 **Video SDK Compatibility**](#-video-sdk-compatibility)
 - [⚡ **Quick Setup**](#-quick-setup)
 - [🔧 **Prerequisites**](#-prerequisites)
 - [📦 **Running the Sample App**](#-running-the-sample-app)
