@@ -12,9 +12,9 @@ import '../../constants/colors.dart';
 import '../../utils/toast.dart';
 import '../../widgets/common/joining/join_view.dart';
 import '../one-to-one/one_to_one_meeting_screen.dart';
-import 'dropdowns_Web.dart';
-import 'selectAudioDevice.dart';
-import 'selectVideoDevice.dart';
+import '../../widgets/common/pre_call/dropdowns_Web.dart';
+import '../../widgets/common/pre_call/selectAudioDevice.dart';
+import '../../widgets/common/pre_call/selectVideoDevice.dart';
 
 // Join Screen
 class JoinScreen extends StatefulWidget {

@@ -1,28 +1,29 @@
-// // ignore_for_file: non_constant_identifier_names, dead_code
+// ignore_for_file: non_constant_identifier_names, dead_code
+
 
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
-import '../../constants/colors.dart';
+import '../../../constants/colors.dart';
 
-class SelectAudioDevice extends StatefulWidget {
-  final bool? isMicrophonePermissionAllowed;
-  AudioDeviceInfo? selectedAudioOutputDevice;
-  List<AudioDeviceInfo>? audioDevices;
-  final Function(AudioDeviceInfo?) onAudioDeviceSelected;
+class SelectVideoDevice extends StatefulWidget {
+  final bool? isCameraPermissionAllowed;
+  VideoDeviceInfo? selectedVideoDevice;
+  List<VideoDeviceInfo>? videoDevices;
+  final Function(VideoDeviceInfo?) onVideoDeviceSelected;
 
-  SelectAudioDevice({
+  SelectVideoDevice({
     Key? key,
-    required this.isMicrophonePermissionAllowed,
-    this.selectedAudioOutputDevice,
-    this.audioDevices,
-    required this.onAudioDeviceSelected,
+    required this.isCameraPermissionAllowed,
+    this.selectedVideoDevice,
+    this.videoDevices,
+    required this.onVideoDeviceSelected,
   }) : super(key: key);
 
   @override
-  State<SelectAudioDevice> createState() => _SelectAudioOutputState();
+  State<SelectVideoDevice> createState() => _SelectVideoDeviceState();
 }
 
-class _SelectAudioOutputState extends State<SelectAudioDevice> {
+class _SelectVideoDeviceState extends State<SelectVideoDevice> {
   @override
   void initState() {
     super.initState();
@@ -36,16 +37,15 @@ class _SelectAudioOutputState extends State<SelectAudioDevice> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          widget.audioDevices != null &&
-                  widget.audioDevices!.isNotEmpty &&
-                  widget.isMicrophonePermissionAllowed == true
+          widget.videoDevices != null &&
+                  widget.videoDevices!.isNotEmpty &&
+                  widget.isCameraPermissionAllowed == true
               ? ListView.builder(
                   shrinkWrap: true,
-                  physics:
-                      NeverScrollableScrollPhysics(), 
-                  itemCount: widget.audioDevices!.length + 1,
+                  physics: NeverScrollableScrollPhysics(), 
+                  itemCount: widget.videoDevices!.length + 1,
                   itemBuilder: (context, index) {
-                    if (index == widget.audioDevices!.length) {
+                    if (index == widget.videoDevices!.length) {
                       return ListTile(
                         leading: Icon(Icons.close, color: Colors.white),
                         title: Text(
@@ -57,9 +57,9 @@ class _SelectAudioOutputState extends State<SelectAudioDevice> {
                         },
                       );
                     } else {
-                      AudioDeviceInfo device = widget.audioDevices![index];
+                      VideoDeviceInfo device = widget.videoDevices![index];
                       return ListTile(
-                        leading: widget.selectedAudioOutputDevice == device
+                        leading: widget.selectedVideoDevice == device
                             ? Icon(Icons.check, color: Colors.white)
                             : SizedBox(width: 24),
                         title: Text(
@@ -70,9 +70,9 @@ class _SelectAudioOutputState extends State<SelectAudioDevice> {
                         ),
                         onTap: () {
                           setState(() {
-                            widget.selectedAudioOutputDevice = device;
+                            widget.selectedVideoDevice = device;
                           });
-                          widget.onAudioDeviceSelected(device);
+                          widget.onVideoDeviceSelected(device);
                           Navigator.pop(context);
                         },
                       );
