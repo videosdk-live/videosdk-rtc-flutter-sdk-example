@@ -3,7 +3,7 @@
 // Join Screen
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
-import '../../constants/colors.dart';
+import '../../../constants/colors.dart';
 
 class DropdownsWebWidget extends StatefulWidget {
   final bool? isCameraPermissionAllowed, isMicrophonePermissionAllowed;

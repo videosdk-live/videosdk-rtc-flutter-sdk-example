@@ -1,95 +1,102 @@
-# Video SDK for Flutter (Android and iOS)
+# 🚀 Video SDK for Flutter
 
-[![Documentation](https://img.shields.io/badge/Read-Documentation-blue)](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/getting-started)
+[![Documentation](https://img.shields.io/badge/Read-Documentation-blue)](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/concept-and-architecture)
 [![Firebase](https://img.shields.io/badge/Download%20Android-Firebase-green)](https://appdistribution.firebase.dev/i/80c2c6cc9fcb89b0)
 [![TestFlight](https://img.shields.io/badge/Download%20iOS-TestFlight-blue)](https://testflight.apple.com/join/C1UOYbxh)
 [![Discord](https://img.shields.io/discord/876774498798551130?label=Join%20on%20Discord)](https://discord.gg/bGZtAbwvab)
 [![Register](https://img.shields.io/badge/Contact-Know%20More-blue)](https://app.videosdk.live/signup)
 
-At Video SDK, we’re building tools to help companies create world-class collaborative products with capabilities of live audio/videos, compose cloud recordings/rtmp/hls and interaction APIs
+At Video SDK, we’re building tools to help companies create world-class collaborative products with capabilities for live audio/video, cloud recordings, RTMP/HLS streaming, and interaction APIs.
 
-## Demo App
+### 🥳 Get **10,000 minutes free** every month! **[Try it now!](https://app.videosdk.live/signup)**
+
+## 📚 **Table of Contents**
+
+- [🖥️ **Demo App**](#%EF%B8%8F-demo-app)
+- [📱 **Video SDK Compatibility**](#-video-sdk-compatibility)
+- [⚡ **Quick Setup**](#-quick-setup)
+- [🔧 **Prerequisites**](#-prerequisites)
+- [📦 **Running the Sample App**](#-running-the-sample-app)
+- [🔥 **Meeting Features**](#-meeting-features)
+- [🧠 **Key Concepts**](#-key-concepts)
+- [🔑 **Token Generation**](#-token-generation)
+- [🧩 **Project OverView**](#-project-overview)
+- [📖 **Examples**](#-examples)
+- [📝 **VideoSDK's Documentation**](#-documentation)
+- [💬 **Join Our Community**](#-join-our-community)
+
+
+## 🖥️ Demo App
 
 📲 Download the sample iOS app here: https://testflight.apple.com/join/C1UOYbxh
 
 📱 Download the sample Android app here: https://appdistribution.firebase.dev/i/80c2c6cc9fcb89b0
 
-## Features
 
-- [x] Real-time video and audio conferencing
-- [x] Enable/disable camera
-- [x] Mute/unmute mic
-- [x] Switch between front and back camera
-- [x] Change audio device
-- [x] Screen share
-- [x] Chat
-- [x] Recording
+## 📱 Video SDK Compatibility
 
-<br/>
+| Android | iOS | Web | MacOS | Windows | Safari |
+|---------|-----|-----|-------|---------|--------|
+| ✅       | ✅   | ✅   | ✅     | ✅       | ❌      |
 
-## Setup Guide
 
-- Sign up on [VideoSDK](https://app.videosdk.live/) and visit [API Keys](https://app.videosdk.live/api-keys) section to get your API key and Secret key.
+## ⚡ Quick Setup
 
-- Get familiarized with [API key and Secret key](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/signup-and-create-api)
+1. Sign up on [VideoSDK](https://app.videosdk.live/) to grab your API Key and Secret.
+2. Familiarize yourself with [Token](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/authentication-and-tokens)
 
-- Get familiarized with [Token](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/server-setup)
+## 🛠 Prerequisites
 
-<br/>
+- Flutter 2.0 or later
+- Dart 3.3.0 or later
+- A valid [Video SDK Account](https://app.videosdk.live/)
 
-## Prerequisites
+## 📦 Running the Sample App
 
-- If your target platform is iOS, your development environment must meet the following requirements:
-  - Flutter 2.0 or later
-  - Dart 2.12.0 or later
-  - macOS
-  - Xcode (Latest version recommended)
-- If your target platform is Android, your development environment must meet the following requirements:
-  - Flutter 2.0 or later
-  - Dart 2.12.0 or later
-  - macOS or Windows
-  - Android Studio (Latest version recommended)
-- If your target platform is iOS, you need a real iOS device.
-- If your target platform is Android, you need an Android simulator or a real Android device.
-- Valid Video SDK [Account](https://app.videosdk.live/)
-
-<br/>
-
-## Run the Sample App
+Follow these steps to get the sample app up and running:
 
 ### 1. Clone the sample project
 
 Clone the repository to your local environment.
 
 ```js
-$ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
+git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
 ```
 
-### 2. Copy the .env.example file to .env file.
+### 2. Copy the `.env.example` file to `.env` file.
 
 Open your favorite code editor and copy `.env.example` to `.env` file.
 
 ```js
-$ cp .env.example .env
+cp .env.example .env
 ```
 
-### 3. Modify .env file
+### 3. Modify `.env` file
 
-Generate temporary token from [Video SDK Account](https://app.videosdk.live/signup).
+Generate a temporary token from [Video SDK Account](https://app.videosdk.live/signup).
 
 ```js title=".env"
 AUTH_TOKEN = "TEMPORARY-TOKEN";
 ```
 
-### 4. Install the dependecies
+### 4. Install the dependencies
 
-Install all the dependecies to run the project.
+Install all the dependencies to run the project.
 
 ```js
 flutter pub get
 ```
 
-### 4. Run the sample app
+### 5. Set Up for iOS/macOS (if applicable)
+
+For iOS or macOS, navigate to the respective folder and install the pods.
+
+```js
+cd ios // or cd macos
+pod install
+```
+
+### 6. Run the sample app
 
 Bingo, it's time to push the launch button.
 
@@ -97,409 +104,155 @@ Bingo, it's time to push the launch button.
 flutter run
 ```
 
-<br/>
+## 🔥 Meeting Features
 
-## Key Concepts
+Unlock a suite of powerful features to enhance your meetings:
 
-- `Meeting` - A Meeting represents Real time audio and video communication.
+| Feature                        | Documentation                                                                                                                | Description                                                                                                      |
+|--------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| 📋 **Precall Setup**           | [Setup Precall](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/setup-call/precall)                   | Configure audio, video devices, and other settings before joining the meeting.                                              |
+| 🤝 **Join Meeting**            | [Join Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/setup-call/join-meeting)                | Allows participants to join a meeting.                                                                 |
+| 🚪 **Leave Meeting**            | [Leave Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/setup-call/leave-end-meeting)                | Allows participants to leave a meeting.                                                                 |
+| 🎤 **Toggle Mic**         | [Mic Control](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/handling-media/mute-unmute-mic)          | Toggle the microphone on or off during a meeting.                                                                  |
+| 📷 **Toggle Camera**           | [Camera Control](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/handling-media/on-off-camera)         | Turn the video camera on or off during a meeting.                                                                  |
+| 🖥️ **Screen Share**            | [Screen Share](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/handling-media/screen-share)          | Share your screen with other participants during the call.                                                      |
+| 🔊 **Change Audio Output**     | [Switch Audio Output](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/handling-media/change-audio-output-device) | Select an output device for audio during a meeting.                                                                |
+| 🔌 **Change Video Output**     | [Switch Video Output](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/handling-media/change-video-input-device) | Select an output device for audio during a meeting.                                                                |
+| ⚙️ **Optimize Audio Track**         | [Audio Track Optimization](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/render-media/optimize-audio-track)                                       | Enhance the quality and performance of media tracks.                                                            |
+| ⚙️ **Optimize Video Track**         | [Video Track Optimization](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/render-media/optimize-video-track)                                       | Enhance the quality and performance of media tracks.                                                            |
+| 🖼️ **Virtual Background**        | [Virtual Background](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/render-media/virtual-background)                                       | Add a virtual background or blur effect to your video during the call.                                                            |
+| 💬 **Chat**                    | [In-Meeting Chat](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/collaboration-in-meeting/pubsub)      | Exchange messages with participants through a Publish-Subscribe mechanism.                                                   |
+| 📝 **Whiteboard**              | [Whiteboard](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/collaboration-in-meeting/whiteboard)      | Collaborate visually by drawing and annotating on a shared whiteboard.                                           |
+| 📼 **Recording**               | [Recording](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/recording/Overview)                | Record the meeting for future reference.                                                                        |
+| 📡 **RTMP Livestream**         | [RTMP Livestream](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/live-streaming/rtmp-livestream)        | Stream the meeting live to platforms like YouTube or Facebook.                                                  |
+| 📝 **Real-time Transcription**           | [Real-time Transcription](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/transcription-and-summary/realtime-transcribe-meeting) | Generate real-time transcriptions of the meeting.                                                               |
+| 🔇 **Toggle Remote Media**     | [Remote Media Control](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/control-remote-participant/remote-participant-media) | Control the microphone or camera of remote participants.                                                        |
+| 🚫 **Mute All Participants**   | [Mute All](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/control-remote-participant/mute-all-participants) | Mute all participants simultaneously during the call.                                                           |
+| 🗑️ **Remove Participant**      | [Remove Participant](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/control-remote-participant/remove-participant) | Eject a participant from the meeting.  |
 
-  **`Note : Don't confuse with Room and Meeting keyword, both are same thing 😃`**
+## 🧠 Key Concepts
 
-- `Sessions` - A particular duration you spend in a given meeting is a referred as session, you can have multiple session of a particular meetingId.
-- `Participant` - Participant represents someone who is attending the meeting's session, `local partcipant` represents self (You), for this self, other participants are `remote participants`.
-- `Stream` - Stream means video or audio media content that is either published by `local participant` or `remote participants`.
+Understand the core components of our SDK:
 
-<br/>
+- `Meeting` - A Meeting represents Real-time audio and video communication.
 
-## Android Permission
+  **` Note: Don't confuse the terms Room and Meeting; both mean the same thing 😃`**
 
-Add all the following permissions to AndroidManifest.xml file.
+- `Sessions` - A particular duration you spend in a given meeting is referred as a session, you can have multiple sessions of a specific meetingId.
+- `Participant` - A participant refers to anyone attending the meeting session. The `local participant` represents yourself (You), while all other attendees are considered `remote participants`.
+- `Stream` - A stream refers to video or audio media content that is published by either the `local participant` or `remote participants`.
 
-```
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
-    <!-- Needed to communicate with already-paired Bluetooth devices. (Legacy up to Android 11) -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
+## 🔐 Token Generation
 
-    <!-- Needed to communicate with already-paired Bluetooth devices. (Android 12 upwards)-->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-
-```
-
-## iOS Permission
-
-Add the following entry to your Info.plist file, located at `<project root>/ios/Runner/Info.plist`:
-
-```
-<key>NSCameraUsageDescription</key>
-<string>$(PRODUCT_NAME) Camera Usage!</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>$(PRODUCT_NAME) Microphone Usage!</string>
-```
-
-## iOS Screen share Setup
-
-Please refer to this documentation guide to [setup screenshare for iOS](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/extras/flutter-ios-screen-share)
-
-<br/>
-
-## Token Generation
-
-Token is used to create and validate a meeting using API and also initialise a meeting.
+The token is used to create and validate a meeting using API and also initialize a meeting.
 
 🛠️ `Development Environment`:
 
-- For development, you can use temporary token. Visit VideoSDK [dashboard](https://app.videosdk.live/api-keys) to generate temporary token.
+- You may use a temporary token for development. To create a temporary token, go to VideoSDK's [dashboard](https://app.videosdk.live/api-keys) .
 
 🌐 `Production Environment`:
 
-- For production, you have to set up an authentication server to authorize users. Follow our official example repositories to setup authentication server, [videosdk-rtc-api-server-examples](https://github.com/videosdk-live/videosdk-rtc-api-server-examples)
+- You must set up an authentication server to authorize users for production. To set up an authentication server, please take a look at our official example repositories. [videosdk-rtc-api-server-examples](https://github.com/videosdk-live/videosdk-rtc-api-server-examples)
 
-> **Note** :
->
-> The expiry of development environment token lasts 7 days only.
 
-<br/>
-
-## API: Create and Validate meeting
-
-- `create meeting` - Please refer this [documentation](https://docs.videosdk.live/api-reference/realtime-communication/create-room) to create meeting.
-- `validate meeting`- Please refer this [documentation](https://docs.videosdk.live/api-reference/realtime-communication/validate-room) to validate the meetingId.
-
-<br/>
-
-## [Initialize a Meeting](https://docs.videosdk.live/flutter/api/sdk-reference/videosdk-class/methods#createroom)
-
-- You can initialize the meeting using `createRoom()` method. `createRoom()` will generate a new `Room` object and the initiated meeting will be returned.
-
-```js
-  Room room = VideoSDK.createRoom(
-        roomId: "abcd-efgh-ijkl",
-        token: "YOUR TOKEN",
-        displayName: "GUEST",
-        micEnabled: true,
-        camEnabled: true,
-        maxResolution: 'hd',
-        defaultCameraIndex: kIsWeb ? 0 : 1,
-        notification: const NotificationInfo(
-          title: "Video SDK",
-          message: "Video SDK is sharing screen in the meeting",
-          icon: "notification_share", // drawable icon name
-        ),
-      );
-```
-
-<br/>
-
-## [Mute/Unmute Local Audio](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/mic-controls)
-
-```js
-// unmute mic
-room.unmuteMic();
-
-// mute mic
-room.muteMic();
-```
-
-<br/>
-
-## [Change Audio Device](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/switch-audio-output)
-
-- The `meeting.getAudioOutputDevices()` function allows a participant to list all of the attached audio devices (e.g., Bluetooth and Earphone).
-
-```js
- // get connected audio devices
- List<MediaDeviceInfo> outputDevice = room.getAudioOutputDevices()
-```
-
-- Local participant can change the audio device using `switchAudioOutput(MediaDeviceInfo device)` method of `Room` class.
-
-```js
-// change mic
-room.switchAudioOutput(mediaDeviceInfo);
-```
-
-- Please consult our documentation [Change Audio Device](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/switch-audio-output) for more infromation.
-
-<br/>
-
-## [Enable/Disable Local Webcam](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/camera-controls)
-
-```js
-// enable webcam
-room.enableCam();
-
-// disable webcam
-room.disableCam();
-```
-
-<br/>
-
-## [Switch Local Webcam](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/camera-controls)
-
-```js
-// switch webcam
-room.changeCam(deviceId);
-```
-
-<br/>
-
-## [Chat](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/pubsub)
-
-- The chat feature allows participants to send and receive messages about specific topics to which they have subscribed.
-
-```js
-// publish
-room.pubSub.publish(String topic,String message, PubSubPublishOptions pubSubPublishoptions);
-
-// pubSubPublishoptions is an object of PubSubPublishOptions, which provides an option, such as persist, which persists message history for upcoming participants.
-
-
-//subscribe
-PubSubMessages pubSubMessageList = room.pubSub.subscribe(String topic, Function(PubSubMessage) messageHandler)
-
-
-//unsubscribe
-room.pubSub.unsubscribe(topic, Function(PubSubMessage) messageHandler);
-
-
-// Message Handler
-void messageHandler(msg){
-  // Do something
-  print("New message received: $msg");
-}
-```
-
-<br/>
-
-## [Leave or End Meeting](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/features/leave-end-room)
-
-```js
-// Only one participant will leave/exit the meeting; the rest of the participants will remain.
-room.leave();
-
-// The meeting will come to an end for each and every participant. So, use this function in accordance with your requirements.
-room.end();
-```
-
-<br/>
-
-## [Listen for Room Events](https://docs.videosdk.live/flutter/api/sdk-reference/room-class/events)
-
-By registering callback handlers, VideoSDK sends callbacks to the client app whenever there is a change or update in the meeting after a user joins.
-
-```js
-    room.on(
-      Events.roomJoined,
-      () {
-        // This event will be emitted when a localParticipant(you) successfully joined the meeting.
-      },
-    );
-
-    room.on(Events.roomLeft, (String? errorMsg) {
-      // This event will be emitted when a localParticipant(you) left the meeting.
-      // [errorMsg]: It will have the message if meeting was left due to some error like Network problem
-    });
-
-    room.on(Events.recordingStarted, () {
-      // This event will be emitted when recording of the meeting is started.
-    });
-
-    room.on(Events.recordingStopped, () {
-      // This event will be emitted when recording of the meeting is stopped.
-    });
-
-    room.on(Events.presenterChanged, (_activePresenterId) {
-      // This event will be emitted when any participant starts or stops screen sharing.
-      // [participantId]: Id of participant who shares the screen.
-    });
-
-    room.on(Events.speakerChanged, (_activeSpeakerId) {
-      // This event will be emitted when a active speaker changed.
-      // [participantId] : Id of active speaker
-    });
-
-    room.on(Events.participantJoined, (Participant participant) {
-      // This event will be emitted when a new participant joined the meeting.
-      // [participant]: new participant who joined the meeting
-    });
-
-    room.on(Events.participantLeft, (participantId) => {
-      // This event will be emitted when a joined participant left the meeting.
-      // [participantId]: id of participant who left the meeting
-    });
-
-```
-
-<br/>
-
-## [Listen for Participant Events](https://docs.videosdk.live/flutter/api/sdk-reference/participant-class/events)
-
-By registering callback handlers, VideoSDK sends callbacks to the client app whenever a participant's video, audio, or screen share stream is enabled or disabled.
-
-```js
-  participant.on(Events.streamEnabled, (Stream _stream) {
-    // This event will be triggered whenever a participant's video, audio or screen share stream is enabled.
-  });
-
-  participant.on(Events.stereamDisabled, (Stream _stream) {
-    // This event will be triggered whenever a participant's video, audio or screen share stream is disabled.
-  });
-
-```
-
-If you want to learn more about the SDK, read the Complete Documentation of [Flutter VideoSDK](https://docs.videosdk.live/flutter/guide/video-and-audio-calling-api-sdk/getting-started)
-
-<br/>
-
-## Project Description
-
-<br/>
-
-> **Note :**
->
-> - **master** branch: Better UI with One-to-One call experience.
-> - **v1-code-sample** branch: Simple UI with Group call experience.
-
-<br/>
+## 🧩 Project Overview
 
 ### App Behaviour with Different Meeting Types
 
 - **One-to-One meeting** - The One-to-One meeting allows 2 participants to join a meeting in the app.
 
-- **Group Meeting** - The Group meeting allows any number of participants to join a meeting in the app with maximum 6 participants on screen.
+- **Group Meeting** - The Group meeting allows any number of participants to join a meeting in the app with a maximum of 6 participants on screen.
 
-<br/>
+## 🏗️ Project Structure
 
-## Project Structure
-
-- We have seprated screens and widget in following folder structure:
-  - `one-to-one` - It includes all files related to OneToOne meeting.
-  - `common` - It inclues all the files that are used in both meeting type (OneToOne and Group calls).
+- We have separated screens and widgets in the following folder structure:
+  - `one-to-one` - It includes all files related to the OneToOne meeting.
+  - `common` - It includes all the files used in both meeting types (OneToOne and Group calls).
   - `conference-call` - It includes all files related to the conference call.
 
-### Common Content
+### 1. Pre-Call Setup on Join Screen
 
-**1. Create or join Meeting**
+- **[lib/widgets/common/pre_call/selectAudioDevice.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/pre_call/selectAudioDevice.dart)**  : This file implements the `SelectAudioDevice` widget, which allows users to select an audio output device.
 
-- `join_screen.dart`: It shows the user with the option to create or join a meeting and to initiate webcam and mic status.
+- **[lib/widgets/common/pre_call/selectVideoDevice.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/lib/widgets/common/pre_call/selectVideoDevice.dart)** : This file provides the `SelectVideoDevice` widget for choosing a video input device (camera).
 
-  - `api.dart` : It incldes all the API calls for create and validate meeting.
+- **[lib/widgets/common/pre_call/dropdowns_Web.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/screens/common/dropdowns_Web.dart)** : This file defines the `DropdownsWebWidget`, a stateful widget that manages dropdown menus for selecting video and audio devices in a web interface.
 
-  - `joining_details.dart`: This widget allows user to enter the meetingId and name for the meeting.
+### 2. Create or Join Meeting
 
-  - If `Join Meeting` is clicked, it will show following:
+- **[lib/utils/api.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/utils/api.dart)** : This file handles the API interactions, including fetching a token, creating a meeting, validating a meeting, and fetching session data.
 
-    - `Dropdown for Meeting Type` - These dropdown is to select the meeting mode: Group Call or One To One call.
-    - `EditText for ParticipantName` - This edit text will contain name of the participant.
-    - `EditText for MeetingId` - This edit text will contain the meeting Id that you want to join.
-    - `Join Meeting Button` - This button will call api for join meeting with meetingId that you entered.
+- **[lib/widgets/common/joining/join_view.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/joining/join_view.dart)** : This file defines the `JoinView` widget, which provides the user interface for joining a meeting.
 
-  - If `Create Meeting` is clicked, it will show following:
+- **[lib/screens/common/join_screen.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/screens/common/join_screen.dart)** : 
+  - This file implements the `JoinScreen` widget, the main screen for joining or creating meetings.
+  - It includes logic for handling device permissions, displaying the camera preview, and navigating to different meeting screens (one-to-one or group) after joining or creating a meeting.
 
-    - `Dropdown for Meeting Type` - These dropdown is to select the meeting mode: Group Call or One To One call.
-    - `EditText for ParticipantName` - This edit text will contain name of the participant.
-    - `Join Meeting Button` - This button will call api for join meeting with a new meetingId
+- **[lib/widgets/common/joining_details/joining_details.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/joining_details/joining_details.dart)** : 
+  - This file defines the `JoiningDetails` widget, where users input meeting details like the meeting ID and their display name.
+  - It includes a dropdown for selecting the meeting type (e.g., "One to One" or "Group Call"), and text fields for the meeting ID (when joining) and display name.
 
-  <p align="center">
-  <img width="230" height="450" src="./assets/create_join.gif"/>
-  </p>
+### 3. Waiting Screen
 
-**2. PartcipantList**
+- **[lib/widgets/common/joining/waiting_to_join.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/joining/waiting_to_join.dart)** : The `waiting_to_join.dart` file defines a basic UI screen that displays a loading animation and a message to notify users that a room is being set up as they wait.
 
-- `participant_list.dart` and `participant_list_item.dart` files are used to show Participant list.
-  <p align="center">
-  <img width="250" height="500" src="./assets/participants.jpg"/>
-  </p>
+### 4. Meeting App Bar for Mobile
 
-**3. Meeting Actions**
+- **[lib/widgets/common/app_bar/meeting_appbar.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/app_bar/meeting_appbar.dart)** : This file defines the `MeetingAppBar` widget, which shows details like the meeting ID, recording status, and the session's elapsed time.
 
-- Meeting actions are present in the `meeting_action_bar.dart`
+### 5. Meeting Bottom Bar for Mobile
 
-  - **MoreOptions**:
-    <p align="center">
-    <img width="200" height="400" src="./assets/more_options.gif"/>
-    </p>
-  - **AudioDeviceList**:
-    <p align="center">
-    <img width="200" height="400" src="./assets/audio_device.gif"/>
-    </p>
-  - **LeaveOrEndDialog**:
-    <p align="center">
-    <img width="200" height="400" src="./assets/end_call.gif"/>
-    </p>
+- **[lib/widgets/common/meeting_controls/meeting_action_bar.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/meeting_controls/meeting_action_bar.dart)** : This file defines the `MeetingActionBar` widget, which provides essential meeting controls at the bottom of the screen. Its main components include meeting controls like ending/ leaving a call, toggling the microphone and camera, and accessing chat. It also provides options for recording, screen sharing, and viewing the participant list.
 
-**4. Meeting Top Bar**
+### 6. Meeting App Bar for Web
 
-- `meeting_appbar.dart`: It contains the meeting timer, switch camera option and recording indicatior.
+- **[lib/widgets/common/app_bar/web_meeting_appbar.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/app_bar/web_meeting_appbar.dart)** : This file defines the `WebMeetingAppBar` widget, serving as the top control bar for a web meeting interface. It features a meeting ID display with a copy button, recording indicator, microphone and camera controls with device options, screen sharing control, chat and participant list buttons, and an option to leave or end the meeting for all participants.
 
-**5. Chat**
+### 7. Chat
 
-- `chat_screen.dart`: It contains the chat screen made using PubSub.
+- **[lib/widgets/common/chat.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/chat/chat_view.dart)** : This file defines the `ChatView` widget. It displays incoming messages and enables users to send new messages.
 
-  <p align="center">
-  <img width="250" height="500" src="./assets/chat.jpg"/>
-  </p>
+### 8. Participant List
 
-### One-to-one
+- **[lib/widgets/common/participant/participant_list_item.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/participant/participant_list_item.dart)** and **[lib/widgets/common/participant/participant_list.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/common/participant/participant_list.dart)** : Displays the list of participants present in the meeting.
 
-- `one_to_one_meeting_screen.dart`: It contains the complete layout for one to one meeting.
+### 9. Participant View
+ 
+### OneToOne Call
 
-- `one_to_one_meeting_container.dart`: It contains the logic to render the participants in the miniview and large view.
+- **[lib/screens/one-to-one/one_to_one_meeting_screen.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/screens/one-to-one/one_to_one_meeting_screen.dart)** : It contains the complete layout for one to one meeting.
 
-- `participant_view.dart`: It is used to display the individual stream of the participant.
+- **[lib/widgets/one-to-one/one_to_one_meeting_container.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/one-to-one/one_to_one_meeting_container.dart)** : The `OneToOneMeetingContainer` widget manages the display of local and remote participant streams in a one-on-one meeting, dynamically adjusting for video, audio, and screen share streams with responsive layout support.
 
-### conference-call
+- **[lib/widgets/one-to-one/participant_view.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/one-to-one/participant_view.dart)** : It is used to display the individual stream of the participant.
 
-- `conference_participant_grid.dart`: It contains the management of participant grid.
+### Conference Call
 
-- `participant_grid_tile.dart`: It contains the widget for a single participant which is displayed int he grid.
+- **[lib/widgets/conference-call/conference_participant_grid.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/conference-call/conference_participant_grid.dart)** : The `ConferenceParticipantGrid` widget organizes and displays participants in a grid layout.
 
-- `conference_screenshare_view.dart`: It contains the widget which will dislpay the screenshare in the meeting.
+- **[lib/widgets/conference-call/participant_grid_tile.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/conference-call/participant_grid_tile.dart)** : The `ParticipantGridTile` widget displays single participant which is displayed in the grid.
 
-<br/>
+- **[lib/widgets/conference-call/manage_grid.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/conference-call/manage_grid.dart)** : The `ManageGrid` class organize participants into grid layouts for different device types (mobile, tablet, desktop) during a conference, adjusting the number of rows and columns based on the participant count and presentation mode.
 
-## Examples 
-### Examples for Conference
+- **[lib/widgets/conference-call/conference_screenshare_view.dart](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example/blob/main/lib/widgets/conference-call/conference_screenshare_view.dart)** : The `ConferenseScreenShareView` widget handles the display of a screen share stream during a meeting.
 
-- [videosdk-rtc-prebuilt-examples](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
-- [videosdk-rtc-javascript-sdk-example](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
-- [videosdk-rtc-react-sdk-examplee](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example)
-- [videosdk-rtc-react-native-sdk-example](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
-- [videosdk-rtc-flutter-sdk-example](https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example)
-- [videosdk-rtc-android-java-sdk-example](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
-- [videosdk-rtc-android-kotlin-sdk-example](https://github.com/videosdk-live/videosdk-rtc-android-kotlin-sdk-example)
-- [videosdk-rtc-ios-sdk-example](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
+## 📖 Examples
 
-### Examples for Live Streaming
+- [**Prebuilt Example**](https://github.com/videosdk-live/videosdk-rtc-prebuilt-examples)
+- [**JavaScript SDK Example**](https://github.com/videosdk-live/videosdk-rtc-javascript-sdk-example)
+- [**React SDK Example**](https://github.com/videosdk-live/videosdk-rtc-react-sdk-example.git)
+- [**React Native SDK Example**](https://github.com/videosdk-live/videosdk-rtc-react-native-sdk-example)
+- [**Android Java SDK Example**](https://github.com/videosdk-live/videosdk-rtc-android-java-sdk-example)
+- [**Android Kotlin SDK Example**](https://github.com/videosdk-live/videosdk-rtc-android-kotlin-sdk-example)
+- [**iOS SDK Example**](https://github.com/videosdk-live/videosdk-rtc-ios-sdk-example)
 
-- [videosdk-hls-react-sdk-example](https://github.com/videosdk-live/videosdk-hls-react-sdk-example)
-- [videosdk-hls-react-native-sdk-example](https://github.com/videosdk-live/videosdk-hls-react-native-sdk-example)
-- [videosdk-hls-flutter-sdk-example](https://github.com/videosdk-live/videosdk-hls-flutter-sdk-example)
-- [videosdk-hls-android-java-example](https://github.com/videosdk-live/videosdk-hls-android-java-example)
-- [videosdk-hls-android-kotlin-example](https://github.com/videosdk-live/videosdk-hls-android-kotlin-example)
 
-<br/>
+## 📝 Documentation
 
-## Documentation
+Explore more and start building with our [**Documentation**](https://docs.videosdk.live/)
 
-[Read the documentation](https://docs.videosdk.live/) to start using Video SDK.
+## 🤝 Join Our Community
 
-<br/>
-
-## Community
-
-- [Discord](https://discord.gg/Gpmj6eCq5u) - To get involved with the Video SDK community, ask questions and share tips.
-- [Twitter](https://twitter.com/video_sdk) - To receive updates, announcements, blog posts, and general Video SDK tips.
+- **[Discord](https://discord.gg/Gpmj6eCq5u)**: Engage with the Video SDK community, ask questions, and share insights.
+- **[X](https://x.com/video_sdk)**: Stay updated with the latest news, updates, and tips from Video SDK.
