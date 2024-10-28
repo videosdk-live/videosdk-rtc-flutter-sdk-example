@@ -60,7 +60,7 @@ Follow these steps to get the sample app up and running:
 Clone the repository to your local environment.
 
 ```js
-$ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
+git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.git
 ```
 
 ### 2. Copy the `.env.example` file to `.env` file.
@@ -68,7 +68,7 @@ $ git clone https://github.com/videosdk-live/videosdk-rtc-flutter-sdk-example.gi
 Open your favorite code editor and copy `.env.example` to `.env` file.
 
 ```js
-$ cp .env.example .env
+cp .env.example .env
 ```
 
 ### 3. Modify `.env` file
@@ -87,7 +87,16 @@ Install all the dependencies to run the project.
 flutter pub get
 ```
 
-### 4. Run the sample app
+### 5. Set Up for iOS/macOS (if applicable)
+
+For iOS or macOS, navigate to the respective folder and install the pods.
+
+```js
+cd ios // or cd macos
+pod install
+```
+
+### 6. Run the sample app
 
 Bingo, it's time to push the launch button.
 
