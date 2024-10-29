@@ -109,7 +109,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     }
   }
 
-  void checkBluetoothPermissions() async {
+  Future<void> checkBluetoothPermissions() async {
     try {
       bool bluetoothPerm = await VideoSDK.checkBluetoothPermission();
       if (bluetoothPerm != true) {
@@ -188,7 +188,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
         }
         if (!kIsWeb) {
           if (Platform.isAndroid) {
-            checkBluetoothPermissions();
+            await checkBluetoothPermissions();
           }
         }
       }
