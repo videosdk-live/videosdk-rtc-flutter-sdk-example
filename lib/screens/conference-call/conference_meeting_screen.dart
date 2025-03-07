@@ -47,6 +47,7 @@ class ConferenceMeetingScreen extends StatefulWidget {
 }
 
 class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
+  static const platform = MethodChannel('com.example.example/channel');
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "RECORDING_STOPPED";
@@ -77,16 +78,16 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
       DeviceOrientation.portraitDown,
     ]);
     // Create instance of Room (Meeting)
-    Room room = VideoSDK.createRoom(
+    meeting = VideoSDK.createRoom(
       roomId: widget.meetingId,
       token: widget.token,
-      customCameraVideoTrack: widget.cameraTrack,
-      customMicrophoneAudioTrack: widget.micTrack,
+      // customCameraVideoTrack: widget.cameraTrack,
+      // customMicrophoneAudioTrack: widget.micTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
-      multiStream: true,
+      multiStream: false,
       //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
@@ -96,10 +97,26 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
 
     // Register meeting events
-    registerMeetingEvents(room);
+    registerMeetingEvents(meeting);
 
     // Join meeting
-    room.join();
+    meeting.join();
+  }
+
+  Future<void> _startMicrophoneService() async {
+    try {
+      await platform.invokeMethod('startMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to start service: '${e.message}'.");
+    }
+  }
+
+  Future<void> _stopMicrophoneService() async {
+    try {
+      await platform.invokeMethod('stopMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to stop service: '${e.message}'.");
+    }
   }
 
   @override
@@ -237,16 +254,14 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                               color: e.deviceId ==
                                                       meeting.selectedSpeaker
                                                           ?.deviceId
-                                                  ? Color.fromRGBO(
+                                                  ? const Color.fromRGBO(
                                                       109, 110, 113, 1)
                                                   : Colors.transparent,
                                               child: SizedBox(
                                                 width: double.infinity,
                                                 child: Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      16,
-                                                      10,
-                                                      5,
+                                                  padding: const EdgeInsets
+                                                      .fromLTRB(16, 10, 5,
                                                       10), // Ensure no padding
                                                   child: Text(e.label),
                                                 ),
@@ -277,11 +292,11 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         builder: (context) => ChatView(
                                             key: const Key("ChatScreen"),
                                             meeting: meeting),
-                                      ).whenComplete(() => {
-                                            setState(() {
-                                              showChatSnackbar = true;
-                                            })
-                                          });
+                                      ).whenComplete(() {
+                                        setState(() {
+                                          showChatSnackbar = true;
+                                        });
+                                      });
                                     },
 
                                     // Called when more options button is pressed
@@ -340,30 +355,31 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
   }
 
-  void registerMeetingEvents(Room _meeting) {
+  void registerMeetingEvents(Room meeting) {
     // Called when joined in meeting
-    _meeting.on(
+    meeting.on(
       Events.roomJoined,
       () {
         setState(() {
-          meeting = _meeting;
+          meeting = meeting;
           _joined = true;
         });
-
+        _startMicrophoneService();
         if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
-          _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
+          meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
         }
 
-        subscribeToChatMessages(_meeting);
+        subscribeToChatMessages(meeting);
       },
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
+    meeting.on(Events.roomLeft, (String? errorMsg) {
       if (errorMsg != null) {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
+      _stopMicrophoneService();
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
@@ -371,7 +387,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when recording is started
-    _meeting.on(Events.recordingStateChanged, (String status) {
+    meeting.on(Events.recordingStateChanged, (String status) {
       showSnackBarMessage(
           message:
               "Meeting recording ${status == "RECORDING_STARTING" ? "is starting" : status == "RECORDING_STARTED" ? "started" : status == "RECORDING_STOPPING" ? "is stopping" : "stopped"}",
@@ -383,33 +399,33 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when stream is enabled
-    _meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
-      if (_stream.kind == 'video') {
+    meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
+      if (stream.kind == 'video') {
         setState(() {
-          videoStream = _stream;
+          videoStream = stream;
         });
-      } else if (_stream.kind == 'audio') {
+      } else if (stream.kind == 'audio') {
         setState(() {
-          audioStream = _stream;
+          audioStream = stream;
         });
-      } else if (_stream.kind == 'share') {
+      } else if (stream.kind == 'share') {
         setState(() {
-          shareStream = _stream;
+          shareStream = stream;
         });
       }
     });
 
     // Called when stream is disabled
-    _meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
-      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+    meeting.localParticipant.on(Events.streamDisabled, (Stream stream) {
+      if (stream.kind == 'video' && videoStream?.id == stream.id) {
         setState(() {
           videoStream = null;
         });
-      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+      } else if (stream.kind == 'audio' && audioStream?.id == stream.id) {
         setState(() {
           audioStream = null;
         });
-      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+      } else if (stream.kind == 'share' && shareStream?.id == stream.id) {
         setState(() {
           shareStream = null;
         });
@@ -417,24 +433,22 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when presenter is changed
-    _meeting.on(Events.presenterChanged, (_activePresenterId) {
+    meeting.on(Events.presenterChanged, (activePresenterId) {
       Participant? activePresenterParticipant =
-          _meeting.participants[_activePresenterId];
+          meeting.participants[activePresenterId];
 
       // Get Share Stream
-      Stream? _stream = activePresenterParticipant?.streams.values
+      Stream? stream = activePresenterParticipant?.streams.values
           .singleWhere((e) => e.kind == "share");
 
-      setState(() => remoteParticipantShareStream = _stream);
+      setState(() => remoteParticipantShareStream = stream);
     });
 
-    _meeting.on(
+    meeting.on(
         Events.error,
         (error) => {
               showSnackBarMessage(
-                  message: error['name'].toString() +
-                      " :: " +
-                      error['message'].toString(),
+                  message: "${error['name']} :: ${error['message']}",
                   context: context)
             });
   }
@@ -445,7 +459,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
         if (mounted) {
           if (showChatSnackbar) {
             showSnackBarMessage(
-                message: message.senderName + ": " + message.message,
+                message: "${message.senderName}: ${message.message}",
                 context: context);
           }
         }
