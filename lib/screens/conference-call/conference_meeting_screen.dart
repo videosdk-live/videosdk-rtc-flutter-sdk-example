@@ -254,7 +254,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                               color: e.deviceId ==
                                                       meeting.selectedSpeaker
                                                           ?.deviceId
-                                                  ? const Color.fromRGBO(
+                                                  ? Color.fromRGBO(
                                                       109, 110, 113, 1)
                                                   : Colors.transparent,
                                               child: SizedBox(
@@ -355,13 +355,13 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
   }
 
-  void registerMeetingEvents(Room meeting) {
+  void registerMeetingEvents(Room _meeting) {
     // Called when joined in meeting
-    meeting.on(
+    _meeting.on(
       Events.roomJoined,
       () {
         setState(() {
-          meeting = meeting;
+          meeting = _meeting;
           _joined = true;
         });
         _startMicrophoneService();
@@ -369,12 +369,12 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
         }
 
-        subscribeToChatMessages(meeting);
+        subscribeToChatMessages(_meeting);
       },
     );
 
     // Called when meeting is ended
-    meeting.on(Events.roomLeft, (String? errorMsg) {
+    _meeting.on(Events.roomLeft, (String? errorMsg) {
       if (errorMsg != null) {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
@@ -387,7 +387,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when recording is started
-    meeting.on(Events.recordingStateChanged, (String status) {
+    _meeting.on(Events.recordingStateChanged, (String status) {
       showSnackBarMessage(
           message:
               "Meeting recording ${status == "RECORDING_STARTING" ? "is starting" : status == "RECORDING_STARTED" ? "started" : status == "RECORDING_STOPPING" ? "is stopping" : "stopped"}",
@@ -399,33 +399,33 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when stream is enabled
-    meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
-      if (stream.kind == 'video') {
+    _meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
+      if (_stream.kind == 'video') {
         setState(() {
-          videoStream = stream;
+          videoStream = _stream;
         });
-      } else if (stream.kind == 'audio') {
+      } else if (_stream.kind == 'audio') {
         setState(() {
-          audioStream = stream;
+          audioStream = _stream;
         });
-      } else if (stream.kind == 'share') {
+      } else if (_stream.kind == 'share') {
         setState(() {
-          shareStream = stream;
+          shareStream = _stream;
         });
       }
     });
 
     // Called when stream is disabled
-    meeting.localParticipant.on(Events.streamDisabled, (Stream stream) {
-      if (stream.kind == 'video' && videoStream?.id == stream.id) {
+    _meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
+      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
         setState(() {
           videoStream = null;
         });
-      } else if (stream.kind == 'audio' && audioStream?.id == stream.id) {
+      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
         setState(() {
           audioStream = null;
         });
-      } else if (stream.kind == 'share' && shareStream?.id == stream.id) {
+      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
         setState(() {
           shareStream = null;
         });
@@ -433,18 +433,18 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when presenter is changed
-    meeting.on(Events.presenterChanged, (activePresenterId) {
+    _meeting.on(Events.presenterChanged, (_activePresenterId) {
       Participant? activePresenterParticipant =
-          meeting.participants[activePresenterId];
+          meeting.participants[_activePresenterId];
 
       // Get Share Stream
-      Stream? stream = activePresenterParticipant?.streams.values
+      Stream? _stream = activePresenterParticipant?.streams.values
           .singleWhere((e) => e.kind == "share");
 
-      setState(() => remoteParticipantShareStream = stream);
+      setState(() => remoteParticipantShareStream = _stream);
     });
 
-    meeting.on(
+    _meeting.on(
         Events.error,
         (error) => {
               showSnackBarMessage(
