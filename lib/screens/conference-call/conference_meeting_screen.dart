@@ -47,6 +47,7 @@ class ConferenceMeetingScreen extends StatefulWidget {
 }
 
 class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
+  static const platform = MethodChannel('com.example.example/channel');
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "RECORDING_STOPPED";
@@ -77,16 +78,16 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
       DeviceOrientation.portraitDown,
     ]);
     // Create instance of Room (Meeting)
-    Room room = VideoSDK.createRoom(
+    meeting = VideoSDK.createRoom(
       roomId: widget.meetingId,
       token: widget.token,
-      customCameraVideoTrack: widget.cameraTrack,
-      customMicrophoneAudioTrack: widget.micTrack,
+      // customCameraVideoTrack: widget.cameraTrack,
+      // customMicrophoneAudioTrack: widget.micTrack,
       displayName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
-      multiStream: true,
+      multiStream: false,
       //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
@@ -96,10 +97,26 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
 
     // Register meeting events
-    registerMeetingEvents(room);
+    registerMeetingEvents(meeting);
 
     // Join meeting
-    room.join();
+    meeting.join();
+  }
+
+  Future<void> _startMicrophoneService() async {
+    try {
+      await platform.invokeMethod('startMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to start service: '${e.message}'.");
+    }
+  }
+
+  Future<void> _stopMicrophoneService() async {
+    try {
+      await platform.invokeMethod('stopMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to stop service: '${e.message}'.");
+    }
   }
 
   @override
@@ -237,16 +254,14 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                               color: e.deviceId ==
                                                       meeting.selectedSpeaker
                                                           ?.deviceId
-                                                  ? Color.fromRGBO(
+                                                  ? const Color.fromRGBO(
                                                       109, 110, 113, 1)
                                                   : Colors.transparent,
                                               child: SizedBox(
                                                 width: double.infinity,
                                                 child: Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      16,
-                                                      10,
-                                                      5,
+                                                  padding: const EdgeInsets
+                                                      .fromLTRB(16, 10, 5,
                                                       10), // Ensure no padding
                                                   child: Text(e.label),
                                                 ),
@@ -277,11 +292,11 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         builder: (context) => ChatView(
                                             key: const Key("ChatScreen"),
                                             meeting: meeting),
-                                      ).whenComplete(() => {
-                                            setState(() {
-                                              showChatSnackbar = true;
-                                            })
-                                          });
+                                      ).whenComplete(() {
+                                        setState(() {
+                                          showChatSnackbar = true;
+                                        });
+                                      });
                                     },
 
                                     // Called when more options button is pressed
@@ -349,7 +364,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           meeting = _meeting;
           _joined = true;
         });
-
+        _startMicrophoneService();
         if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
           _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
         }
@@ -364,6 +379,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
+      _stopMicrophoneService();
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
@@ -419,7 +435,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     // Called when presenter is changed
     _meeting.on(Events.presenterChanged, (_activePresenterId) {
       Participant? activePresenterParticipant =
-          _meeting.participants[_activePresenterId];
+          meeting.participants[_activePresenterId];
 
       // Get Share Stream
       Stream? _stream = activePresenterParticipant?.streams.values
@@ -432,9 +448,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
         Events.error,
         (error) => {
               showSnackBarMessage(
-                  message: error['name'].toString() +
-                      " :: " +
-                      error['message'].toString(),
+                  message: "${error['name']} :: ${error['message']}",
                   context: context)
             });
   }
@@ -445,7 +459,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
         if (mounted) {
           if (showChatSnackbar) {
             showSnackBarMessage(
-                message: message.senderName + ": " + message.message,
+                message: "${message.senderName}: ${message.message}",
                 context: context);
           }
         }

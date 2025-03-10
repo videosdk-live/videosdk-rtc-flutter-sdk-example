@@ -47,6 +47,7 @@ class OneToOneMeetingScreen extends StatefulWidget {
 }
 
 class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
+  static const platform = MethodChannel('com.example.example/channel');
   bool isRecordingOn = false;
   bool showChatSnackbar = true;
   String recordingState = "RECORDING_STOPPED";
@@ -79,7 +80,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     ]);
 
     // Create instance of Room (Meeting)
-    Room room = VideoSDK.createRoom(
+    meeting = VideoSDK.createRoom(
       roomId: widget.meetingId,
       token: widget.token,
       displayName: widget.displayName,
@@ -97,10 +98,26 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     );
 
     // Register meeting events
-    registerMeetingEvents(room);
+    registerMeetingEvents(meeting);
 
     // Join meeting
-    room.join();
+    meeting.join();
+  }
+
+  Future<void> _startMicrophoneService() async {
+    try {
+      await platform.invokeMethod('startMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to start service: '${e.message}'.");
+    }
+  }
+
+  Future<void> _stopMicrophoneService() async {
+    try {
+      await platform.invokeMethod('stopMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to stop service: '${e.message}'.");
+    }
   }
 
   @override
@@ -242,11 +259,11 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                         builder: (context) => ChatView(
                                             key: const Key("ChatScreen"),
                                             meeting: meeting),
-                                      ).whenComplete(() => {
-                                            setState(() {
-                                              showChatSnackbar = true;
-                                            })
-                                          });
+                                      ).whenComplete(() {
+                                        setState(() {
+                                          showChatSnackbar = true;
+                                        });
+                                      });
                                     },
 
                                     // Called when more options button is pressed
@@ -317,7 +334,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     _meeting.on(
       Events.roomJoined,
       () {
-        if (_meeting.participants.length > 1) {
+        if (meeting.participants.length > 1) {
           setState(() {
             meeting = _meeting;
             _moreThan2Participants = true;
@@ -327,9 +344,9 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             meeting = _meeting;
             _joined = true;
           });
-
+          _startMicrophoneService();
           if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
-            _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
+            meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
           }
           subscribeToChatMessages(_meeting);
         }
@@ -342,6 +359,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
+      _stopMicrophoneService();
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
@@ -397,7 +415,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     // Called when presenter is changed
     _meeting.on(Events.presenterChanged, (_activePresenterId) {
       Participant? activePresenterParticipant =
-          _meeting.participants[_activePresenterId];
+          meeting.participants[_activePresenterId];
 
       // Get Share Stream
       Stream? _stream = activePresenterParticipant?.streams.values
@@ -411,13 +429,13 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
         (participant) => {
               if (_moreThan2Participants)
                 {
-                  if (_meeting.participants.length < 2)
+                  if (meeting.participants.length < 2)
                     {
                       setState(() {
                         _joined = true;
                         _moreThan2Participants = false;
                       }),
-                      subscribeToChatMessages(_meeting),
+                      subscribeToChatMessages(meeting),
                     }
                 }
             });
@@ -439,7 +457,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
           // print(navigatorKey.currentWidget?.key.toString());
           if (showChatSnackbar) {
             showSnackBarMessage(
-                message: message.senderName + ": " + message.message,
+                message: "${message.senderName}: ${message.message}",
                 context: context);
           }
         }
