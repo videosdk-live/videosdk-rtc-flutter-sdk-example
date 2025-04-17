@@ -86,7 +86,6 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
       maxResolution: 'hd',
-      multiStream: true,
       //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
       notification: const NotificationInfo(
         title: "Video SDK",
