@@ -7,33 +7,61 @@ private enum Constants {
 
 class SampleUploader {
     
-    private static var imageContext = CIContext(options: nil)
+    enum UploaderType {
+        case video
+        case audio
+    }
     
+    private var imageContext: CIContext?
+    private var contextCreationTime: Date?
+    private let contextLifetime: TimeInterval = 120.0
+    private let audioCodec = AudioCodec()
     @Atomic private var isReady = false
     private var connection: SocketConnection
+    private let uploaderType: UploaderType
   
     private var dataToSend: Data?
     private var byteIndex = 0
   
     private let serialQueue: DispatchQueue
     
-    init(connection: SocketConnection) {
+    init(connection: SocketConnection, type: UploaderType) {
         self.connection = connection
-        self.serialQueue = DispatchQueue(label: "org.videosdk.broadcast.sampleUploader")
+        self.uploaderType = type
+        self.serialQueue = DispatchQueue(label: "org.videosdk.broadcast.sampleUploader.\(type)")
+        
+        if type == .video {
+            self.createImageContext()
+        }
       
         setupConnection()
     }
   
     @discardableResult func send(sample buffer: CMSampleBuffer) -> Bool {
-        guard isReady else {
+        guard uploaderType == .video && isReady else {
             return false
         }
         
         isReady = false
-
         dataToSend = prepare(sample: buffer)
         byteIndex = 0
 
+        serialQueue.async { [weak self] in
+            self?.sendDataChunk()
+        }
+        
+        return true
+    }
+
+    @discardableResult func send(audioSample buffer: CMSampleBuffer) -> Bool {
+        guard uploaderType == .audio && isReady else {
+            return false
+        }
+        
+        isReady = false
+        dataToSend = prepare(audioSample: buffer)
+        byteIndex = 0
+        
         serialQueue.async { [weak self] in
             self?.sendDataChunk()
         }
@@ -125,14 +153,61 @@ private extension SampleUploader {
     }
     
     func jpegData(from buffer: CVPixelBuffer, scale scaleTransform: CGAffineTransform) -> Data? {
+        guard let context = getImageContext() else { return nil }
+        
         let image = CIImage(cvPixelBuffer: buffer).transformed(by: scaleTransform)
         
         guard let colorSpace = image.colorSpace else {
             return nil
         }
       
-        let options: [CIImageRepresentationOption: Float] = [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 1.0]
+        let options: [CIImageRepresentationOption: Float] = [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.8]
 
-        return SampleUploader.imageContext.jpegRepresentation(of: image, colorSpace: colorSpace, options: options)
+        return context.jpegRepresentation(of: image, colorSpace: colorSpace, options: options)
+    }
+
+    func prepare(audioSample buffer: CMSampleBuffer) -> Data? {
+        do {
+            let (metadata, audioData) = try audioCodec.encode(buffer)
+            
+            let metadataJSON = try JSONEncoder().encode(metadata)
+            guard let metadataString = String(data: metadataJSON, encoding: .utf8) else {
+                print("Failed to create metadata string from JSON data")
+                return nil
+            }
+            
+            let httpResponse = CFHTTPMessageCreateResponse(nil, 200, nil, kCFHTTPVersion1_1).takeRetainedValue()
+            CFHTTPMessageSetHeaderFieldValue(httpResponse, "Content-Type" as CFString, "audio/pcm" as CFString)
+            CFHTTPMessageSetHeaderFieldValue(httpResponse, "Content-Length" as CFString, String(audioData.count) as CFString)
+            CFHTTPMessageSetHeaderFieldValue(httpResponse, "Buffer-Metadata" as CFString, metadataString as CFString)
+            
+            CFHTTPMessageSetBody(httpResponse, audioData as CFData)
+            
+            let serializedMessage = CFHTTPMessageCopySerializedMessage(httpResponse)?.takeRetainedValue()
+            
+            return serializedMessage as Data?
+        } catch {
+            print("Failed to encode audio buffer: \(error)")
+            return nil
+        }
+    }
+    
+    private func createImageContext() {
+        let options: [CIContextOption: Any] = [
+            .cacheIntermediates: false,
+            .useSoftwareRenderer: false
+        ]
+        self.imageContext = CIContext(options: options)
+        self.contextCreationTime = Date()
+    }
+    
+    private func getImageContext() -> CIContext? {
+        if let creationTime = contextCreationTime,
+           Date().timeIntervalSince(creationTime) > contextLifetime {
+            self.imageContext = nil
+            self.contextCreationTime = nil
+            createImageContext()
+        }
+        return imageContext
     }
 }
