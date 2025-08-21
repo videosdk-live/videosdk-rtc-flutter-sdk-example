@@ -54,6 +54,8 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
   late Room meeting;
   bool _joined = false;
 
+  static const platform = MethodChannel('com.example.example/channel');
+
   // Streams
   Stream? shareStream;
   Stream? videoStream;
@@ -99,6 +101,22 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
 
     // Join meeting
     room.join();
+  }
+
+  Future<void> _startMicrophoneService() async {
+    try {
+      await platform.invokeMethod('startMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to start service: '${e.message}'.");
+    }
+  }
+
+  Future<void> _stopMicrophoneService() async {
+    try {
+      await platform.invokeMethod('stopMicrophoneService');
+    } on PlatformException catch (e) {
+      print("Failed to stop service: '${e.message}'.");
+    }
   }
 
   @override
@@ -348,13 +366,16 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           meeting = _meeting;
           _joined = true;
         });
+        if(!kIsWeb && Platform.isAndroid){
+          _startMicrophoneService();
+        }
 
         if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
           _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
         }
 
         subscribeToChatMessages(_meeting);
-      },
+      }
     );
 
     // Called when meeting is ended
@@ -363,6 +384,11 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
+
+      if(!kIsWeb && Platform.isAndroid){
+        _stopMicrophoneService();
+      }
+
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
