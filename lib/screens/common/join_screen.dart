@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:videosdk_flutter_example/screens/conference-call/conference_meeting_screen.dart';
 import 'package:videosdk_flutter_example/utils/api.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/join_options.dart';
@@ -99,12 +100,12 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
 
   void updateSelectedVideoDevice(VideoDeviceInfo? device) {
     if (device?.deviceId != selectedVideoDevice?.deviceId) {
-
+    
       disposeCameraPreview();
       setState(() {
         selectedVideoDevice = device;
       });
-      
+
       initCameraPreview();
     }
   }
@@ -186,6 +187,11 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
             setState(() => isCameraPermissionAllowed = true);
           }
         }
+        
+        if (!kIsWeb && Platform.isAndroid ) {
+          await Permission.notification.request();  
+        }
+
         if (!kIsWeb) {
           if (Platform.isAndroid) {
             await checkBluetoothPermissions();

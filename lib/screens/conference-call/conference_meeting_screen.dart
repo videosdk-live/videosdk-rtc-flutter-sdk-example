@@ -54,7 +54,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
   late Room meeting;
   bool _joined = false;
 
-  static const platform = MethodChannel('com.example.example/channel');
+  static const platform = MethodChannel('foreground_notification_channel');
 
   // Streams
   Stream? shareStream;
@@ -103,17 +103,17 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     room.join();
   }
 
-  Future<void> _startMicrophoneService() async {
+  Future<void> _startForegroundService() async {
     try {
-      await platform.invokeMethod('startMicrophoneService');
+      await platform.invokeMethod('startForegroundService');
     } on PlatformException catch (e) {
       print("Failed to start service: '${e.message}'.");
     }
   }
 
-  Future<void> _stopMicrophoneService() async {
+  Future<void> _stopForegroundService() async {
     try {
-      await platform.invokeMethod('stopMicrophoneService');
+      await platform.invokeMethod('stopForegroundService');
     } on PlatformException catch (e) {
       print("Failed to stop service: '${e.message}'.");
     }
@@ -367,7 +367,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           _joined = true;
         });
         if(!kIsWeb && Platform.isAndroid){
-          _startMicrophoneService();
+          _startForegroundService();
         }
 
         if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
@@ -386,7 +386,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
       }
 
       if(!kIsWeb && Platform.isAndroid){
-        _stopMicrophoneService();
+        _stopForegroundService();
       }
 
       Navigator.pushAndRemoveUntil(

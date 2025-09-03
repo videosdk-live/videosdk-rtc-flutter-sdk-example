@@ -60,7 +60,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
   Stream? videoStream;
   Stream? audioStream;
   Stream? remoteParticipantShareStream;
-  static const platform = MethodChannel('com.example.example/channel');
+  static const platform = MethodChannel('foreground_notification_channel');
 
   bool fullScreen = false;
 
@@ -104,17 +104,17 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     room.join();
   }
 
-  Future<void> _startMicrophoneService() async {
+  Future<void> _startForegroundService() async {
     try {
-      await platform.invokeMethod('startMicrophoneService');
+      await platform.invokeMethod('startForegroundService');
     } on PlatformException catch (e) {
       print("Failed to start service: '${e.message}'.");
     }
   }
 
-  Future<void> _stopMicrophoneService() async {
+  Future<void> _stopForegroundService() async {
     try {
-      await platform.invokeMethod('stopMicrophoneService');
+      await platform.invokeMethod('stopForegroundService');
     } on PlatformException catch (e) {
       print("Failed to stop service: '${e.message}'.");
     }
@@ -345,7 +345,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             _joined = true;
           });
 
-          _startMicrophoneService();
+          _startForegroundService();
 
           if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
             _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
@@ -362,7 +362,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             message: "Meeting left due to $errorMsg !!", context: context);
       }
 
-      _stopMicrophoneService();
+      _stopForegroundService();
       
       Navigator.pushAndRemoveUntil(
           context,
