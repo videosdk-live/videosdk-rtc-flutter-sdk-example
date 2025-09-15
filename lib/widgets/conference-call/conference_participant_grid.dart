@@ -122,7 +122,10 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     // Called when participant left meeting
     _meeting.on(
       Events.participantLeft,
-      (participantId) {
+      (
+        String participantId,
+        Map<String, dynamic> reason,
+      ) {
         final newParticipants = participants;
 
         newParticipants.remove(participantId);

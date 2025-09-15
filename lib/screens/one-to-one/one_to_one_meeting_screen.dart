@@ -273,7 +273,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                         if (remoteParticipantShareStream ==
                                             null) {
                                           if (shareStream == null) {
-                                            meeting.enableScreenShare();
+                                            meeting.enableScreenShare(enableAudio: true );
                                           } else {
                                             meeting.disableScreenShare();
                                           }
@@ -430,7 +430,11 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
 
     _meeting.on(
         Events.participantLeft,
-        (participant) => {
+        (
+          String participantId,
+          Map<String, dynamic> reason,
+        ) =>
+            {
               if (_moreThan2Participants)
                 {
                   if (_meeting.participants.length < 2)

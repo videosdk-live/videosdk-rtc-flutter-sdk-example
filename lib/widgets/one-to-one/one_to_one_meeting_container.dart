@@ -172,7 +172,10 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
     // Called when participant left meeting
     _meeting.on(
       Events.participantLeft,
-      (participantId) {
+      (
+        String participantId,
+        Map<String, dynamic> reason,
+      ) {
         if (remoteParticipant?.id == participantId) {
           setState(() {
             remoteParticipant = null;

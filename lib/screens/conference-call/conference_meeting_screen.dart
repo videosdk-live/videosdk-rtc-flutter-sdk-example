@@ -308,7 +308,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         if (remoteParticipantShareStream ==
                                             null) {
                                           if (shareStream == null) {
-                                            meeting.enableScreenShare();
+                                            meeting.enableScreenShare(enableAudio: true);
                                           } else {
                                             meeting.disableScreenShare();
                                           }
