@@ -83,7 +83,8 @@ class _ParticipantListState extends State<ParticipantList> {
       }
     });
 
-    meeting.on(Events.participantLeft, (participantId) {
+    meeting.on(Events.participantLeft,
+        (String participantId, Map<String, dynamic> reason) {
       if (mounted) {
         final newParticipants = _participants;
         newParticipants.remove(participantId);

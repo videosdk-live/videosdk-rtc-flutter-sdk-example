@@ -60,6 +60,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
   Stream? videoStream;
   Stream? audioStream;
   Stream? remoteParticipantShareStream;
+  static const platform = MethodChannel('foreground_notification_channel');
 
   bool fullScreen = false;
 
@@ -101,6 +102,22 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
 
     // Join meeting
     room.join();
+  }
+
+  Future<void> _startForegroundService() async {
+    try {
+      await platform.invokeMethod('startForegroundService');
+    } on PlatformException catch (e) {
+      print("Failed to start service: '${e.message}'.");
+    }
+  }
+
+  Future<void> _stopForegroundService() async {
+    try {
+      await platform.invokeMethod('stopForegroundService');
+    } on PlatformException catch (e) {
+      print("Failed to stop service: '${e.message}'.");
+    }
   }
 
   @override
@@ -256,7 +273,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                         if (remoteParticipantShareStream ==
                                             null) {
                                           if (shareStream == null) {
-                                            meeting.enableScreenShare();
+                                            meeting.enableScreenShare(enableAudio: true );
                                           } else {
                                             meeting.disableScreenShare();
                                           }
@@ -328,6 +345,8 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
             _joined = true;
           });
 
+          _startForegroundService();
+
           if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
             _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
           }
@@ -342,6 +361,9 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
         showSnackBarMessage(
             message: "Meeting left due to $errorMsg !!", context: context);
       }
+
+      _stopForegroundService();
+      
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
@@ -408,7 +430,11 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
 
     _meeting.on(
         Events.participantLeft,
-        (participant) => {
+        (
+          String participantId,
+          Map<String, dynamic> reason,
+        ) =>
+            {
               if (_moreThan2Participants)
                 {
                   if (_meeting.participants.length < 2)
