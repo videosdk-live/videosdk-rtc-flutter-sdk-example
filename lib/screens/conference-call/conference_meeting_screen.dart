@@ -14,10 +14,10 @@ import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
+// import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
-import 'package:videosdk_webrtc/flutter_webrtc.dart';
+// import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
 class ConferenceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
@@ -358,11 +358,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
-      if (errorMsg != null) {
-        showSnackBarMessage(
-            message: "Meeting left due to $errorMsg !!", context: context);
-      }
+    _meeting.on(Events.roomLeft, (LeaveReason reason) {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),

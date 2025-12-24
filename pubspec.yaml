@@ -10,13 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^2.1.0
+  videosdk: ^3.2.0
   http: ^1.1.0
   flutter_dotenv: ^5.0.2
   flutter_svg: ^2.0.2
   date_time_format: ^2.0.1
   touch_ripple_effect: ^2.2.3
-  lottie: ^2.2.0
+  lottie: 3.3.2 
   responsive_framework: 1.1.1
   window_manager: ^0.3.4
 
