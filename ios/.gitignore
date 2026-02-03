@@ -13,7 +13,9 @@ Icon?
 **/Pods/
 **/.symlinks/
 profile
+Podfile.lock
 xcuserdata
+build/
 **/.generated/
 Flutter/App.framework
 Flutter/Flutter.framework
