@@ -337,11 +337,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
-      if (errorMsg != null) {
-        showSnackBarMessage(
-            message: "Meeting left due to $errorMsg !!", context: context);
-      }
+    _meeting.on(Events.roomLeft, (LeaveReason reason) {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
