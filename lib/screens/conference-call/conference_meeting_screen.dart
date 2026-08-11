@@ -301,6 +301,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                               context: context);
                                         }
                                       } else if (option == "recording") {
+                                        print("⏺️ [RECORDING ACTION TRIGGERED] current recordingState = $recordingState");
                                         if (recordingState ==
                                             "RECORDING_STOPPING") {
                                           showSnackBarMessage(
@@ -358,11 +359,13 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
-      if (errorMsg != null) {
+    _meeting.on(Events.roomLeft, (LeaveReason? reason) {
+      if (reason != null && reason != LeaveReason.manualLeaveCalled) {
         showSnackBarMessage(
-            message: "Meeting left due to $errorMsg !!", context: context);
+            message: "Meeting left due to ${reason.message} !!",
+            context: context);
       }
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),

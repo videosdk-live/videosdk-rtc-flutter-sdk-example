@@ -3,13 +3,15 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  flutter_webrtc
+  permission_handler_windows
   screen_retriever
   videosdk
+  videosdk_webrtc
   window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  jni
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

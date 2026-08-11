@@ -210,10 +210,8 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        checkPermissions();
-        break;
+    if (state == AppLifecycleState.resumed) {
+      checkPermissions();
     }
   }
 

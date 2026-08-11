@@ -77,7 +77,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
+    VideoSDK.setLogLevel(LogLevel.all);
     // Create instance of Room (Meeting)
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
@@ -267,6 +267,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                               context: context);
                                         }
                                       } else if (option == "recording") {
+                                        print("⏺️ [RECORDING ACTION TRIGGERED] current recordingState = $recordingState");
                                         if (recordingState ==
                                             "RECORDING_STOPPING") {
                                           showSnackBarMessage(
@@ -337,11 +338,13 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
     );
 
     // Called when meeting is ended
-    _meeting.on(Events.roomLeft, (String? errorMsg) {
-      if (errorMsg != null) {
+    _meeting.on(Events.roomLeft, (LeaveReason? reason) {
+      if (reason != null && reason != LeaveReason.manualLeaveCalled) {
         showSnackBarMessage(
-            message: "Meeting left due to $errorMsg !!", context: context);
+            message: "Meeting left due to ${reason.message} !!",
+            context: context);
       }
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const JoinScreen()),
