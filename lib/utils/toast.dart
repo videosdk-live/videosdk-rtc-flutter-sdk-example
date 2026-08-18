@@ -6,6 +6,10 @@ void showSnackBarMessage(
     Widget? icon,
     Color messageColor = black900,
     required BuildContext context}) {
+  print("\n--------------------------------------------------");
+  print("🔴 [APP LOG / ERROR SNACKBAR]: $message");
+  print("--------------------------------------------------\n");
+
   ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(

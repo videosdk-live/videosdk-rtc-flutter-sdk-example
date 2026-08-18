@@ -1,29 +1,21 @@
 PODS:
-  - flutter_webrtc (0.9.31):
-    - FlutterMacOS
-    - WebRTC-SDK (= 104.5112.17)
   - FlutterMacOS (1.0.0)
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - screen_retriever (0.0.1):
-    - FlutterMacOS
-  - shared_preferences_foundation (0.0.1):
-    - Flutter
     - FlutterMacOS
   - videosdk (0.0.1):
     - FlutterMacOS
-  - WebRTC-SDK (104.5112.17)
+  - videosdk_webrtc (0.0.17):
+    - FlutterMacOS
+    - WebRTC-SDK (= 137.7151.04)
+  - WebRTC-SDK (137.7151.04)
   - window_manager (0.2.0):
     - FlutterMacOS
 
 DEPENDENCIES:
-  - flutter_webrtc (from `Flutter/ephemeral/.symlinks/plugins/flutter_webrtc/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - screen_retriever (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos`)
-  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - videosdk (from `Flutter/ephemeral/.symlinks/plugins/videosdk/macos`)
+  - videosdk_webrtc (from `Flutter/ephemeral/.symlinks/plugins/videosdk_webrtc/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
 
 SPEC REPOS:
@@ -31,31 +23,25 @@ SPEC REPOS:
     - WebRTC-SDK
 
 EXTERNAL SOURCES:
-  flutter_webrtc:
-    :path: Flutter/ephemeral/.symlinks/plugins/flutter_webrtc/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
-  path_provider_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
   screen_retriever:
     :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever/macos
-  shared_preferences_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
   videosdk:
     :path: Flutter/ephemeral/.symlinks/plugins/videosdk/macos
+  videosdk_webrtc:
+    :path: Flutter/ephemeral/.symlinks/plugins/videosdk_webrtc/macos
   window_manager:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
-  flutter_webrtc: 9903b25f3648e335a40952058b14225e7b0df88d
-  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
-  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
-  shared_preferences_foundation: e2dae3258e06f44cc55f49d42024fd8dd03c590c
-  videosdk: 412b9887b47af7669188cf310789dd1cc32cfd4f
-  WebRTC-SDK: 082ae4893212534a779ca233f19a9df8efd5f3bd
-  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  screen_retriever: 4f97c103641aab8ce183fa5af3b87029df167936
+  videosdk: 1791c7b58cd6118da35a29d95cf74f2495fa15fd
+  videosdk_webrtc: 180078f3d8c4ff9a994fef95e6f65dd3042ac195
+  WebRTC-SDK: 40d4f5ba05cadff14e4db5614aec402a633f007e
+  window_manager: 1d01fa7ac65a6e6f83b965471b1a7fdd3f06166c
 
-PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
+PODFILE CHECKSUM: d7d238662d45b0a21bd2a53944dc8520b8acb775
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.17.0

@@ -19,7 +19,7 @@ class JoiningDetails extends StatefulWidget {
 }
 
 class _JoiningDetailsState extends State<JoiningDetails> {
-  String _meetingId = "";  
+  String _meetingId = "";
   String _displayName = "";
   String meetingMode = "GROUP";
   List<String> meetingModes = ["ONE_TO_ONE", "GROUP"];
@@ -28,48 +28,53 @@ class _JoiningDetailsState extends State<JoiningDetails> {
     final maxWidth = MediaQuery.of(context).size.width;
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), color: black750),
-          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: meetingMode,
-              icon: const Icon(Icons.arrow_drop_down),
-              elevation: 16,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w500, color: Colors.white),
-              onChanged: (String? value) {
-                setState(() {
-                  meetingMode = value!;
-                });
-              },
-              borderRadius: BorderRadius.circular(12),
-              dropdownColor: black750,
-              alignment: AlignmentDirectional.centerStart,
-              items: meetingModes.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth:
-                          ResponsiveValue<double>(context, conditionalValues: [
-                        Condition.equals(name: MOBILE, value: maxWidth / 1.5),
-                        Condition.equals(name: TABLET, value: maxWidth / 1.5),
-                        Condition.equals(name: DESKTOP, value: maxWidth / 3.33),
-                      ]).value!,
+        if (widget.isCreateMeeting)
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12), color: black750),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: meetingMode,
+                icon: const Icon(Icons.arrow_drop_down),
+                elevation: 16,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500, color: Colors.white),
+                onChanged: (String? value) {
+                  setState(() {
+                    meetingMode = value!;
+                  });
+                },
+                borderRadius: BorderRadius.circular(12),
+                dropdownColor: black750,
+                alignment: AlignmentDirectional.centerStart,
+                items:
+                    meetingModes.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: ResponsiveValue<double>(context,
+                            conditionalValues: [
+                              Condition.equals(
+                                  name: MOBILE, value: maxWidth / 1.5),
+                              Condition.equals(
+                                  name: TABLET, value: maxWidth / 1.5),
+                              Condition.equals(
+                                  name: DESKTOP, value: maxWidth / 3.33),
+                            ]).value!,
+                      ),
+                      child: Text(
+                        value == "GROUP" ? "Group Call" : "One to One Call",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    child: Text(
-                      value == "GROUP" ? "Group Call" : "One to One Call",
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
           ),
-        ),
-        const VerticalSpacer(16),
+        if (widget.isCreateMeeting) const VerticalSpacer(16),
         if (!widget.isCreateMeeting)
           Container(
             decoration: BoxDecoration(

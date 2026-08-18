@@ -396,10 +396,11 @@ class WebMeetingAppBarState extends State<WebMeetingAppBar> {
                 if (!widget.isRemoteScreenShareEnabled) {
                   if (!widget.isLocalScreenShareEnabled) {
                     if (!kIsWeb) {
-                      selectScreenSourceDialog(context).then((value) => {
-                            if (value != null)
-                              {widget.meeting.enableScreenShare(value)}
-                          });
+                      selectScreenSourceDialog(context).then((value) {
+                        if (value != null) {
+                          widget.meeting.enableScreenShare(source: value);
+                        }
+                      });
                     } else {
                       widget.meeting.enableScreenShare();
                     }
