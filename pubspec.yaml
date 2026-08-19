@@ -18,7 +18,7 @@ dependencies:
   touch_ripple_effect: ^2.2.3
   lottie: ^3.5.1
   responsive_framework: 1.1.1
-  window_manager: ^0.3.4
+  window_manager: ^0.5.2
 
 
 dev_dependencies:
