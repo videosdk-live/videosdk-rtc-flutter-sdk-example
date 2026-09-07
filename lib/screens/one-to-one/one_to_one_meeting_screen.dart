@@ -267,7 +267,8 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                               context: context);
                                         }
                                       } else if (option == "recording") {
-                                        print("⏺️ [RECORDING ACTION TRIGGERED] current recordingState = $recordingState");
+                                        print(
+                                            "⏺️ [RECORDING ACTION TRIGGERED] current recordingState = $recordingState");
                                         if (recordingState ==
                                             "RECORDING_STOPPING") {
                                           showSnackBarMessage(
@@ -435,19 +436,25 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
   }
 
   void subscribeToChatMessages(Room meeting) {
-    meeting.pubSub.subscribe("CHAT", (message) {
-      if (message.senderId != meeting.localParticipant.id) {
-        if (mounted) {
-          // print("navigator key");
-          // print(navigatorKey.currentWidget?.key.toString());
-          if (showChatSnackbar) {
-            showSnackBarMessage(
-                message: message.senderName + ": " + message.message,
-                context: context);
-          }
-        }
-      }
-    });
+    // A named handler, not a closure: the SDK compares handlers by identity, so
+    // calling this again registers nothing new instead of delivering every
+    // message twice. The subscription also survives reconnections on its own.
+    meeting.pubSub.subscribe(
+      "CHAT",
+      showChatNotification,
+      // This subscriber only announces new messages, so the past conversation
+      // is not replayed to it. The chat screen replays history separately.
+      options: const PubSubSubscribeOptions(oldMessageLimit: 0),
+    );
+  }
+
+  void showChatNotification(PubSubMessage message) {
+    if (message.senderId == meeting.localParticipant.id) return;
+    if (!mounted) return;
+    if (!showChatSnackbar) return;
+
+    showSnackBarMessage(
+        message: "${message.senderName}: ${message.message}", context: context);
   }
 
   Future<bool> _onWillPopScope() async {
