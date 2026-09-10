@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  videosdk: ^3.12.1
+  videosdk: ^4.0.1
   permission_handler: ^12.0.3 # 13.x needs compileSdk 37 (AGP 8.13+)
   http: ^1.1.0
   flutter_dotenv: ^5.0.2

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -447,6 +448,9 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
           }
         }
       }
+    }).catchError((Object e) {
+      log("Subscribe failed: $e");
+      return PubSubMessages(messages: const []);
     });
   }
 
