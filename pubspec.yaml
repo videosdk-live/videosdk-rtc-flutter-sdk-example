@@ -18,7 +18,7 @@ dependencies:
   date_time_format: ^2.0.1
   touch_ripple_effect: ^2.2.3
   lottie: ^3.5.1
-  responsive_framework: 1.1.1
+  responsive_framework: 1.5.1
   window_manager: ^0.3.4
 
 
