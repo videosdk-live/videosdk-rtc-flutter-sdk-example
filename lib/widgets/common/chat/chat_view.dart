@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
@@ -29,7 +31,8 @@ class _ChatViewState extends State<ChatView> {
     // Subscribing 'CHAT' Topic
     widget.meeting.pubSub
         .subscribe("CHAT", messageHandler)
-        .then((value) => setState((() => messages = value)));
+        .then((value) => setState((() => messages = value)))
+        .catchError((Object e) => log("Subscribe failed: $e"));
   }
 
   @override
@@ -125,7 +128,9 @@ class _ChatViewState extends State<ChatView> {
                                 msgTextController.text,
                                 const PubSubPublishOptions(persist: true),
                               )
-                              .then((value) => msgTextController.clear()),
+                              .then((value) => msgTextController.clear())
+                              .catchError(
+                                  (Object e) => log("Publish failed: $e")),
                       child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 8),
@@ -154,7 +159,9 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
-    widget.meeting.pubSub.unsubscribe("CHAT", messageHandler);
+    widget.meeting.pubSub
+        .unsubscribe("CHAT", messageHandler)
+        .catchError((Object e) => log("Unsubscribe failed: $e"));
     super.dispose();
   }
 }
