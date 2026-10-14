@@ -83,10 +83,10 @@ class _ParticipantListState extends State<ParticipantList> {
       }
     });
 
-    meeting.on(Events.participantLeft, (participantId) {
+    meeting.on(Events.participantLeft, (Participant participant, LeaveReason reason) {
       if (mounted) {
         final newParticipants = _participants;
-        newParticipants.remove(participantId);
+        newParticipants.remove(participant.id);
 
         setState(() => _participants = newParticipants);
       }

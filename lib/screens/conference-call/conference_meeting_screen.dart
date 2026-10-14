@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,23 +9,20 @@ import 'package:videosdk_flutter_example/constants/colors.dart';
 import 'package:videosdk_flutter_example/screens/common/join_screen.dart';
 import 'package:videosdk_flutter_example/utils/toast.dart';
 import 'package:videosdk_flutter_example/widgets/common/app_bar/meeting_appbar.dart';
-import 'package:videosdk_flutter_example/widgets/common/app_bar/web_meeting_appbar.dart';
 import 'package:videosdk_flutter_example/widgets/common/chat/chat_view.dart';
 import 'package:videosdk_flutter_example/widgets/common/joining/waiting_to_join.dart';
 import 'package:videosdk_flutter_example/widgets/common/meeting_controls/meeting_action_bar.dart';
 import 'package:videosdk_flutter_example/widgets/common/participant/participant_list.dart';
-import 'package:videosdk_flutter_example/widgets/common/screen_share/screen_select_dialog.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_participant_grid.dart';
 import 'package:videosdk_flutter_example/widgets/conference-call/conference_screenshare_view.dart';
-import 'package:videosdk_webrtc/flutter_webrtc.dart';
 
 class ConferenceMeetingScreen extends StatefulWidget {
   final String meetingId, token, displayName;
   final bool micEnabled, camEnabled, chatEnabled;
-  final AudioDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
+  final MicrophoneDeviceInfo? selectedAudioOutputDevice, selectedAudioInputDevice;
 
-  final CustomTrack? cameraTrack;
-  final CustomTrack? micTrack;
+  final CustomStreamTrack? cameraTrack;
+  final CustomStreamTrack? micTrack;
 
   const ConferenceMeetingScreen(
       {Key? key,
@@ -56,10 +52,10 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
   bool _joined = false;
 
   // Streams
-  Stream? shareStream;
-  Stream? videoStream;
-  Stream? audioStream;
-  Stream? remoteParticipantShareStream;
+  RTCStream? shareStream;
+  RTCStream? videoStream;
+  RTCStream? audioStream;
+  RTCStream? remoteParticipantShareStream;
 
   bool fullScreen = false;
 
@@ -81,34 +77,25 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     Room room = VideoSDK.createRoom(
       roomId: widget.meetingId,
       token: widget.token,
-      customCameraVideoTrack: widget.cameraTrack,
-      customMicrophoneAudioTrack: widget.micTrack,
-      displayName: widget.displayName,
+      customCameraTrack: widget.cameraTrack,
+      customMicrophoneTrack: widget.micTrack,
+      participantName: widget.displayName,
       micEnabled: widget.micEnabled,
       camEnabled: widget.camEnabled,
-      maxResolution: 'hd',
-      //defaultCameraIndex: kIsWeb ? 0 : (Platform.isAndroid || Platform.isIOS) ? 1 : 0,
-      notification: const NotificationInfo(
-        title: "Video SDK",
-        message: "Video SDK is sharing screen in the meeting",
-        icon: "notification_share", // drawable icon name
-      ),
+      maxResolution: MaxResolution.HD,
     );
 
     // Register meeting events
     registerMeetingEvents(room);
 
     // Join meeting
-    room.join();
+    room.join().showErrors(context);
   }
 
   @override
   Widget build(BuildContext context) {
     //Get statusbar height
     final statusbarHeight = MediaQuery.of(context).padding.top;
-    bool isWebMobile = kIsWeb &&
-        (defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.android);
 
     return PopScope(
       canPop: false,
@@ -125,19 +112,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                   body: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      !isWebMobile &&
-                              (kIsWeb || Platform.isMacOS || Platform.isWindows)
-                          ? WebMeetingAppBar(
-                              meeting: meeting,
-                              token: widget.token,
-                              recordingState: recordingState,
-                              isMicEnabled: audioStream != null,
-                              isCamEnabled: videoStream != null,
-                              isLocalScreenShareEnabled: shareStream != null,
-                              isRemoteScreenShareEnabled:
-                                  remoteParticipantShareStream != null,
-                            )
-                          : MeetingAppBar(
+                      MeetingAppBar(
                               meeting: meeting,
                               token: widget.token,
                               recordingState: recordingState,
@@ -165,10 +140,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                           ],
                         ),
                       )),
-                      !isWebMobile &&
-                              (kIsWeb || Platform.isMacOS || Platform.isWindows)
-                          ? Container()
-                          : Column(
+                      Column(
                               children: [
                                 const Divider(),
                                 AnimatedCrossFade(
@@ -184,32 +156,32 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                     recordingState: recordingState,
                                     // Called when Call End button is pressed
                                     onCallEndButtonPressed: () {
-                                      meeting.end();
+                                      meeting.end().showErrors(context);
                                     },
 
                                     onCallLeaveButtonPressed: () {
-                                      meeting.leave();
+                                      meeting.leave().showErrors(context);
                                     },
                                     // Called when mic button is pressed
                                     onMicButtonPressed: () {
                                       if (audioStream != null) {
-                                        meeting.muteMic();
+                                        meeting.muteMic().showErrors(context);
                                       } else {
-                                        meeting.unmuteMic();
+                                        meeting.unmuteMic().showErrors(context);
                                       }
                                     },
                                     // Called when camera button is pressed
                                     onCameraButtonPressed: () {
                                       if (videoStream != null) {
-                                        meeting.disableCam();
+                                        meeting.disableCam().showErrors(context);
                                       } else {
-                                        meeting.enableCam();
+                                        meeting.enableCam().showErrors(context);
                                       }
                                     },
 
                                     onSwitchMicButtonPressed: (details) async {
-                                      List<AudioDeviceInfo>? outputDevice =
-                                          await VideoSDK.getAudioDevices();
+                                      List<MicrophoneDeviceInfo>? outputDevice =
+                                          await VideoSDK.getMics();
 
                                       double bottomMargin =
                                           (70.0 * outputDevice!.length);
@@ -235,7 +207,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                             value: e,
                                             child: Container(
                                               color: e.deviceId ==
-                                                      meeting.selectedSpeaker
+                                                      VideoSDK.getSelectedAudioDevice()
                                                           ?.deviceId
                                                   ? Color.fromRGBO(
                                                       109, 110, 113, 1)
@@ -257,7 +229,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         elevation: 8.0,
                                       ).then((value) {
                                         if (value != null) {
-                                          meeting.switchAudioDevice(value);
+                                          meeting.setAudioDevice(value);
                                         }
                                       });
                                     },
@@ -291,9 +263,9 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         if (remoteParticipantShareStream ==
                                             null) {
                                           if (shareStream == null) {
-                                            meeting.enableScreenShare();
+                                            meeting.enableScreenShare().showErrors(context);
                                           } else {
-                                            meeting.disableScreenShare();
+                                            meeting.disableScreenShare().showErrors(context);
                                           }
                                         } else {
                                           showSnackBarMessage(
@@ -311,7 +283,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                               context: context);
                                         } else if (recordingState ==
                                             "RECORDING_STARTED") {
-                                          meeting.stopRecording();
+                                          meeting.stopRecording().showErrors(context);
                                         } else if (recordingState ==
                                             "RECORDING_STARTING") {
                                           showSnackBarMessage(
@@ -319,7 +291,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                                   "Recording is in starting state",
                                               context: context);
                                         } else {
-                                          meeting.startRecording();
+                                          meeting.startRecording().showErrors(context);
                                         }
                                       } else if (option == "participants") {
                                         showModalBottomSheet(
@@ -351,9 +323,6 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           _joined = true;
         });
 
-        if (kIsWeb || Platform.isWindows || Platform.isMacOS) {
-          _meeting.switchAudioDevice(widget.selectedAudioOutputDevice!);
-        }
 
         subscribeToChatMessages(_meeting);
       },
@@ -361,7 +330,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
 
     // Called when meeting is ended
     _meeting.on(Events.roomLeft, (LeaveReason? reason) {
-      if (reason != null && reason != LeaveReason.manualLeaveCalled) {
+      if (reason != null && reason != LeaveReason.MANUAL_LEAVE_CALLED) {
         showSnackBarMessage(
             message: "Meeting left due to ${reason.message} !!",
             context: context);
@@ -386,16 +355,16 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when stream is enabled
-    _meeting.localParticipant.on(Events.streamEnabled, (Stream _stream) {
-      if (_stream.kind == 'video') {
+    _meeting.localParticipant.on(Events.streamEnabled, (RTCStream _stream) {
+      if (_stream.kind == MediaType.VIDEO) {
         setState(() {
           videoStream = _stream;
         });
-      } else if (_stream.kind == 'audio') {
+      } else if (_stream.kind == MediaType.AUDIO) {
         setState(() {
           audioStream = _stream;
         });
-      } else if (_stream.kind == 'share') {
+      } else if (_stream.kind == MediaType.SHARE) {
         setState(() {
           shareStream = _stream;
         });
@@ -403,16 +372,16 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
     });
 
     // Called when stream is disabled
-    _meeting.localParticipant.on(Events.streamDisabled, (Stream _stream) {
-      if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+    _meeting.localParticipant.on(Events.streamDisabled, (RTCStream _stream) {
+      if (_stream.kind == MediaType.VIDEO && videoStream?.id == _stream.id) {
         setState(() {
           videoStream = null;
         });
-      } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+      } else if (_stream.kind == MediaType.AUDIO && audioStream?.id == _stream.id) {
         setState(() {
           audioStream = null;
         });
-      } else if (_stream.kind == 'share' && shareStream?.id == _stream.id) {
+      } else if (_stream.kind == MediaType.SHARE && shareStream?.id == _stream.id) {
         setState(() {
           shareStream = null;
         });
@@ -425,42 +394,40 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
           _meeting.participants[_activePresenterId];
 
       // Get Share Stream
-      Stream? _stream = activePresenterParticipant?.streams.values
-          .singleWhere((e) => e.kind == "share");
+      RTCStream? _stream = activePresenterParticipant?.streams.values
+          .singleWhere((e) => e.kind == MediaType.SHARE);
 
       setState(() => remoteParticipantShareStream = _stream);
     });
 
     _meeting.on(
         Events.error,
-        (error) => {
-              showSnackBarMessage(
-                  message: error['name'].toString() +
-                      " :: " +
-                      error['message'].toString(),
-                  context: context)
-            });
+        (VideoSDKError error) => showSnackBarMessage(
+            message: "${error.name} :: ${error.message}", context: context));
   }
 
   void subscribeToChatMessages(Room meeting) {
-    meeting.pubSub.subscribe("CHAT", (message) {
-      if (message.senderId != meeting.localParticipant.id) {
-        if (mounted) {
-          if (showChatSnackbar) {
-            showSnackBarMessage(
-                message: message.senderName + ": " + message.message,
-                context: context);
+    meeting.pubSub
+        .subscribe(
+            "CHAT",
+            PubSubMessageListener(onMessageReceived: (message) {
+          if (message.senderId != meeting.localParticipant.id) {
+            if (mounted) {
+              if (showChatSnackbar) {
+                showSnackBarMessage(
+                    message: message.senderName + ": " + message.message,
+                    context: context);
+              }
+            }
           }
-        }
-      }
-    }).catchError((Object e) {
+    }))
+        .catchError((Object e) {
       log("Subscribe failed: $e");
-      return PubSubMessages(messages: const []);
     });
   }
 
   Future<bool> _onWillPopScope() async {
-    meeting.leave();
+    meeting.leave().showErrors(context);
     return true;
   }
 

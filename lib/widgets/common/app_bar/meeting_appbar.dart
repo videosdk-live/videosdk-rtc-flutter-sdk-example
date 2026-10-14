@@ -31,7 +31,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
   Duration? elapsedTime;
   Timer? sessionTimer;
 
-  List<VideoDeviceInfo>? cameras = [];
+  List<CameraDeviceInfo>? cameras = [];
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class MeetingAppBarState extends State<MeetingAppBar> {
   }
 
   void fetchCameras() async {
-    cameras = await VideoSDK.getVideoDevices();
+    cameras = await VideoSDK.getCameras();
   }
 
   @override
@@ -116,10 +116,10 @@ class MeetingAppBarState extends State<MeetingAppBar> {
                   width: 24,
                 ),
                 onPressed: () {
-                  VideoDeviceInfo? newCam = cameras?.firstWhere((camera) =>
-                      camera.deviceId != widget.meeting.selectedCam?.deviceId);
+                  CameraDeviceInfo? newCam = cameras?.firstWhere((camera) =>
+                      camera.deviceId != VideoSDK.getSelectedVideoDevice()?.deviceId);
                   if (newCam != null) {
-                    widget.meeting.changeCam(newCam);
+                    widget.meeting.changeCam(deviceId: newCam.deviceId);
                   }
                 },
               ),

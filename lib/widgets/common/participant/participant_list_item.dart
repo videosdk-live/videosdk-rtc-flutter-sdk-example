@@ -15,15 +15,15 @@ class ParticipantListItem extends StatefulWidget {
 }
 
 class _ParticipantListItemState extends State<ParticipantListItem> {
-  Stream? videoStream;
-  Stream? audioStream;
+  RTCStream? videoStream;
+  RTCStream? audioStream;
 
   @override
   void initState() {
-    widget.participant.streams.forEach((key, Stream stream) {
-      if (stream.kind == "video") {
+    widget.participant.streams.forEach((key, RTCStream stream) {
+      if (stream.kind == MediaType.VIDEO) {
         videoStream = stream;
-      } else if (stream.kind == 'audio') {
+      } else if (stream.kind == MediaType.AUDIO) {
         audioStream = stream;
       }
       log("Stream: " + stream.kind.toString());
@@ -90,24 +90,24 @@ class _ParticipantListItemState extends State<ParticipantListItem> {
   }
 
   void addParticipantListener(Participant participant) {
-    participant.on(Events.streamEnabled, (Stream _stream) {
+    participant.on(Events.streamEnabled, (RTCStream _stream) {
       if (mounted) {
         setState(() {
-          if (_stream.kind == "video") {
+          if (_stream.kind == MediaType.VIDEO) {
             videoStream = _stream;
-          } else if (_stream.kind == 'audio') {
+          } else if (_stream.kind == MediaType.AUDIO) {
             audioStream = _stream;
           }
         });
       }
     });
 
-    participant.on(Events.streamDisabled, (Stream _stream) {
+    participant.on(Events.streamDisabled, (RTCStream _stream) {
       if (mounted) {
         setState(() {
-          if (_stream.kind == "video") {
+          if (_stream.kind == MediaType.VIDEO) {
             videoStream = null;
-          } else if (_stream.kind == 'audio') {
+          } else if (_stream.kind == MediaType.AUDIO) {
             audioStream = null;
           }
         });

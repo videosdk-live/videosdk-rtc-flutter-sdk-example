@@ -18,7 +18,7 @@ class ConferenseScreenShareView extends StatefulWidget {
 
 class _ConferenseScreenShareViewState extends State<ConferenseScreenShareView> {
   Participant? _presenterParticipant;
-  Stream? shareStream;
+  RTCStream? shareStream;
   String? presenterId;
   bool isLocalScreenShare = false;
 
@@ -109,16 +109,16 @@ class _ConferenseScreenShareViewState extends State<ConferenseScreenShareView> {
   }
 
   void setMeetingListeners(Room _meeting) {
-    _meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
-      if (stream.kind == "share") {
+    _meeting.localParticipant.on(Events.streamEnabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           isLocalScreenShare = true;
           shareStream = stream;
         });
       }
     });
-    _meeting.localParticipant.on(Events.streamDisabled, (Stream stream) {
-      if (stream.kind == "share") {
+    _meeting.localParticipant.on(Events.streamDisabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           isLocalScreenShare = false;
           shareStream = null;
@@ -149,15 +149,15 @@ class _ConferenseScreenShareViewState extends State<ConferenseScreenShareView> {
   }
 
   addParticipantListener(Participant participant) {
-    participant.on(Events.streamEnabled, (Stream stream) {
-      if (stream.kind == "share") {
+    participant.on(Events.streamEnabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           shareStream = stream;
         });
       }
     });
-    participant.on(Events.streamDisabled, (Stream stream) {
-      if (stream.kind == "share") {
+    participant.on(Events.streamDisabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           shareStream = null;
         });

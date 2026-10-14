@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:videosdk/videosdk.dart';
 import 'package:videosdk_flutter_example/constants/colors.dart';
 
 void showSnackBarMessage(
@@ -32,4 +33,14 @@ void showSnackBarMessage(
           )
         ],
       )));
+}
+
+// 5.0 room actions are Futures that throw VideoSDKError; surface failures instead of dropping them.
+extension ShowErrors on Future<void> {
+  void showErrors(BuildContext context) => catchError((Object e) {
+        if (!context.mounted) return;
+        showSnackBarMessage(
+            message: e is VideoSDKError ? "${e.name} :: ${e.message}" : "$e",
+            context: context);
+      });
 }

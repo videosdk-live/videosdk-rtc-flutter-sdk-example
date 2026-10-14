@@ -21,8 +21,14 @@ class _ChatViewState extends State<ChatView> {
   // MessageTextController
   final msgTextController = TextEditingController();
 
-  // PubSubMessages
-  PubSubMessages? messages;
+  // Chat history and live messages
+  final List<PubSubMessage> messages = [];
+
+  late final PubSubMessageListener _chatListener = PubSubMessageListener(
+    onMessageReceived: messageHandler,
+    onOldMessagesReceived: (oldMessages, info) =>
+        setState(() => messages.insertAll(0, oldMessages)),
+  );
 
   @override
   void initState() {
@@ -30,8 +36,8 @@ class _ChatViewState extends State<ChatView> {
 
     // Subscribing 'CHAT' Topic
     widget.meeting.pubSub
-        .subscribe("CHAT", messageHandler)
-        .then((value) => setState((() => messages = value)))
+        .subscribe("CHAT", _chatListener,
+            const PubSubSubscribeOptions(oldMessageLimit: 100))
         .catchError((Object e) => log("Subscribe failed: $e"));
   }
 
@@ -77,22 +83,20 @@ class _ChatViewState extends State<ChatView> {
           child: Column(
             children: [
               Expanded(
-                child: messages == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                        reverse: true,
-                        child: Column(
-                          children: messages!.messages
-                              .map(
-                                (e) => ChatWidget(
-                                  message: e,
-                                  isLocalParticipant: e.senderId ==
-                                      widget.meeting.localParticipant.id,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Column(
+                    children: messages
+                        .map(
+                          (e) => ChatWidget(
+                            message: e,
+                            isLocalParticipant: e.senderId ==
+                                widget.meeting.localParticipant.id,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
@@ -154,13 +158,13 @@ class _ChatViewState extends State<ChatView> {
   }
 
   void messageHandler(PubSubMessage message) {
-    setState(() => messages!.messages.add(message));
+    setState(() => messages.add(message));
   }
 
   @override
   void dispose() {
     widget.meeting.pubSub
-        .unsubscribe("CHAT", messageHandler)
+        .unsubscribe("CHAT", _chatListener)
         .catchError((Object e) => log("Unsubscribe failed: $e"));
     super.dispose();
   }
