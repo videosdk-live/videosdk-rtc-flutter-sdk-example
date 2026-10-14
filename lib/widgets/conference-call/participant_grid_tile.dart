@@ -9,7 +9,7 @@ class ParticipantGridTile extends StatefulWidget {
   final Participant participant;
   final bool isLocalParticipant;
   final String? activeSpeakerId;
-  final String? quality;
+  final VideoQuality quality;
   final int participantCount;
   final bool isPresenting;
 
@@ -28,20 +28,20 @@ class ParticipantGridTile extends StatefulWidget {
 }
 
 class _ParticipantGridTileState extends State<ParticipantGridTile> {
-  Stream? videoStream;
-  Stream? audioStream;
+  RTCStream? videoStream;
+  RTCStream? audioStream;
 
   @override
   void initState() {
     _initStreamListeners();
     super.initState();
 
-    widget.participant.streams.forEach((key, Stream stream) {
+    widget.participant.streams.forEach((key, RTCStream stream) {
       setState(() {
-        if (stream.kind == 'video') {
+        if (stream.kind == MediaType.VIDEO) {
           videoStream = stream;
           widget.participant.setQuality(widget.quality);
-        } else if (stream.kind == 'audio') {
+        } else if (stream.kind == MediaType.AUDIO) {
           audioStream = stream;
         }
       });
@@ -143,45 +143,39 @@ class _ParticipantGridTileState extends State<ParticipantGridTile> {
   }
 
   _initStreamListeners() {
-    widget.participant.on(Events.streamEnabled, (Stream _stream) {
+    widget.participant.on(Events.streamEnabled, (RTCStream _stream) {
       setState(() {
-        if (_stream.kind == 'video') {
+        if (_stream.kind == MediaType.VIDEO) {
           videoStream = _stream;
           widget.participant.setQuality(widget.quality);
-        } else if (_stream.kind == 'audio') {
+        } else if (_stream.kind == MediaType.AUDIO) {
           audioStream = _stream;
         }
       });
     });
 
-    widget.participant.on(Events.streamDisabled, (Stream _stream) {
+    widget.participant.on(Events.streamDisabled, (RTCStream _stream) {
       setState(() {
-        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
+        if (_stream.kind == MediaType.VIDEO && videoStream?.id == _stream.id) {
           videoStream = null;
-        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
+        } else if (_stream.kind == MediaType.AUDIO && audioStream?.id == _stream.id) {
           audioStream = null;
         }
       });
     });
 
-    widget.participant.on(Events.streamPaused, (Stream _stream) {
-      setState(() {
-        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-          videoStream = null;
-        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-          audioStream = _stream;
-        }
-      });
+    // Paused/resumed events now carry the kind, not the stream.
+    widget.participant.on(Events.streamPaused, (String? kind, String? reason) {
+      if (kind == 'video') setState(() => videoStream = null);
     });
 
-    widget.participant.on(Events.streamResumed, (Stream _stream) {
+    widget.participant.on(Events.streamResumed, (String? kind, String? reason) {
+      if (kind != 'video') return;
       setState(() {
-        if (_stream.kind == 'video' && videoStream?.id == _stream.id) {
-          videoStream = _stream;
-          widget.participant.setQuality(widget.quality);
-        } else if (_stream.kind == 'audio' && audioStream?.id == _stream.id) {
-          audioStream = _stream;
-        }
+        videoStream = widget.participant.streams.values
+            .where((e) => e.kind == MediaType.VIDEO)
+            .firstOrNull;
+        widget.participant.setQuality(widget.quality);
       });
     });
   }

@@ -7,18 +7,18 @@ import '../../../constants/colors.dart';
 
 class DropdownsWebWidget extends StatefulWidget {
   final bool? isCameraPermissionAllowed, isMicrophonePermissionAllowed;
-  VideoDeviceInfo? selectedVideoDevice;
-  AudioDeviceInfo? selectedAudioOutputDevice;
-  AudioDeviceInfo? selectedAudioInputDevice;
+  CameraDeviceInfo? selectedVideoDevice;
+  MicrophoneDeviceInfo? selectedAudioOutputDevice;
+  MicrophoneDeviceInfo? selectedAudioInputDevice;
 
-  List<VideoDeviceInfo>? videoDevices;
-  List<AudioDeviceInfo>? audioInputDevices;
-  List<AudioDeviceInfo>? audioOutputDevices;
+  List<CameraDeviceInfo>? videoDevices;
+  List<MicrophoneDeviceInfo>? audioInputDevices;
+  List<MicrophoneDeviceInfo>? audioOutputDevices;
 
-  final Function(AudioDeviceInfo?) onAudioOutputDeviceSelected;
-  final Function(AudioDeviceInfo?) onAudioInputDeviceSelected;
+  final Function(MicrophoneDeviceInfo?) onAudioOutputDeviceSelected;
+  final Function(MicrophoneDeviceInfo?) onAudioInputDeviceSelected;
 
-  final Function(VideoDeviceInfo?) onVideoDeviceSelected;
+  final Function(CameraDeviceInfo?) onVideoDeviceSelected;
 
   DropdownsWebWidget({
     Key? key,
@@ -80,14 +80,14 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             icon: const Icon(Icons.keyboard_arrow_down),
             elevation: 16,
             style: const TextStyle(color: Colors.white, fontSize: 15),
-            onChanged: (VideoDeviceInfo? value) {
+            onChanged: (CameraDeviceInfo? value) {
               setState(() {
                 widget.selectedVideoDevice = value;
               });
               widget.onVideoDeviceSelected(value);
             },
-            items: widget.videoDevices?.map((VideoDeviceInfo device) {
-              return DropdownMenuItem<VideoDeviceInfo>(
+            items: widget.videoDevices?.map((CameraDeviceInfo device) {
+              return DropdownMenuItem<CameraDeviceInfo>(
                 value: device,
                 child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );
@@ -128,14 +128,14 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             icon: const Icon(Icons.keyboard_arrow_down),
             elevation: 16,
             style: const TextStyle(color: Colors.white, fontSize: 15),
-            onChanged: (AudioDeviceInfo? value) {
+            onChanged: (MicrophoneDeviceInfo? value) {
               setState(() {
                 widget.selectedAudioOutputDevice = value;
               });
               widget.onAudioOutputDeviceSelected(value);
             },
-            items: widget.audioOutputDevices?.map((AudioDeviceInfo device) {
-              return DropdownMenuItem<AudioDeviceInfo>(
+            items: widget.audioOutputDevices?.map((MicrophoneDeviceInfo device) {
+              return DropdownMenuItem<MicrophoneDeviceInfo>(
                 value: device,
                 child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );
@@ -176,14 +176,14 @@ class _DropdownsWidgetState extends State<DropdownsWebWidget> {
             icon: const Icon(Icons.keyboard_arrow_down),
             elevation: 16,
             style: const TextStyle(color: Colors.white, fontSize: 15),
-            onChanged: (AudioDeviceInfo? value) {
+            onChanged: (MicrophoneDeviceInfo? value) {
               setState(() {
                 widget.selectedAudioInputDevice = value;
               });
               widget.onAudioInputDeviceSelected(value);
             },
-            items: widget.audioInputDevices?.map((AudioDeviceInfo device) {
-              return DropdownMenuItem<AudioDeviceInfo>(
+            items: widget.audioInputDevices?.map((MicrophoneDeviceInfo device) {
+              return DropdownMenuItem<MicrophoneDeviceInfo>(
                 value: device,
                 child: Text(device.label,overflow: TextOverflow.ellipsis,),
               );

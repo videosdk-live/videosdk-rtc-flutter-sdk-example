@@ -20,7 +20,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
   late Participant localParticipant;
   String? activeSpeakerId;
   String? presenterId;
-  String quality = "high";
+  VideoQuality quality = VideoQuality.HIGH;
 
   Map<String, Participant> participants = {};
   Map<int, List<Participant>> onScreenParticipants = {};
@@ -33,7 +33,7 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     localParticipant = widget.meeting.localParticipant;
     participants.putIfAbsent(localParticipant.id, () => localParticipant);
     participants.addAll(widget.meeting.participants);
-    presenterId = widget.meeting.activePresenterId;
+    presenterId = widget.meeting.getActivePresenterId();
     isPresenting = presenterId != null;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -122,10 +122,10 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
     // Called when participant left meeting
     _meeting.on(
       Events.participantLeft,
-      (participantId) {
+      (Participant participant, LeaveReason reason) {
         final newParticipants = participants;
 
-        newParticipants.remove(participantId);
+        newParticipants.remove(participant.id);
         setState(() {
           participants = newParticipants;
           updateOnScreenParticipants();
@@ -153,16 +153,16 @@ class _ConferenceParticipantGridState extends State<ConferenceParticipantGrid> {
       });
     });
 
-    _meeting.localParticipant.on(Events.streamEnabled, (Stream stream) {
-      if (stream.kind == "share") {
+    _meeting.localParticipant.on(Events.streamEnabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           isPresenting = true;
           updateOnScreenParticipants();
         });
       }
     });
-    _meeting.localParticipant.on(Events.streamDisabled, (Stream stream) {
-      if (stream.kind == "share") {
+    _meeting.localParticipant.on(Events.streamDisabled, (RTCStream stream) {
+      if (stream.kind == MediaType.SHARE) {
         setState(() {
           isPresenting = false;
           updateOnScreenParticipants();

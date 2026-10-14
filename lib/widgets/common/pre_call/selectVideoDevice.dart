@@ -7,9 +7,9 @@ import '../../../constants/colors.dart';
 
 class SelectVideoDevice extends StatefulWidget {
   final bool? isCameraPermissionAllowed;
-  VideoDeviceInfo? selectedVideoDevice;
-  List<VideoDeviceInfo>? videoDevices;
-  final Function(VideoDeviceInfo?) onVideoDeviceSelected;
+  CameraDeviceInfo? selectedVideoDevice;
+  List<CameraDeviceInfo>? videoDevices;
+  final Function(CameraDeviceInfo?) onVideoDeviceSelected;
 
   SelectVideoDevice({
     Key? key,
@@ -57,7 +57,7 @@ class _SelectVideoDeviceState extends State<SelectVideoDevice> {
                         },
                       );
                     } else {
-                      VideoDeviceInfo device = widget.videoDevices![index];
+                      CameraDeviceInfo device = widget.videoDevices![index];
                       return ListTile(
                         leading: widget.selectedVideoDevice == device
                             ? Icon(Icons.check, color: Colors.white)

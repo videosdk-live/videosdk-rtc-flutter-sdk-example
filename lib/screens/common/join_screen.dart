@@ -33,8 +33,8 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   bool isCameraOn =
       !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
 
-  CustomTrack? cameraTrack;
-  CustomTrack? microphoneTrack;
+  CustomStreamTrack? cameraTrack;
+  CustomStreamTrack? microphoneTrack;
   RTCVideoRenderer? cameraRenderer;
 
   bool? isJoinMeetingSelected;
@@ -45,15 +45,13 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   bool? isMicrophonePermissionAllowed =
       !kIsWeb && (Platform.isMacOS || Platform.isWindows) ? true : false;
 
-  VideoDeviceInfo? selectedVideoDevice;
-  AudioDeviceInfo? selectedAudioOutputDevice;
-  AudioDeviceInfo? selectedAudioInputDevice;
-  List<VideoDeviceInfo>? videoDevices;
-  List<AudioDeviceInfo>? audioDevices;
-  List<AudioDeviceInfo> audioInputDevices = [];
-  List<AudioDeviceInfo> audioOutputDevices = [];
-
-  late Function handler;
+  CameraDeviceInfo? selectedVideoDevice;
+  MicrophoneDeviceInfo? selectedAudioOutputDevice;
+  MicrophoneDeviceInfo? selectedAudioInputDevice;
+  List<CameraDeviceInfo>? videoDevices;
+  List<MicrophoneDeviceInfo>? audioDevices;
+  List<MicrophoneDeviceInfo> audioInputDevices = [];
+  List<MicrophoneDeviceInfo> audioOutputDevices = [];
 
   @override
   void initState() {
@@ -70,10 +68,9 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
       setState(() => _token = token);
     });
     checkandReqPermissions();
-    subscribe();
   }
 
-  void updateselectedAudioOutputDevice(AudioDeviceInfo? device) {
+  void updateselectedAudioOutputDevice(MicrophoneDeviceInfo? device) {
     if (device?.deviceId != selectedAudioOutputDevice?.deviceId) {
       setState(() {
         selectedAudioOutputDevice = device;
@@ -87,7 +84,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     }
   }
 
-  void updateselectedAudioInputDevice(AudioDeviceInfo? device) {
+  void updateselectedAudioInputDevice(MicrophoneDeviceInfo? device) {
     if (device?.deviceId != selectedAudioInputDevice?.deviceId) {
       setState(() {
         selectedAudioInputDevice = device;
@@ -97,7 +94,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     }
   }
 
-  void updateSelectedVideoDevice(VideoDeviceInfo? device) {
+  void updateSelectedVideoDevice(CameraDeviceInfo? device) {
     if (device?.deviceId != selectedVideoDevice?.deviceId) {
 
       disposeCameraPreview();
@@ -121,7 +118,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   void getDevices() async {
     if (isCameraPermissionAllowed != null &&
         isCameraPermissionAllowed == true) {
-      videoDevices = await VideoSDK.getVideoDevices();
+      videoDevices = await VideoSDK.getCameras();
       setState(() {
         selectedVideoDevice = videoDevices?.first;
       });
@@ -129,7 +126,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     }
     if (isMicrophonePermissionAllowed != null &&
         isMicrophonePermissionAllowed == true) {
-      audioDevices = await VideoSDK.getAudioDevices();
+      audioDevices = await VideoSDK.getMics();
       if (!kIsWeb && !Platform.isMacOS && !Platform.isWindows) {
         //Condition for android and ios devices
         setState(() {
@@ -138,7 +135,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
       } else {
         audioInputDevices = [];
         audioOutputDevices = [];
-        for (AudioDeviceInfo device in audioDevices!) {
+        for (MicrophoneDeviceInfo device in audioDevices!) {
           if (device.kind == 'audioinput') {
             audioInputDevices.add(device);
           } else {
@@ -155,15 +152,15 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   }
 
   void checkandReqPermissions([Permissions? perm]) async {
-    perm ??= Permissions.audio_video;
+    perm ??= Permissions.AUDIO_VIDEO;
     try {
       if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
         Map<String, bool> permissions = await VideoSDK.checkPermissions();
 
-        if (perm == Permissions.audio || perm == Permissions.audio_video) {
+        if (perm == Permissions.AUDIO || perm == Permissions.AUDIO_VIDEO) {
           if (permissions['audio'] != true) {
             Map<String, bool> reqPermissions =
-                await VideoSDK.requestPermissions(Permissions.audio);
+                await VideoSDK.requestPermissions(Permissions.AUDIO);
             setState(() {
               isMicrophonePermissionAllowed = reqPermissions['audio'];
               isMicOn = reqPermissions['audio']!;
@@ -176,10 +173,10 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
           }
         }
 
-        if (perm == Permissions.video || perm == Permissions.audio_video) {
+        if (perm == Permissions.VIDEO || perm == Permissions.AUDIO_VIDEO) {
           if (permissions['video'] != true) {
             Map<String, bool> reqPermissions =
-                await VideoSDK.requestPermissions(Permissions.video);
+                await VideoSDK.requestPermissions(Permissions.VIDEO);
 
             setState(() => isCameraPermissionAllowed = reqPermissions['video']);
           } else {
@@ -348,7 +345,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                                       )
                                                     }
                                                   : checkandReqPermissions(
-                                                      Permissions.audio),
+                                                      Permissions.AUDIO),
                                           onCameraToggle: () {
                                             isCameraPermissionAllowed != null &&
                                                     isCameraPermissionAllowed ==
@@ -362,7 +359,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                                         !isCameraOn)
                                                   }
                                                 : checkandReqPermissions(
-                                                    Permissions.video);
+                                                    Permissions.VIDEO);
                                           },
                                         ),
                                         kIsWeb ||
@@ -444,7 +441,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                                 )
                                               }
                                             : checkandReqPermissions(
-                                                Permissions.audio),
+                                                Permissions.AUDIO),
                                     onCameraToggle: () {
                                       isCameraPermissionAllowed != null &&
                                               isCameraPermissionAllowed == true
@@ -457,7 +454,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
                                                   isCameraOn = !isCameraOn)
                                             }
                                           : checkandReqPermissions(
-                                              Permissions.video);
+                                              Permissions.VIDEO);
                                     },
                                   ),
                                 ),
@@ -512,36 +509,44 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   void initCameraPreview() async {
     if (isCameraPermissionAllowed != null &&
         isCameraPermissionAllowed == true ) {
-      CustomTrack? track = await VideoSDK.createCameraVideoTrack(
-          cameraId: selectedVideoDevice?.deviceId);
-      RTCVideoRenderer render = RTCVideoRenderer();
-      await render.initialize();
-      render.setSrcObject(
-          stream: track?.mediaStream,
-          trackId: track?.mediaStream.getVideoTracks().first.id);
-      setState(() {
-        cameraTrack = track;
-        cameraRenderer = render;
-        isCameraOn = true;
-      });
+      try {
+        CustomStreamTrack track = await VideoSDK.createCameraVideoTrack(
+            cameraId: selectedVideoDevice?.deviceId);
+        RTCVideoRenderer render = RTCVideoRenderer();
+        await render.initialize();
+        render.setSrcObject(
+            stream: track.mediaStream,
+            trackId: track.mediaStream.getVideoTracks().first.id);
+        setState(() {
+          cameraTrack = track;
+          cameraRenderer = render;
+          isCameraOn = true;
+        });
+      } on VideoSDKError catch (e) {
+        showSnackBarMessage(message: e.message, context: context);
+      }
     }
   }
 
   void initMic() async {
     if (isMicrophonePermissionAllowed != null &&
         isMicrophonePermissionAllowed == true) {
-      CustomTrack? track = await VideoSDK.createMicrophoneAudioTrack(
-          microphoneId: kIsWeb || Platform.isMacOS || Platform.isWindows
-              ? selectedAudioInputDevice?.deviceId
-              : selectedAudioOutputDevice?.deviceId);
-      setState(() {
-        microphoneTrack = track;
-      });
+      try {
+        CustomStreamTrack track = await VideoSDK.createMicrophoneAudioTrack(
+            microphoneId: kIsWeb || Platform.isMacOS || Platform.isWindows
+                ? selectedAudioInputDevice?.deviceId
+                : selectedAudioOutputDevice?.deviceId);
+        setState(() {
+          microphoneTrack = track;
+        });
+      } on VideoSDKError catch (e) {
+        showSnackBarMessage(message: e.message, context: context);
+      }
     }
   }
 
   void disposeCameraPreview() {
-    cameraTrack?.dispose();
+    cameraTrack?.stop();
     setState(() {
       cameraRenderer = null;
       cameraTrack = null;
@@ -549,7 +554,7 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
   }
 
   void disposeMicTrack() {
-    microphoneTrack?.dispose();
+    microphoneTrack?.stop();
     setState(() {
       microphoneTrack = null;
     });
@@ -573,7 +578,6 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
         setState(() {
           cameraRenderer = null;
         });
-        unsubscribe();
 
         if (callType == "GROUP") {
           Navigator.push(
@@ -627,7 +631,6 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
         setState(() {
           cameraRenderer = null;
         });
-        unsubscribe();
 
         if (callType == "GROUP") {
           Navigator.push(
@@ -670,20 +673,8 @@ class _JoinScreenState extends State<JoinScreen> with WidgetsBindingObserver {
     }
   }
 
-  void subscribe() {
-    handler = (devices) {
-      getDevices();
-    };
-    VideoSDK.on(Events.deviceChanged, handler);
-  }
-
-  void unsubscribe() {
-    VideoSDK.off(Events.deviceChanged, handler);
-  }
-
   @override
   void dispose() {
-    unsubscribe();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
