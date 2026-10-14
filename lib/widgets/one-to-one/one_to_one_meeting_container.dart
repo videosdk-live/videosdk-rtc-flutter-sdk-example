@@ -17,15 +17,15 @@ class OneToOneMeetingContainer extends StatefulWidget {
 }
 
 class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
-  Stream? localVideoStream;
-  Stream? localShareStream;
-  Stream? localAudioStream;
-  Stream? remoteAudioStream;
-  Stream? remoteVideoStream;
-  Stream? remoteShareStream;
+  RTCStream? localVideoStream;
+  RTCStream? localShareStream;
+  RTCStream? localAudioStream;
+  RTCStream? remoteAudioStream;
+  RTCStream? remoteVideoStream;
+  RTCStream? remoteShareStream;
 
-  Stream? largeViewStream;
-  Stream? smallViewStream;
+  RTCStream? largeViewStream;
+  RTCStream? smallViewStream;
   Participant? largeParticipant, smallParticipant;
   Participant? localParticipant, remoteParticipant;
   String? activeSpeakerId, presenterId;
@@ -172,8 +172,8 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
     // Called when participant left meeting
     _meeting.on(
       Events.participantLeft,
-      (participantId) {
-        if (remoteParticipant?.id == participantId) {
+      (Participant participant, LeaveReason reason) {
+        if (remoteParticipant?.id == participant.id) {
           setState(() {
             remoteParticipant = null;
             remoteShareStream = null;
@@ -208,7 +208,7 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
   }
 
   void updateView() {
-    Stream? _largeViewStream, _smallViewStream;
+    RTCStream? _largeViewStream, _smallViewStream;
     if (remoteParticipant != null) {
       if (remoteShareStream != null) {
         _largeViewStream = remoteShareStream;
@@ -238,21 +238,21 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
   }
 
   void addParticipantListener(Participant participant, bool isRemote) {
-    participant.streams.forEach((key, Stream stream) {
+    participant.streams.forEach((key, RTCStream stream) {
       setState(() {
-        if (stream.kind == 'video') {
+        if (stream.kind == MediaType.VIDEO) {
           if (isRemote) {
             remoteVideoStream = stream;
           } else {
             localVideoStream = stream;
           }
-        } else if (stream.kind == 'share') {
+        } else if (stream.kind == MediaType.SHARE) {
           if (isRemote) {
             remoteShareStream = stream;
           } else {
             localShareStream = stream;
           }
-        } else if (stream.kind == 'audio') {
+        } else if (stream.kind == MediaType.AUDIO) {
           if (isRemote) {
             remoteAudioStream = stream;
           } else {
@@ -262,21 +262,21 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
         updateView();
       });
     });
-    participant.on(Events.streamEnabled, (Stream _stream) {
+    participant.on(Events.streamEnabled, (RTCStream _stream) {
       setState(() {
-        if (_stream.kind == "video") {
+        if (_stream.kind == MediaType.VIDEO) {
           if (isRemote) {
             remoteVideoStream = _stream;
           } else {
             localVideoStream = _stream;
           }
-        } else if (_stream.kind == "share") {
+        } else if (_stream.kind == MediaType.SHARE) {
           if (isRemote) {
             remoteShareStream = _stream;
           } else {
             localShareStream = _stream;
           }
-        } else if (_stream.kind == 'audio') {
+        } else if (_stream.kind == MediaType.AUDIO) {
           if (isRemote) {
             remoteAudioStream = _stream;
           } else {
@@ -287,21 +287,21 @@ class _OneToOneMeetingContainerState extends State<OneToOneMeetingContainer> {
       });
     });
 
-    participant.on(Events.streamDisabled, (Stream _stream) {
+    participant.on(Events.streamDisabled, (RTCStream _stream) {
       setState(() {
-        if (_stream.kind == "video") {
+        if (_stream.kind == MediaType.VIDEO) {
           if (isRemote) {
             remoteVideoStream = null;
           } else {
             localVideoStream = null;
           }
-        } else if (_stream.kind == "share") {
+        } else if (_stream.kind == MediaType.SHARE) {
           if (isRemote) {
             remoteShareStream = null;
           } else {
             localShareStream = null;
           }
-        } else if (_stream.kind == 'audio') {
+        } else if (_stream.kind == MediaType.AUDIO) {
           if (isRemote) {
             remoteAudioStream = null;
           } else {

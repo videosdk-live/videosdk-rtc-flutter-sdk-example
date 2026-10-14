@@ -6,7 +6,7 @@ import 'package:videosdk_flutter_example/utils/spacer.dart';
 import 'package:videosdk_flutter_example/widgets/common/stats/call_stats.dart';
 
 class ParticipantView extends StatelessWidget {
-  final Stream? stream;
+  final RTCStream? stream;
   final bool isMicOn;
   final Color? avatarBackground;
   final Participant participant;

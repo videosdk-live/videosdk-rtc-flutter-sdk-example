@@ -6,9 +6,9 @@ import '../../../constants/colors.dart';
 
 class SelectAudioDevice extends StatefulWidget {
   final bool? isMicrophonePermissionAllowed;
-  AudioDeviceInfo? selectedAudioOutputDevice;
-  List<AudioDeviceInfo>? audioDevices;
-  final Function(AudioDeviceInfo?) onAudioDeviceSelected;
+  MicrophoneDeviceInfo? selectedAudioOutputDevice;
+  List<MicrophoneDeviceInfo>? audioDevices;
+  final Function(MicrophoneDeviceInfo?) onAudioDeviceSelected;
 
   SelectAudioDevice({
     Key? key,
@@ -57,7 +57,7 @@ class _SelectAudioOutputState extends State<SelectAudioDevice> {
                         },
                       );
                     } else {
-                      AudioDeviceInfo device = widget.audioDevices![index];
+                      MicrophoneDeviceInfo device = widget.audioDevices![index];
                       return ListTile(
                         leading: widget.selectedAudioOutputDevice == device
                             ? Icon(Icons.check, color: Colors.white)
