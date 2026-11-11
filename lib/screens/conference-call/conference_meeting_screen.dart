@@ -229,7 +229,7 @@ class _ConferenceMeetingScreenState extends State<ConferenceMeetingScreen> {
                                         elevation: 8.0,
                                       ).then((value) {
                                         if (value != null) {
-                                          meeting.setAudioDevice(value);
+                                          meeting.changeMic(deviceId: value.deviceId);
                                         }
                                       });
                                     },

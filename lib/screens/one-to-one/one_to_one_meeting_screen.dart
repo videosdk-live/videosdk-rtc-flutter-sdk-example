@@ -196,7 +196,7 @@ class _OneToOneMeetingScreenState extends State<OneToOneMeetingScreen> {
                                         elevation: 8.0,
                                       ).then((value) {
                                         if (value != null) {
-                                          meeting.setAudioDevice(value);
+                                          meeting.changeMic(deviceId: value.deviceId);
                                         }
                                       });
                                     },
